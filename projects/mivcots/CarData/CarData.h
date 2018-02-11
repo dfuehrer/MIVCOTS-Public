@@ -18,10 +18,10 @@ typedef struct dataValue_st {
 } dataValue;
 
 struct cStrCmp {
-	bool operator()(const char[] lhs, const char[] rhs) const{
+	bool operator()(const char* lhs, const char* rhs) const{
 		return strncmp(lhs, rhs, KEYLENGTH) < 0;
 	}
-}
+};
 
 class CarData
 {
@@ -29,9 +29,9 @@ public:
 	CarData();
 	~CarData();
 
-	void
+	
 
 protected:
-	std::map<char[] key, dataValue value, cStrCmp>;
+	std::map<char*, dataValue, cStrCmp> dataMap;
 };
 
