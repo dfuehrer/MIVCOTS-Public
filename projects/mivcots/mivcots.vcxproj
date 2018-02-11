@@ -19,20 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Analysis.cpp" />
-    <ClCompile Include="CarData.cpp" />
-    <ClCompile Include="DataInterface\DataInterface.cpp" />
-    <ClCompile Include="GUI.cpp" />
-    <ClCompile Include="InterTreadComm.cpp" />
-    <ClCompile Include="MIVCOTS.cpp" />
+    <ClCompile Include="CarData\CarData.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Analysis.h" />
-    <ClInclude Include="CarData.h" />
-    <ClInclude Include="DataInterface\DataInterface.h" />
-    <ClInclude Include="GUI.h" />
-    <ClInclude Include="InterTreadComm.h" />
-    <ClInclude Include="MIVCOTS.h" />
+    <ClInclude Include="CarData\CarData.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
