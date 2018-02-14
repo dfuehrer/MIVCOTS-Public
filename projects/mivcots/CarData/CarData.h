@@ -8,7 +8,7 @@ typedef struct dataValue_st {
 	union unprocessed {
 		long s;
 		unsigned long u;
-		double d
+		double d;
 	};
 	
 } dataValue;

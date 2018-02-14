@@ -19,11 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Analysis\Analysis.cpp" />
     <ClCompile Include="CarData\CarData.cpp" />
+    <ClCompile Include="DataInterface\DataInterface.cpp" />
+    <ClCompile Include="GUI\GUI.cpp" />
+    <ClCompile Include="InterThreadComm\InterThreadComm.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="CarData\CarData.h" />
+    <ClInclude Include="DataInterface\DataInterface.h" />
+    <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="InterThreadComm\InterThreadComm.h" />
+    <ClInclude Include="MIVCOTS\MIVCOTS.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -82,7 +92,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(SolutionDir)Libraries\serial\visual_studio\serial.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

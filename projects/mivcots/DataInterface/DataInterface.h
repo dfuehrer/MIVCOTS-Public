@@ -1,5 +1,12 @@
 #pragma once
 
+#include <atomic>
+#include <iostream>
+#include <thread>
+
+#include "CarData.h"
+#include "serial/serial.h"
+
 class DataInterface
 {
 public:
@@ -16,7 +23,7 @@ protected:
 
 	void runSerialThread();
 
-	CarData parseString(std::string toParse)
+	CarData parseString(std::string toParse);
 
 	serial::Serial* dataSource;
 };

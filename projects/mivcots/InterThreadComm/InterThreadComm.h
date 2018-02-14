@@ -1,5 +1,5 @@
 #pragma once
-class InterTgreadComm
+class InterThreadComm
 {
 public:
 	InterThreadComm();
