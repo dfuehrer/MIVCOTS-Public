@@ -9,6 +9,40 @@ CarData::~CarData()
 {
 }
 
+int CarData::addKey(char* key) 
+{
+	if (key == nullptr) {
+		return NULLPTRERR;
+	}
+
+	if (dataMap.find(key) == dataMap.end()) {
+		dataMap[key].data.u = 0;
+		return SUCCESS;
+	}
+	else {
+		return ELEMENTEXISTS;
+	}
+}
+
+int CarData::initialize(std::vector<char*>* keys, bool clearMap)
+{
+	if (clearMap) {
+		dataMap.clear();
+	}
+	
+	if (keys == nullptr) {
+		return NULLPTRERR;
+	}
+
+	int rc = SUCCESS;
+
+	for (char* key : *keys) {
+		rc |= addKey(key);
+	}
+
+	return rc;
+}
+
 int CarData::set(char* key, long newValue)
 {
 	dataMap_t::iterator iter;
@@ -93,8 +127,8 @@ int CarData::get(char* key, double* dest)
 	return rc;
 }
 
-inline int CarData::find_key(char* key, dataMap_t::iterator* iter) {
-
+inline int CarData::find_key(char* key, dataMap_t::iterator* iter) 
+{
 	if ((iter == nullptr) || (key == nullptr)) {
 		return NULLPTRERR;
 	}

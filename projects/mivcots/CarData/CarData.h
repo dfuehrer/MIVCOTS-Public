@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 #define KEYLENGTH 3
 
@@ -26,6 +27,9 @@ class CarData
 public:
 	CarData();
 	~CarData();
+
+	int addKey(char* key);
+	int initialize(std::vector<char*>* keys, bool clearMap);
 
 	int set(char* key, long newValue);
 	int set(char* key, unsigned long newValue);

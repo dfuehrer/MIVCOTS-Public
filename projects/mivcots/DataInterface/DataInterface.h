@@ -23,7 +23,7 @@ protected:
 
 	void runSerialThread();
 
-	CarData parseString(std::string toParse);
+	CarData* parseString(std::string toParse);
 
 	serial::Serial* dataSource;
 };
