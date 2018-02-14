@@ -56,5 +56,8 @@
     <ClInclude Include="Analysis\Analysis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="error_codes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

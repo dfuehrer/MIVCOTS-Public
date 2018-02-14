@@ -31,6 +31,7 @@
     <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="CarData\CarData.h" />
     <ClInclude Include="DataInterface\DataInterface.h" />
+    <ClInclude Include="error_codes.h" />
     <ClInclude Include="GUI\GUI.h" />
     <ClInclude Include="InterThreadComm\InterThreadComm.h" />
     <ClInclude Include="MIVCOTS\MIVCOTS.h" />
@@ -92,7 +93,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include; $(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(SolutionDir)Libraries\serial_lib\serial.lib;%(AdditionalDependencies)</AdditionalDependencies>

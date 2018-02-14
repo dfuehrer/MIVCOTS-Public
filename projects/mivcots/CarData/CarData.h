@@ -5,12 +5,14 @@
 #define KEYLENGTH 3
 
 typedef struct dataValue_st {
-	union unprocessed {
+	union data_u {
 		long s;
 		unsigned long u;
 		double d;
 	};
 	
+	data_u data;
+
 } dataValue;
 
 struct cStrCmp {
@@ -34,6 +36,9 @@ public:
 	int get(char* key, double* dest);	
 
 protected:
-	std::map<char*, dataValue, cStrCmp> dataMap;
+	typedef std::map<char*, dataValue, cStrCmp> dataMap_t;
+	dataMap_t dataMap;
+
+	inline int find_key(char* key, dataMap_t::iterator* iter);
 };
 

@@ -44,3 +44,8 @@ void DataInterface::runSerialThread()
 	}
 }
 
+CarData DataInterface::parseString(std::string toParse)
+{
+	return CarData();
+}
+
