@@ -1,6 +1,9 @@
 # MIVCOTS_SOFTWARE
 Only Software (Sean, we're looking at you...)
 
+## Cloning
+Use the command "git clone --recurse-submodules -j8 https://github.com/pdxfrog/MIVCOTS_SOFTWARE.git" to also clone the submodules.
+
 ## Installing wxWidgets:
 1. Download and run the Windows installer for 3.0.3 (latest stable release)
 
