@@ -1,5 +1,5 @@
 #include "Analysis.h"
-#include <vector>
+
 
 
 
@@ -41,5 +41,5 @@ int Analysis::ControlChart(int GraphPoints) {
 	}
 	else
 		Warning = 0; 
-	return;
+	return 0;
 }
