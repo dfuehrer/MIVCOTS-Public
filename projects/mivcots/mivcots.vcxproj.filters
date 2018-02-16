@@ -18,9 +18,6 @@
     <ClCompile Include="CarData\CarData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

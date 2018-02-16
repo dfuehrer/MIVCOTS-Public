@@ -24,7 +24,6 @@
     <ClCompile Include="DataInterface\DataInterface.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
     <ClCompile Include="InterThreadComm\InterThreadComm.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
   <ItemGroup>
