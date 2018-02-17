@@ -21,12 +21,18 @@ public:
 private:
 	void onExit(wxCommandEvent &event);
 	void onAbout(wxCommandEvent &event);
-
+	void onToggleFullscreen(wxCommandEvent &event);
 	wxDECLARE_EVENT_TABLE();
+};
+
+enum
+{
+	toggleFullscreen
 };
 
 wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_EXIT, Frame::onExit)
 	EVT_MENU(wxID_ABOUT, Frame::onAbout)
+	EVT_MENU(toggleFullscreen, Frame::onToggleFullscreen)
 wxEND_EVENT_TABLE()
 
