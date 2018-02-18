@@ -32,7 +32,9 @@
     <ClInclude Include="DataInterface\DataInterface.h" />
     <ClInclude Include="error_codes.h" />
     <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="InterThreadComm\endpoint.h" />
     <ClInclude Include="InterThreadComm\InterThreadComm.h" />
+    <ClInclude Include="InterThreadComm\lockedQueue.h" />
     <ClInclude Include="MIVCOTS\MIVCOTS.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -56,5 +56,11 @@
     <ClInclude Include="error_codes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InterThreadComm\endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterThreadComm\lockedQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

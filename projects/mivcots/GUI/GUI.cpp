@@ -17,15 +17,15 @@ Frame::Frame(const wxString& title, const wxPoint& pos, const wxSize& size)
 	menuFile->Append(wxID_EXIT);
 
 	wxMenu *menuView = new wxMenu;
-	menuView->Append(toggleFullscreen, _T("Toggle fullscreen\tF11"), _T("Toggle fullscreen display"));
+	menuView->Append(toggleFullscreen, "Toggle fullscreen\tF11", "Toggle fullscreen display");
 
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
 
 	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append(menuFile, "&File");
-	menuBar->Append(menuView, "&View");
-	menuBar->Append(menuHelp, "&Help");
+	menuBar->Append(menuFile, "File");
+	menuBar->Append(menuView, "View");
+	menuBar->Append(menuHelp, "Help");
 
 	SetMenuBar(menuBar);
 	CreateStatusBar();
