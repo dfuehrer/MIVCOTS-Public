@@ -1,30 +1,5 @@
 #include "GUI.h"
 
-//wxIMPLEMENT_APP(GUI);
-//
-//Frame::Frame(const wxString& title, const wxPoint& pos, const wxSize& size)
-//	: wxFrame(NULL, wxID_ANY, title, pos, size)
-//{
-//	wxMenu *menuFile = new wxMenu;
-//	menuFile->Append(wxID_EXIT);
-//
-//	wxMenu *menuView = new wxMenu;
-//	menuView->Append(toggleFullscreen, "Toggle fullscreen\tF11", "Toggle fullscreen display");
-//
-//	wxMenu *menuHelp = new wxMenu;
-//	menuHelp->Append(wxID_ABOUT);
-//
-//	wxMenuBar *menuBar = new wxMenuBar;
-//	menuBar->Append(menuFile, "File");
-//	menuBar->Append(menuView, "View");
-//	menuBar->Append(menuHelp, "Help");
-//
-//	SetMenuBar(menuBar);
-//	CreateStatusBar();
-//	SetStatusText("Welcome to MIVCOTS!");
-//}
-//
-
 DECLARE_APP(GUI);
 IMPLEMENT_APP(GUI);
 
