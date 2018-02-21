@@ -2,6 +2,7 @@
 
 #include <wx/wx.h>
 #include <wx/app.h>
+#include <wx/aui/aui.h>
 
 
 class GUI: public wxApp
@@ -16,9 +17,12 @@ private:
 class Frame : public wxFrame
 {
 public:
-	Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
-
+	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
+	Frame(wxWindow* parent);
+	~Frame();
 private:
+	wxAuiManager m_mgr;
+
 	void onExit(wxCommandEvent &event);
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);

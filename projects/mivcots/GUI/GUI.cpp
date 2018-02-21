@@ -1,49 +1,105 @@
 #include "GUI.h"
 
-wxIMPLEMENT_APP(GUI);
+//wxIMPLEMENT_APP(GUI);
+//
+//Frame::Frame(const wxString& title, const wxPoint& pos, const wxSize& size)
+//	: wxFrame(NULL, wxID_ANY, title, pos, size)
+//{
+//	wxMenu *menuFile = new wxMenu;
+//	menuFile->Append(wxID_EXIT);
+//
+//	wxMenu *menuView = new wxMenu;
+//	menuView->Append(toggleFullscreen, "Toggle fullscreen\tF11", "Toggle fullscreen display");
+//
+//	wxMenu *menuHelp = new wxMenu;
+//	menuHelp->Append(wxID_ABOUT);
+//
+//	wxMenuBar *menuBar = new wxMenuBar;
+//	menuBar->Append(menuFile, "File");
+//	menuBar->Append(menuView, "View");
+//	menuBar->Append(menuHelp, "Help");
+//
+//	SetMenuBar(menuBar);
+//	CreateStatusBar();
+//	SetStatusText("Welcome to MIVCOTS!");
+//}
+//
+
+DECLARE_APP(GUI);
+IMPLEMENT_APP(GUI);
 
 bool GUI::OnInit()
 {
-	Frame *framep = new Frame("MIVCOTS", wxPoint(50, 50), wxSize(450, 340));
-	framep->Show(true);
-	framep->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
+	wxFrame* frame = new Frame(NULL);
+	SetTopWindow(frame);
+	frame->Show();
 	return true;
 }
 
-Frame::Frame(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame(NULL, wxID_ANY, title, pos, size)
+
+Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
+	wxDefaultPosition, wxSize(800, 600),
+	wxDEFAULT_FRAME_STYLE) 
 {
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_EXIT);
-
+	
 	wxMenu *menuView = new wxMenu;
 	menuView->Append(toggleFullscreen, "Toggle fullscreen\tF11", "Toggle fullscreen display");
-
+	
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
-
+	
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, "File");
 	menuBar->Append(menuView, "View");
 	menuBar->Append(menuHelp, "Help");
-
+	
 	SetMenuBar(menuBar);
 	CreateStatusBar();
-	SetStatusText("Welcome to MIVCOTS!");
+	SetStatusText("Welcome to MIVCOTS!");	
+
+	m_mgr.SetManagedWindow(this);
+
+	// create several text controls
+	wxTextCtrl* text1 = new wxTextCtrl(this, -1, _("Pane 1 - sample text"),
+		wxDefaultPosition, wxSize(200, 150),
+		wxNO_BORDER | wxTE_MULTILINE);
+
+	wxTextCtrl* text2 = new wxTextCtrl(this, -1, _("Pane 2 - sample text"),
+		wxDefaultPosition, wxSize(200, 150),
+		wxNO_BORDER | wxTE_MULTILINE);
+
+	wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window"),
+		wxDefaultPosition, wxSize(200, 150),
+		wxNO_BORDER | wxTE_MULTILINE);
+
+	// add the panes to the manager
+	m_mgr.AddPane(text1, wxLEFT, wxT("Pane Number One"));
+	m_mgr.AddPane(text2, wxBOTTOM, wxT("Pane Number Two"));
+	m_mgr.AddPane(text3, wxCENTER);
+
+	// tell the manager to "commit" all the changes just made
+	m_mgr.Update();
 }
 
-void Frame::onExit(wxCommandEvent &event)
+Frame::~Frame()
+{
+	m_mgr.UnInit();
+}
+
+void Frame::onExit(wxCommandEvent & event)
 {
 	Close(true);
 }
 
-void Frame::onAbout(wxCommandEvent &event)
+void Frame::onAbout(wxCommandEvent & event)
 {
-	wxMessageBox("This is the start of a MIVCOTS", "About MIVCOTS", 
-				 wxOK | wxICON_INFORMATION);
+	wxMessageBox("This is the start of a MIVCOTS", "About MIVCOTS",
+		wxOK | wxICON_INFORMATION);
 }
 
-void Frame::onToggleFullscreen(wxCommandEvent &event)
+void Frame::onToggleFullscreen(wxCommandEvent & event)
 {
 	ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER);
 }
