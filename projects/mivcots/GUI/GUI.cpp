@@ -49,10 +49,16 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 		wxDefaultPosition, wxSize(200, 150),
 		wxNO_BORDER | wxTE_MULTILINE);
 
+	std::string image = "C:/Users/Sean/Documents/MIVCOTS_SOFTWARE/projects/mivcots/GUI/test.png";
+
+	Map mapPanel = Map(this);
+	mapPanel.initMap();
 	// add the panes to the manager
+	m_mgr.AddPane(mapPanel.getPanel(), wxBOTTOM);
 	m_mgr.AddPane(text1, wxLEFT, wxT("Pane Number One"));
 	m_mgr.AddPane(text2, wxBOTTOM, wxT("Pane Number Two"));
 	m_mgr.AddPane(text3, wxCENTER);
+	
 
 	// tell the manager to "commit" all the changes just made
 	m_mgr.Update();
