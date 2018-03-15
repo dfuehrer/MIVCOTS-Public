@@ -4,12 +4,16 @@ Only Software (Sean, we're looking at you...)
 ## Cloning
 Use the command "git clone --recurse-submodules -j8 https://github.com/pdxfrog/MIVCOTS_SOFTWARE.git" to also clone the submodules.
 
+## To pull submodules into an already cloned repository, run:
+#git submodule init
+#git submodule update
+
 ## Installing wxWidgets:
-1. Download and run the Windows installer for 3.0.3 (latest stable release)
+1. Download and run the Windows installer for 3.0.4 (latest stable release)
 
    https://www.wxwidgets.org/downloads/
    
-2. Navigate to the install directory (hopefully C:\wxWidgets-3.0.3) then \build\msw
+2. Navigate to the install directory (hopefully C:\wxWidgets-3.0.4) then \build\msw
 3. Open wx_vc10.sln in Visual Studios 2017. Let it convert everything to v141.
 4. Build the solution.
 5. Set the WXWIN environment variable to the install directory if the installer didn't. 
