@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Map">
+      <UniqueIdentifier>{1b2122a2-8b80-4e0b-96b5-1cb9e845854c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Map">
+      <UniqueIdentifier>{fdce33da-7d44-4492-850f-02fdfb90e8a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CarData\CarData.cpp">
@@ -33,11 +39,11 @@
     <ClCompile Include="Analysis\Analysis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Map.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GUI\MapWidget\Map.cpp">
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\PictureWindow.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="GUI\MapWidget\PictureWindow.cpp">
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,11 +74,11 @@
     <ClInclude Include="InterThreadComm\lockedQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\Map.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GUI\MapWidget\Map.h">
+      <Filter>Header Files\Map</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\PictureWindow.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="GUI\MapWidget\PictureWindow.h">
+      <Filter>Header Files\Map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

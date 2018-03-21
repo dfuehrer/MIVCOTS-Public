@@ -4,7 +4,7 @@
 #include <wx/app.h>
 #include <wx/aui/aui.h>
 
-#include "Map.h"
+#include "MapWidget/Map.h"
 #include <string.h>
 
 

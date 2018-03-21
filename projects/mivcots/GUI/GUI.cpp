@@ -8,12 +8,13 @@ bool GUI::OnInit()
 	wxFrame* frame = new Frame(NULL);
 	SetTopWindow(frame);
 	frame->Show();
+	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
 	return true;
 }
 
 
 Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
-	wxDefaultPosition, wxSize(800, 600),
+	wxDefaultPosition, wxDefaultSize,
 	wxDEFAULT_FRAME_STYLE) 
 {
 	wxMenu *menuFile = new wxMenu;
@@ -54,10 +55,12 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	Map mapPanel = Map(this);
 	mapPanel.initMap();
 	// add the panes to the manager
-	m_mgr.AddPane(mapPanel.getPanel(), wxBOTTOM);
+	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280,1280).BestSize(1280, 1280).MaxSize(1280,1280));
+
+
 	m_mgr.AddPane(text1, wxLEFT, wxT("Pane Number One"));
 	m_mgr.AddPane(text2, wxBOTTOM, wxT("Pane Number Two"));
-	m_mgr.AddPane(text3, wxCENTER);
+	m_mgr.AddPane(text3, wxBOTTOM);
 	
 
 	// tell the manager to "commit" all the changes just made

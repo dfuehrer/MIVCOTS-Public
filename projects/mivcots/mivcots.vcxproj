@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -23,8 +23,8 @@
     <ClCompile Include="CarData\CarData.cpp" />
     <ClCompile Include="DataInterface\DataInterface.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
-    <ClCompile Include="GUI\Map.cpp" />
-    <ClCompile Include="GUI\PictureWindow.cpp" />
+    <ClCompile Include="GUI\MapWidget\Map.cpp" />
+    <ClCompile Include="GUI\MapWidget\PictureWindow.cpp" />
     <ClCompile Include="InterThreadComm\InterThreadComm.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
@@ -34,8 +34,8 @@
     <ClInclude Include="DataInterface\DataInterface.h" />
     <ClInclude Include="error_codes.h" />
     <ClInclude Include="GUI\GUI.h" />
-    <ClInclude Include="GUI\Map.h" />
-    <ClInclude Include="GUI\PictureWindow.h" />
+    <ClInclude Include="GUI\MapWidget\Map.h" />
+    <ClInclude Include="GUI\MapWidget\PictureWindow.h" />
     <ClInclude Include="InterThreadComm\endpoint.h" />
     <ClInclude Include="InterThreadComm\InterThreadComm.h" />
     <ClInclude Include="InterThreadComm\lockedQueue.h" />
