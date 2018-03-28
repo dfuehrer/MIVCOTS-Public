@@ -9,6 +9,7 @@ bool GUI::OnInit()
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
+
 	return true;
 }
 
@@ -53,7 +54,7 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	std::string image = "C:/Users/Sean/Documents/MIVCOTS_SOFTWARE/projects/mivcots/GUI/test.png";
 
 	Map mapPanel = Map(this);
-	mapPanel.initMap();
+	//mapPanel.initMap();
 	// add the panes to the manager
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280,1280).BestSize(1280, 1280).MaxSize(1280,1280));
 

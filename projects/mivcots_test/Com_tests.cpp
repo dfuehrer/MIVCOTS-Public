@@ -3,6 +3,7 @@
 #include "CarData/CarData.cpp"
 #include "InterThreadComm/InterThreadComm.h"
 #include "InterThreadComm/InterThreadComm.cpp"
+#include "error_codes.h"
 
 TEST(CarDataTests, basic) {
 	CarData uut;
@@ -41,7 +42,7 @@ TEST(InterThreadCommTests, basic) {
 	int rc3 = endpoint1->receive(&dest3);
 	int rc4 = endpoint1->receive(&dest4);
 
-	ASSERT_EQ(rc1 + rc2 + rc3 + rc4, 0);
+	ASSERT_EQ(rc1 + rc2 + rc3 + rc4, SUCCESS);
 	EXPECT_EQ(dest1, "This is a test");
 	EXPECT_EQ(dest2, "Part 2");
 	EXPECT_EQ(dest3, 42);

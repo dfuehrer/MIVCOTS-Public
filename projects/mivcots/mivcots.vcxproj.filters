@@ -45,6 +45,9 @@
     <ClCompile Include="GUI\MapWidget\PictureWindow.cpp">
       <Filter>Source Files\Map</Filter>
     </ClCompile>
+    <ClCompile Include="InterThreadComm\sharedCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="GUI\MapWidget\PictureWindow.h">
       <Filter>Header Files\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="InterThreadComm\sharedCache.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,7 +1,5 @@
 #include "MIVCOTS.h"
 
-
-
 MIVCOTS::MIVCOTS()
 {
 }
