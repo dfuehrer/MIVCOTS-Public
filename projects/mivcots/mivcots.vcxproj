@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Analysis\Analysis.cpp" />
     <ClCompile Include="CarData\CarData.cpp" />
+    <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp" />
     <ClCompile Include="DataInterface\DataInterface.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
     <ClCompile Include="GUI\MapWidget\Map.cpp" />
@@ -32,6 +33,7 @@
   <ItemGroup>
     <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="CarData\CarData.h" />
+    <ClInclude Include="DatabaseConnector\DatabaseConnector.h" />
     <ClInclude Include="DataInterface\DataInterface.h" />
     <ClInclude Include="error_codes.h" />
     <ClInclude Include="GUI\GUI.h" />
@@ -100,7 +102,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

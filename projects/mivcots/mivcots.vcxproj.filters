@@ -48,6 +48,9 @@
     <ClCompile Include="InterThreadComm\sharedCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files\Map</Filter>
     </ClInclude>
     <ClInclude Include="InterThreadComm\sharedCache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseConnector\DatabaseConnector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
