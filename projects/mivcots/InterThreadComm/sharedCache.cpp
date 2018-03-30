@@ -52,7 +52,7 @@ int sharedCache<CarData*>::updateCache()
 }
 
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
-	if ((cacheIter == nullptr) || (endIter == nullptr)) {
+	if ((startIter == nullptr) || (endIter == nullptr)) {
 		return NULLPTRERR;
 	}
 
@@ -65,7 +65,7 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
 }
 
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length){
-	if ((cacheIter == nullptr) || (endIter == nullptr)) {
+	if ((startIter == nullptr) || (endIter == nullptr)) {
 		return NULLPTRERR;
 	}
 
@@ -77,8 +77,11 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 
 	*startIter = buffer.begin();
 	*endIter = buffer.begin() + length;
+
+	return SUCCESS;
 }
 
 int sharedCache<CarData*>::releaseReadLock(){
-	slocl->unlock();
+	slock->unlock();
+	return SUCCESS;
 }

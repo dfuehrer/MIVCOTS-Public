@@ -10,7 +10,7 @@ template <class T> class sharedCache
 {
 public:
 
-	typedef std::deque<T>::iterator cacheIter;
+	typedef typename std::deque<T>::iterator cacheIter;
 
 	sharedCache();
 	~sharedCache();
