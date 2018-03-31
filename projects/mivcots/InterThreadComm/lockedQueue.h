@@ -56,7 +56,7 @@ public:
 
 	int size()
 	{
-		std::lock_guard<std::mutex> Qmutex;
+		std::lock_guard<std::mutex> lock(Qmutex);
 		return Q.size();
 	}
 

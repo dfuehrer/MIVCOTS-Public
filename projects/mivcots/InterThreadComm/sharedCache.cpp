@@ -9,6 +9,9 @@ sharedCache<CarData*>::sharedCache()
 
 sharedCache<CarData*>::~sharedCache()
 {
+	if (slock != nullptr) {
+		delete slock;
+	}
 }
 
 int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>* _feedQ, endpoint<CarData*>* _updateQ)
@@ -38,8 +41,23 @@ int sharedCache<CarData*>::feedCache()
 	std::unique_lock<std::shared_mutex> ulock(smtx);
 	ulock.lock();
 
+	CarData* received;
+	int rc = feedQ->receive(&received);
+
+	if (rc != SUCCESS) {
+		ulock.unlock();
+		return rc;
+	}
+
+	if (buffer.size() == maxSize) {
+		delete buffer.front();
+		buffer.pop_front();
+	}
+
+	buffer.push_back(received);
+
 	ulock.unlock();
-	return 0;
+	return SUCCESS;
 }
 
 int sharedCache<CarData*>::updateCache()
@@ -47,8 +65,25 @@ int sharedCache<CarData*>::updateCache()
 	std::unique_lock<std::shared_mutex> ulock(smtx);
 	ulock.lock();
 
+	int rc = SUCCESS;
+
+	int ind, findRC;
+	CarData* tempData;
+
+	while (updateQ->receiveQsize() > 0) {
+		updateQ->receiveQfront(&tempData);
+
+		findRC = findItem(tempData, &ind);
+		if (findRC == SUCCESS) {
+			buffer.at(ind) = tempData;
+		}
+		else {
+			rc |= findRC;
+		}
+	}
+
 	ulock.unlock();
-	return 0;
+	return rc;
 }
 
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
@@ -84,4 +119,38 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 int sharedCache<CarData*>::releaseReadLock(){
 	slock->unlock();
 	return SUCCESS;
+}
+
+template <>
+int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
+{
+	if ((toFind == nullptr) || (ind == nullptr)) {
+		return NULLPTRERR;
+	}
+	
+	int left = 0;
+	int right = buffer.size();
+	int middle;
+
+	unsigned long toFindTimeStamp, searchTimeStamp;
+	toFind->get("TM", &toFindTimeStamp);
+
+	while (left <= right) {
+		middle = (left + right) / 2;
+
+		buffer.at(middle)->get("TM", &searchTimeStamp);
+
+		if (searchTimeStamp == toFindTimeStamp) {
+			*ind = middle;
+			return SUCCESS;
+		}
+		else if (searchTimeStamp > toFindTimeStamp) {
+			right = middle - 1;
+		}
+		else {
+			left = middle + 1;
+		}
+	}
+
+	return NOTFOUND;
 }

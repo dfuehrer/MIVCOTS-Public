@@ -6,3 +6,4 @@
 #define ELEMENTEXISTS 1 << 3
 #define EMPTYQUEUE 1 << 4
 #define MUTEXERR 1 << 5
+#define NOTFOUND 1 << 6
