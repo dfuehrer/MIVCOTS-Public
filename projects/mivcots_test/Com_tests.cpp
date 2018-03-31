@@ -2,7 +2,6 @@
 #include "CarData/CarData.h"
 #include "CarData/CarData.cpp"
 #include "InterThreadComm/InterThreadComm.h"
-#include "InterThreadComm/InterThreadComm.cpp"
 #include "error_codes.h"
 
 TEST(CarDataTests, basic) {

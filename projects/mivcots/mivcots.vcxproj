@@ -26,7 +26,6 @@
     <ClCompile Include="GUI\GUI.cpp" />
     <ClCompile Include="GUI\MapWidget\Map.cpp" />
     <ClCompile Include="GUI\MapWidget\PictureWindow.cpp" />
-    <ClCompile Include="InterThreadComm\InterThreadComm.cpp" />
     <ClCompile Include="InterThreadComm\sharedCache.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
@@ -102,7 +101,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

@@ -27,9 +27,6 @@
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterThreadComm\InterThreadComm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
