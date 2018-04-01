@@ -48,6 +48,9 @@
     <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CarPool\CarPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DatabaseConnector\DatabaseConnector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CarPool\CarPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

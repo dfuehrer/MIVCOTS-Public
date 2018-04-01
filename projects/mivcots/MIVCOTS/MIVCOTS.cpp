@@ -13,6 +13,16 @@ int MIVCOTS::initialize()
 	return 0;
 }
 
+int MIVCOTS::start()
+{
+	return 0;
+}
+
+int MIVCOTS::stop()
+{
+	return 0;
+}
+
 int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter)
 {
 	return cache.readCache(startIter, endIter);

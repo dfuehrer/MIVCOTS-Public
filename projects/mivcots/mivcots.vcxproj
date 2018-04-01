@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Analysis\Analysis.cpp" />
     <ClCompile Include="CarData\CarData.cpp" />
+    <ClCompile Include="CarPool\CarPool.cpp" />
     <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp" />
     <ClCompile Include="DataInterface\DataInterface.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
@@ -32,6 +33,7 @@
   <ItemGroup>
     <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="CarData\CarData.h" />
+    <ClInclude Include="CarPool\CarPool.h" />
     <ClInclude Include="DatabaseConnector\DatabaseConnector.h" />
     <ClInclude Include="DataInterface\DataInterface.h" />
     <ClInclude Include="error_codes.h" />
