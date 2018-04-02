@@ -7,3 +7,4 @@
 #define EMPTYQUEUE 1 << 4
 #define MUTEXERR 1 << 5
 #define NOTFOUND 1 << 6
+#define INITERR 1 << 7

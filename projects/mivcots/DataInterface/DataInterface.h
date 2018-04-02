@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "CarData.h"
+#include "endpoint.h"
 #include "serial/serial.h"
 
 class DataInterface
@@ -13,7 +14,7 @@ public:
 	DataInterface();
 	~DataInterface();
 
-	void initialize(std::string portName, long int baud);
+	int initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ);
 	void start();
 	void stop();
 
@@ -21,10 +22,12 @@ protected:
 	std::atomic<bool> isRunning;
 	std::thread serialThread;
 
+	endpoint<CarData*>* outputQ;
+
 	void runSerialThread();
 
 	CarData* parseString(std::string toParse);
 
-	serial::Serial* dataSource;
+	serial::Serial* serialPort;
 };
 

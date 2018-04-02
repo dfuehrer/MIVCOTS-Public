@@ -9,16 +9,25 @@ DataInterface::~DataInterface()
 {
 	stop();
 
-	if (dataSource != nullptr){
-		dataSource->flush();
-		dataSource->close();
-		delete dataSource;
+	if (serialPort != nullptr){
+		serialPort->flush();
+		serialPort->close();
+		delete serialPort;
 	}
 	
 }
 
-void DataInterface::initialize(std::string portName, long int baud){
-	dataSource = new serial::Serial(portName, baud);
+int DataInterface::initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ)
+{
+	outputQ = _outputQ;
+	
+	serialPort = new serial::Serial(portName, baud);
+	
+	if (serialPort == nullptr) {
+		return INITERR;
+	}
+
+	return SUCCESS;
 }
 
 void DataInterface::start()
