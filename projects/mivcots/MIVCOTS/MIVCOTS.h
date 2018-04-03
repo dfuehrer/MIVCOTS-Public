@@ -27,6 +27,8 @@ public:
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
 	int endCacheRead();
 
+	bool newData();
+
 private:
 	DataInterface dataSource;
 	DatabaseConnector dataStorage;

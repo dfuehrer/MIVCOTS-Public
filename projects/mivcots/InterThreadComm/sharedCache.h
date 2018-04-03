@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <shared_mutex>
 #include <deque>
 
@@ -29,6 +30,9 @@ public:
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
 	int releaseReadLock();
+
+	bool newRawData();
+	bool newAnalyzedData();
 
 private:
 	unsigned int maxSize;

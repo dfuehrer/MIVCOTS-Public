@@ -38,3 +38,8 @@ int MIVCOTS::endCacheRead()
 	return cache.releaseReadLock();
 }
 
+bool MIVCOTS::newData()
+{
+	return cache.newRawData() || cache.newAnalyzedData();
+}
+

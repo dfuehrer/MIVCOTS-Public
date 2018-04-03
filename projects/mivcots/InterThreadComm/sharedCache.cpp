@@ -121,6 +121,17 @@ int sharedCache<CarData*>::releaseReadLock(){
 	return SUCCESS;
 }
 
+// TODO
+bool sharedCache<CarData*>::newRawData()
+{
+	return true;
+}
+
+bool sharedCache<CarData*>::newAnalyzedData()
+{
+	return true;
+}
+
 template <>
 int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 {
