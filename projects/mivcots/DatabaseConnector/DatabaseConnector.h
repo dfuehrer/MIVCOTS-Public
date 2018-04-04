@@ -28,4 +28,7 @@ public:
 	void dropColumn(int carnum, std::string columnName);
 	void createDatabase(std::string databaseName);
 	void createTable(int carnum);
+	void shutdown();
+private:
+	MYSQL mysql;
 };

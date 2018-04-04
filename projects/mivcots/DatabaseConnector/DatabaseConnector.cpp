@@ -10,7 +10,6 @@ DatabaseConnector::~DatabaseConnector()
 }
 
 void DatabaseConnector::initCar(int carnum) {
-	MYSQL mysql;
 	mysql_init(&mysql);
 	int tablefound = 0;
 	char input = 'A';
@@ -34,7 +33,6 @@ void DatabaseConnector::initCar(int carnum) {
 }
 
 void DatabaseConnector::createTable(int carnum) {
-	MYSQL mysql;
 	mysql_init(&mysql);
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
 	{
@@ -58,7 +56,6 @@ void DatabaseConnector::createTable(int carnum) {
 }
 
 void DatabaseConnector::addDataAndColumnToTable(int carnum,long long datetime, std::string sensortype, double data) {
-	MYSQL mysql;
 	mysql_init(&mysql);
 	int result = 0;
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
@@ -101,7 +98,6 @@ void DatabaseConnector::addDataAndColumnToTable(int carnum,long long datetime, s
 }
 
 void DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::string columnType) {
-	MYSQL mysql;
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 	int columnFound = 0;
@@ -148,7 +144,6 @@ void DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::st
 
 //Add Data to Table. EIther use Insert into or possibly update.
 void DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
-	MYSQL mysql;
 	mysql_init(&mysql);
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
 	{
@@ -195,7 +190,6 @@ void DatabaseConnector::addDataToTable(int carnum, long long datetime, std::stri
 }
 
 void DatabaseConnector::getData(int carnum, long long minValue, long long maxValue) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
-	MYSQL mysql;
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 	mysql_init(&mysql);
@@ -229,7 +223,6 @@ void DatabaseConnector::getData(int carnum, long long minValue, long long maxVal
 }
 
 void DatabaseConnector::dropTable(int carnum) {
-	MYSQL mysql;;
 	int tablefound = 0;
 	mysql_init(&mysql);
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
@@ -255,7 +248,6 @@ void DatabaseConnector::dropTable(int carnum) {
 
 //delete row of data from table   Delete a row(s) from a table.		DELETE from [table name] where [field name] = 'whatever';
 void DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
-	MYSQL mysql;
 	int tablefound = 0;
 	mysql_init(&mysql);
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
@@ -282,7 +274,6 @@ void DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
 
 //delete column from table  Delete a column.	alter table [table name] drop column [column name];
 void DatabaseConnector::dropColumn(int carnum,std::string columnName) {
-	MYSQL mysql;
 	int columnfound = 0;
 	mysql_init(&mysql);
 	if (!mysql_real_connect(&mysql, host, user, passwd, database, 0, NULL, 0))
@@ -309,7 +300,6 @@ void DatabaseConnector::dropColumn(int carnum,std::string columnName) {
 
 //possibly create database Create a database on the sql server.		create database [databasename];
 void DatabaseConnector::createDatabase(std::string databaseName) {
-	MYSQL mysql;
 	mysql_init(&mysql);
 	int result = 0;
 	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0))
@@ -330,7 +320,16 @@ void DatabaseConnector::createDatabase(std::string databaseName) {
 	mysql_close(&mysql);
 }
 
+//shutdown mysql_shutdown(&mysql)
+void DatabaseConnector::shutdown() {
+	int result = 0;
+	result = mysql_shutdown(&mysql, SHUTDOWN_DEFAULT);
+	if (result == 0) {
+		std::cout << "Shutdown Successful" << std::endl;
+	}
+	else
+		std::cout << "Shutdown Failed" << std::endl;
+}
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
-=======
->>>>>>> 828c8ed160968088538760bb592824bb79bd27da
+
