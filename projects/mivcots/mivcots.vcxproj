@@ -21,18 +21,19 @@
   <ItemGroup>
     <ClCompile Include="Analysis\Analysis.cpp" />
     <ClCompile Include="CarData\CarData.cpp" />
+    <ClCompile Include="CarPool\CarPool.cpp" />
     <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp" />
     <ClCompile Include="DataInterface\DataInterface.cpp" />
     <ClCompile Include="GUI\GUI.cpp" />
     <ClCompile Include="GUI\MapWidget\Map.cpp" />
     <ClCompile Include="GUI\MapWidget\PictureWindow.cpp" />
-    <ClCompile Include="InterThreadComm\InterThreadComm.cpp" />
     <ClCompile Include="InterThreadComm\sharedCache.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="CarData\CarData.h" />
+    <ClInclude Include="CarPool\CarPool.h" />
     <ClInclude Include="DatabaseConnector\DatabaseConnector.h" />
     <ClInclude Include="DataInterface\DataInterface.h" />
     <ClInclude Include="error_codes.h" />
@@ -102,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis;$(ProjectDir)CarPool</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
