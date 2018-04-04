@@ -15,10 +15,10 @@ public:
 	int send(T1 toSend) { return forwardQ->push(toSend); }
 	int receive(T2* destination) { return backwardQ->pop(destination); }
 
-	int sendQsize() { return forwardQ->size() }
-	int receiveQsize() { return backwardQ->size() }
+	int sendQsize() { return forwardQ->size(); }
+	int receiveQsize() { return backwardQ->size(); }
 	
-	int receiveQfront(T2* destination) { return backwardQ->front(destination) }
+	int receiveQfront(T2* destination) { return backwardQ->front(destination); }
 
 protected:
 	lockedQueue<T1>* forwardQ;

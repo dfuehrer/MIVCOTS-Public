@@ -9,7 +9,6 @@ DatabaseConnector::~DatabaseConnector()
 {
 }
 
-
 void DatabaseConnector::initCar(int carnum) {
 	MYSQL mysql;
 	mysql_init(&mysql);
@@ -333,3 +332,5 @@ void DatabaseConnector::createDatabase(std::string databaseName) {
 
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
+=======
+>>>>>>> 828c8ed160968088538760bb592824bb79bd27da

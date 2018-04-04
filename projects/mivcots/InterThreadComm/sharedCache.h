@@ -1,14 +1,20 @@
 #pragma once
 
+#include <atomic>
 #include <shared_mutex>
 #include <deque>
 
 #include "endpoint.h"
 #include "error_codes.h"
 
+// TODO: use a condition variable to give priority to updates
+
 template <class T> class sharedCache
 {
 public:
+
+	typedef typename std::deque<T>::iterator cacheIter;
+
 	sharedCache();
 	~sharedCache();
 
@@ -19,7 +25,15 @@ public:
 
 	int feedCache();
 	int updateCache();
-	int readCache();
+
+	// startIter points to the oldest element
+	int readCache(cacheIter* startIter, cacheIter* endIter);
+	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
+	int releaseReadLock();
+
+	bool newRawData();
+	bool newAnalyzedData();
+
 private:
 	unsigned int maxSize;
 	endpoint<T>* feedQ;
@@ -27,4 +41,7 @@ private:
 
 	std::deque<T> buffer;
 	std::shared_mutex smtx;
+	std::shared_lock<std::shared_mutex>* slock;
+	
+	int findItem(T toFind, int* ind);
 };

@@ -27,9 +27,6 @@
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterThreadComm\InterThreadComm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,6 +46,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CarPool\CarPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DatabaseConnector\DatabaseConnector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CarPool\CarPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
