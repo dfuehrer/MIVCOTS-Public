@@ -14,8 +14,9 @@ DatabaseConnector::~DatabaseConnector()
 //n-1. DB manipulation
 //n. shutdownDB();
 
-int DatabaseConnector::initDB() {
+int DatabaseConnector::initDB(CarPool* _CarSource) {
 	mysql_init(&mysql);
+	CarSource = _CarSource;
 	int success = 0;
 	char input = 'A';
 	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0))
@@ -57,6 +58,7 @@ int DatabaseConnector::createTable(int carnum) {
 	}
 }
 
+/*
 void DatabaseConnector::addDataAndColumnToTable(int carnum,long long datetime, std::string sensortype, double data) {
 	int result = 0;
 	//ADDS sensor column to table if not there
@@ -91,6 +93,7 @@ void DatabaseConnector::addDataAndColumnToTable(int carnum,long long datetime, s
 		std::cout << "Error adding data to Database" << std::endl;
 	}
 }
+*/
 
 int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::string columnType) {
 	int columnFound = 0;
@@ -174,7 +177,7 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 		return 0;
 }
 
-int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
+int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
 	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #; 
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
@@ -196,6 +199,7 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 		printf("\n");
 
 	}
+	return 0;
 }
 
 int DatabaseConnector::dropTable(int carnum) {
@@ -209,7 +213,7 @@ int DatabaseConnector::dropTable(int carnum) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		std::cout << "Table car" << carnum << " was dropped. I hope you meant to do this!" << std::endl;
+		//std::cout << "Table car" << carnum << " was dropped. I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
@@ -231,7 +235,7 @@ int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		std::cout << "Timestamp " << timestamp << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
+		//std::cout << "Timestamp " << timestamp << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
@@ -253,7 +257,7 @@ int DatabaseConnector::dropColumn(int carnum,std::string columnName) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
 	if (pass == 0) {
-		std::cout << "Column " << columnName << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
+		//std::cout << "Column " << columnName << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
@@ -272,7 +276,7 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		std::cout << "Databse: " << databaseName << " was created" << std::endl;
+		//std::cout << "Databse: " << databaseName << " was created" << std::endl;
 		return 0;
 	}
 	else {
@@ -332,4 +336,5 @@ int DatabaseConnector::closeConnection() {
 
 int DatabaseConnector::freeResult() {
 	mysql_free_result(result);
+	return 0;
 }

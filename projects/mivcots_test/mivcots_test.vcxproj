@@ -71,7 +71,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>$(SolutionDir)mivcots;$(SolutionDir)Libraries\mariadb_conn\include;$(SolutionDir)mivcots\CarData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mivcots;$(SolutionDir)Libraries\mariadb_conn\include;$(SolutionDir)mivcots\CarData;$(SolutionDir)mivcots\CarPool;$(SolutionDir)mivcots\InterThreadComm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

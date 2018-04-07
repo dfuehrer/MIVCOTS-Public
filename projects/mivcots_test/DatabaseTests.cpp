@@ -2,7 +2,6 @@
 #include "DatabaseConnector/DatabaseConnector.h"
 #include "DatabaseConnector\DatabaseConnector.cpp"
 
-
 //Returns 0 for success or 1 for fail
 TEST(DatabaseTests, Shutdown) {
 	int carnum = 1;
@@ -15,7 +14,7 @@ TEST(DatabaseTests, Shutdown) {
 	std::string database = "mivcots";
 
 	DatabaseConnector test;
-	test.initDB();
+	test.initDB(nullptr);
 	test.createDatabase(database);
 
 	test.shutdown();
