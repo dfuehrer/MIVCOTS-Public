@@ -15,8 +15,8 @@ bool Map::initMap()
 		wxPoint(20, 20));*/
 	wxImage::AddHandler(new wxPNGHandler);
 	std::string filePath = "C:/Users/Sean/Documents/MIVCOTS_SOFTWARE/projects/mivcots/GUI/MapWidget/map.png";
-	const wxImage *img = new wxImage(filePath, wxBITMAP_TYPE_PNG);
-	PictureWindow* picWindow = new PictureWindow(panel, *img);
+	//const wxImage *img = new wxImage(filePath, wxBITMAP_TYPE_PNG);
+	//PictureWindow* picWindow = new PictureWindow(panel, *img);
 	return true;
 }
 

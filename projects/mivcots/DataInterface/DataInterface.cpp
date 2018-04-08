@@ -1,8 +1,8 @@
 #include "DataInterface.h"
 
-DataInterface::DataInterface()
+DataInterface::DataInterface(std::string _tempString)
 {
-
+	tempString = _tempString;
 }
 
 DataInterface::~DataInterface()
@@ -47,7 +47,7 @@ void DataInterface::stop()
 void DataInterface::runSerialThread()
 {
 	while(isRunning){
-		
+		std::cout << tempString << std::endl;
 	}
 }
 

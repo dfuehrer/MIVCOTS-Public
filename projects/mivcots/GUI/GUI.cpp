@@ -1,4 +1,5 @@
 #include "GUI.h"
+#include "MIVCOTS\MIVCOTS.h"
 #include <iostream>
 
 DECLARE_APP(GUI);
@@ -10,6 +11,12 @@ bool GUI::OnInit()
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
+
+	DataInterface* temp1 = new DataInterface("AHHHH");
+	DataInterface* temp2 = new DataInterface("BBBBBBBB");
+	temp1->start();
+	temp2->start();
+
 	return true;
 }
 
