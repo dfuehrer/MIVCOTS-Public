@@ -15,7 +15,7 @@
 class DataInterface
 {
 public:
-	DataInterface(std::string _tempString);
+	DataInterface();
 	~DataInterface();
 
 	int initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ);
@@ -33,6 +33,5 @@ protected:
 	CarData* parseString(std::string toParse);
 
 	serial::Serial* serialPort;
-	std::string tempString;
 };
 

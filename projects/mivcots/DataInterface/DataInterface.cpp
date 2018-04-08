@@ -1,8 +1,8 @@
 #include "DataInterface.h"
 
-DataInterface::DataInterface(std::string _tempString)
+DataInterface::DataInterface()
 {
-	tempString = _tempString;
+
 }
 
 DataInterface::~DataInterface()
@@ -46,10 +46,9 @@ void DataInterface::stop()
 
 void DataInterface::runSerialThread()
 {
-	wxLogMessage(_(tempString));
 	while(isRunning){
 		
-		//std::cout << tempString << std::endl;
+
 	}
 }
 
