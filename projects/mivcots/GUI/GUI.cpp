@@ -88,3 +88,6 @@ void Frame::onToggleFullscreen(wxCommandEvent & event)
 {
 	ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER);
 }
+
+
+

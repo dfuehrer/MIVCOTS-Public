@@ -5,6 +5,7 @@
 #include <wx/aui/aui.h>
 
 #include "MapWidget/Map.h"
+
 #include <string.h>
 
 
@@ -42,4 +43,6 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_ABOUT, Frame::onAbout)
 	EVT_MENU(toggleFullscreen, Frame::onToggleFullscreen)
 wxEND_EVENT_TABLE()
+
+
 
