@@ -49,7 +49,7 @@ void DataInterface::runSerialThread()
 	std::string readStr;
 	while(isRunning){
 		readStr = serialPort->readline();
-		outputQ->send(parseString(readStr));
+		//outputQ->send(parseString(readStr));
 	}
 }
 
@@ -64,6 +64,6 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	}
 
 
-	return newCar;
+	return 0;
 }
 
