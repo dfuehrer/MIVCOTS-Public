@@ -57,8 +57,7 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	printf("printf test\n");*/
 	wxLog::SetActiveTarget(new wxLogTextCtrl(text3));
 	wxLogMessage("test in gui");
-	std::string image = "C:/Users/Sean/Documents/MIVCOTS_SOFTWARE/projects/mivcots/GUI/test.png";
-
+	
 	Map mapPanel = Map(this);
 	mapPanel.initMap();
 	// add the panes to the manager
