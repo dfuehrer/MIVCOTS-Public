@@ -20,7 +20,7 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 	int success = 0;
 	char input = 'A';
 	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0)){ // if failed
-		return 1;//Failed
+		return mysql_errno(&mysql);//Failed
 	}
 	else {//Success
 		return 0;//Pass
@@ -29,6 +29,7 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 
 int DatabaseConnector::createTable(int carnum) {
 	int pass = 0;
+	int errorNum = NULL;
 	std::string str1 = "CREATE TABLE car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
@@ -41,8 +42,7 @@ int DatabaseConnector::createTable(int carnum) {
 		return 0;
 	}
 	else {//Failed
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;//Failed
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -59,7 +59,7 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 			}
 		}
 	}
-	if (columnFound == 1) {
+	if (columnFound == 0) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
 		str2 = std::to_string(carnum);
@@ -76,8 +76,7 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 	}
 	else {
 		mysql_free_result(result);
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 	
 }
@@ -117,8 +116,7 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 	cstr = NewCarTable.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 1) {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;//Failed
+		return mysql_errno(&mysql);//Failed
 	}
 	else
 		return 0;
@@ -173,8 +171,7 @@ int DatabaseConnector::dropTable(int carnum) {
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -194,8 +191,7 @@ int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -215,8 +211,7 @@ int DatabaseConnector::dropColumn(int carnum,std::string columnName) {
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -233,8 +228,7 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -248,8 +242,7 @@ int DatabaseConnector::shutdown() {
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -272,8 +265,7 @@ int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnNa
 		return 0;
 	}
 	else {
-		wxLogMessage(_(mysql_error(&mysql)));
-		return 1;
+		return mysql_errno(&mysql);//Failed
 	}
 }
 
@@ -287,5 +279,74 @@ int DatabaseConnector::closeConnection() {
 
 int DatabaseConnector::freeResult() {
 	mysql_free_result(result);
+	return 0;
+}
+
+int DatabaseConnector::selectDatabase(std::string databaseName) {
+	int pass = 0;
+	const char* cstr = new char[databaseName.length() + 1];
+	cstr = databaseName.c_str();
+	pass = mysql_select_db(&mysql, cstr);
+	if (pass == 0) {
+		return 0;
+	}
+	else {
+		return mysql_errno(&mysql);//Failed
+	}
+}
+
+int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
+
+	try {
+		createTable(carnum);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0 || ErrorNum != 1050) {
+			wxLogMessage(_(mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	try {
+		addNewColumn(carnum, sensortype, sensorvar);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0 || ErrorNum != 1060) {
+			wxLogMessage(_(mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	try {
+	addDataToTable(carnum, datetime, sensortype, data);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogMessage(_(mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int DatabaseConnector::InitializeDatabase(std::string database) {
+	initDB(nullptr);
+	try {
+		createDatabase(database);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 1007 || ErrorNum != 0) {
+			wxLogMessage(_(mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	try {
+		selectDatabase(database);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogMessage(_(mysql_error(&mysql)));
+			return 1;
+		}
+	}
 	return 0;
 }

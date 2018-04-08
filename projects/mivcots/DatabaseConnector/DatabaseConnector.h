@@ -15,6 +15,17 @@ class DatabaseConnector
 public:
 	DatabaseConnector();
 	~DatabaseConnector();
+
+	int AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data);
+	int InitializeDatabase(std::string database);
+
+private:
+
+	MYSQL mysql;
+	MYSQL_RES *result;
+	MYSQL_ROW row;
+	CarPool* CarSource;
+
 	char host[32] = "localhost";
 	char user[32] = "root";
 	char passwd[32] = "somethingsecure";
@@ -23,7 +34,7 @@ public:
 	int initDB(CarPool* _CarSource);
 	int addNewColumn(int carnum, std::string columnName, std::string columnType);
 	int addDataToTable(int carnum, long long datetime, std::string columnName, double storedata);
-	int getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*,CarData* > outputq );
+	int getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq);
 	int dropTable(int carnum);
 	int dropRowFromTable(int carnum, long long timestamp);
 	int dropColumn(int carnum, std::string columnName);
@@ -32,10 +43,7 @@ public:
 	int shutdown();
 	int closeConnection();
 	int freeResult();
+	int selectDatabase(std::string databaseName);
 	int tableUpdate(int carnum, int uniqueID, std::string columnName, double undatedValue);
-private:
-	MYSQL mysql;
-	MYSQL_RES *result;
-	MYSQL_ROW row;
-	CarPool* CarSource;
+
 };
