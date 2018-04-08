@@ -105,8 +105,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis;$(ProjectDir)CarPool;$(SolutionDir)Libraries\wxMathPlot_lib</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis;$(ProjectDir)CarPool;$(SolutionDir)Libraries\wxMathPlot_lib\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(SolutionDir)Libraries\serial_lib\serial.lib;wxmsw30ud_core.lib;wxbase30ud.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;$(SolutionDir)Libraries\mariadb_conn\libmariadb.lib;$(SolutionDir)Libraries\mariadb_conn\mariadbclient.lib;version.lib;Shlwapi.lib;Ws2_32.lib;$(SolutionDir)Libraries\wxMathPlot_lib\mathplot.lib;%(AdditionalDependencies)</AdditionalDependencies>
