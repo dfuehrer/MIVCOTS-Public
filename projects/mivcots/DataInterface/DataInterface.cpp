@@ -46,8 +46,10 @@ void DataInterface::stop()
 
 void DataInterface::runSerialThread()
 {
+	wxLogMessage(_(tempString));
 	while(isRunning){
-		std::cout << tempString << std::endl;
+		
+		//std::cout << tempString << std::endl;
 	}
 }
 

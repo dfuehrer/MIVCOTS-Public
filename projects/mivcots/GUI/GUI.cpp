@@ -57,9 +57,11 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window\n"),
 		wxDefaultPosition, wxSize(200, 150),
 		wxNO_BORDER | wxTE_MULTILINE);
-	wxStreamToTextRedirector redirect(text3);
+	/*wxStreamToTextRedirector redirect(text3);
 	std::cout << "cout test" << std::endl;
-	printf("printf test\n");
+	printf("printf test\n");*/
+	wxLog::SetActiveTarget(new wxLogTextCtrl(text3));
+	wxLogMessage("test in gui");
 	std::string image = "C:/Users/Sean/Documents/MIVCOTS_SOFTWARE/projects/mivcots/GUI/test.png";
 
 	Map mapPanel = Map(this);
