@@ -19,81 +19,32 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 	CarSource = _CarSource;
 	int success = 0;
 	char input = 'A';
-	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0))
-	{
-		std::cout << "initCar Failed to connect to connect to MySQL Server: Error: " << mysql_error(&mysql) << std::endl;
-		/*std::cout << "Would you like to create database:" << database << " Y/N" << std::endl;
-		while (input != 'Y' || 'N') {
-			std::cin >> input;
-		}
-		if (input == 'Y') {
-			createDatabase(database);
-		}
-		else
-			std::cout << "Database not created" << std::endl;*/
+	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0)){ // if failed
+		return 1;//Failed
 	}
-	//success = mysql_select_db(&mysql, database); //Used to test if it was able to select database. Will return 0 if worked.
-	if (success == 0)
-		return 0;
-	else
-		return 1;
+	else {//Success
+		return 0;//Pass
+	}
 }
 
 int DatabaseConnector::createTable(int carnum) {
+	int pass = 0;
 	std::string str1 = "CREATE TABLE car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
-	std::string str3 = " (UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,timestamp BIGINT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
+	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,timestamp BIGINT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
 	const char* cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
-	int result = mysql_query(&mysql, cstr);
-	if (result > 0) {
-		//std::cout << "Table Found for car" << carnum << std::endl;
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 0) {//Success
 		return 0;
 	}
-	else {
-		//std::cout << "Table car" << carnum << " was not found and has been created" << std::endl;
-		return 1;
+	else {//Failed
+		wxLogMessage(_(mysql_error(&mysql)));
+		return 1;//Failed
 	}
 }
-
-/*
-void DatabaseConnector::addDataAndColumnToTable(int carnum,long long datetime, std::string sensortype, double data) {
-	int result = 0;
-	//ADDS sensor column to table if not there
-	std::string str1 = "ALTER TABLE car";
-	std::string str2 = "";
-	str2 = std::to_string(carnum);
-	std::string str3 = " ADD ";
-	std::string str4 = sensortype;
-	std::string str5 = " DOUBLE;";
-	std::string NewCarTable = str1 + str2 + str3 + str4+ str5;
-	std::cout << NewCarTable << std::endl;
-	const char* cstr = new char[NewCarTable.length() + 1];
-	cstr = NewCarTable.c_str();
-	mysql_query(&mysql, cstr);
-	//Store data with datetime
-	str1 = "INSERT INTO car";
-	str2 = "";
-	str2 = std::to_string(carnum);
-	str3 = " (timestamp, ";
-	str4 = sensortype;
-	str5 = ") VALUES (";
-	std::string str6 = std::to_string(datetime);
-	std::string str7 = ", ";
-	std::string str8 = std::to_string(data);
-	std::string str9 = ");";
-	NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
-	std::cout << NewCarTable << std::endl;
-	cstr = new char[NewCarTable.length() + 1];
-	cstr = NewCarTable.c_str();
-	result = mysql_query(&mysql, cstr);
-	if (result == 1) {
-		std::cout << "Error adding data to Database" << std::endl;
-	}
-}
-*/
 
 int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::string columnType) {
 	int columnFound = 0;
@@ -103,14 +54,10 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 	while (row = mysql_fetch_row(result)) {
 		int endOfRow = 1;
 		for (int i = 0; i < endOfRow; i++) {
-			//printf("%s\t", row[i]);
 			if (row[i] == str1) {
 				columnFound = 1;
 			}
 		}
-		//printf("\n");
-		//std::cout << row[0] , '\t' ,row[1] , '\t' , row[2], '\n';
-		//printf("%s\t%s\t%s\n", row[0], row[1], row[2]);
 	}
 	if (columnFound == 1) {
 		std::string str1 = "ALTER TABLE car";
@@ -125,12 +72,11 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 		cstr = NewCarTable.c_str();
 		mysql_query(&mysql, cstr);
 		mysql_free_result(result);
-		//std::cout << "Column created in table" << std::endl;
 		return 0;
 	}
 	else {
 		mysql_free_result(result);
-		//std::cout << "Column is already in table" << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 	
@@ -138,6 +84,7 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 
 //Add Data to Table. EIther use Insert into or possibly update.
 int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
+	int pass = 0;
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
@@ -166,12 +113,12 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 	std::string str9 = ");";
 	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
 	const char* cstr = new char[NewCarTable.length() + 1];
-	//std::cout << NewCarTable << std::endl;
 	cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
-	if (mysql_query(&mysql, cstr) > 0) {
-		std::cout << "Error adding data to Database" << std::endl;
-		return 1;
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 1) {
+		wxLogMessage(_(mysql_error(&mysql)));
+		return 1;//Failed
 	}
 	else
 		return 0;
@@ -191,14 +138,24 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 	cstr = finalString.c_str();
 	mysql_query(&mysql, cstr);
 	result = mysql_store_result(&mysql);
+
+	str1 = "car";
+	str2 = std::to_string(carnum);
+	std::string TableName = str1 + str2;
+	const char* cstr1 = new char[TableName.length() + 1];
+	cstr1 = TableName.c_str();
+	MYSQL_RES *tbl_cols = mysql_list_fields(&mysql, cstr1 , "f%");
+	
+	unsigned int field_cnt = mysql_num_fields(tbl_cols);
+	printf("Number of columns: %d\n", field_cnt);
 	while (row = mysql_fetch_row(result)) {//put into cardata object
-		int endOfRow = 3;
-		for (int i = 0; i < endOfRow; i++) {
+		for (int i = 0; i < field_cnt; i++) {
 			printf("%s\t", row[i]);
 		}
 		printf("\n");
 
 	}
+	mysql_free_result(tbl_cols);
 	return 0;
 }
 
@@ -213,11 +170,10 @@ int DatabaseConnector::dropTable(int carnum) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		//std::cout << "Table car" << carnum << " was dropped. I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
-		std::cout << "ERROR: Table car" << carnum << " was NOT dropped!" << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
@@ -235,11 +191,10 @@ int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		//std::cout << "Timestamp " << timestamp << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
-		std::cout << "ERROR: Timestamp " << timestamp << " was NOT deleted from Table car" << carnum << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
@@ -257,11 +212,10 @@ int DatabaseConnector::dropColumn(int carnum,std::string columnName) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
 	if (pass == 0) {
-		//std::cout << "Column " << columnName << " was deleted from Table car" << carnum << ". I hope you meant to do this!" << std::endl;
 		return 0;
 	}
 	else {
-		std::cout << "ERROR: Column " << columnName << " was NOT deleted from Table car" << carnum << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
@@ -275,12 +229,11 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 	const char* cstr = new char[finalString.length() + 1];
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
-	if (pass == 0) {
-		//std::cout << "Databse: " << databaseName << " was created" << std::endl;
+	if (pass == 0) {;
 		return 0;
 	}
 	else {
-		std::cout << "ERROR: Databse " << databaseName << " was NOT created." << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
@@ -295,13 +248,13 @@ int DatabaseConnector::shutdown() {
 		return 0;
 	}
 	else {
-		std::cout << "Shutdown Failed" << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
-int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, long updatedValue) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
+int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, double updatedValue) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
 	int pass = 0;
 	std::string str1 = "UPDATE car";
 	std::string str2 = std::to_string(carnum);
@@ -316,11 +269,10 @@ int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnNa
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		//std::cout << "Table was updated" << std::endl;
 		return 0;
 	}
 	else {
-		//std::cout << "ERROR: Table was NOT created." << std::endl;
+		wxLogMessage(_(mysql_error(&mysql)));
 		return 1;
 	}
 }
@@ -328,7 +280,6 @@ int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnNa
 //Close connection		 mysql_close(&mysql)
 int DatabaseConnector::closeConnection() {
 	mysql_close(&mysql);
-	//std::cout << "Connection Closed" << std::endl;
 	return 0;
 }
 
