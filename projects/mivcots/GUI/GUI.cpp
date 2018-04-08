@@ -7,10 +7,14 @@ IMPLEMENT_APP(GUI);
 
 bool GUI::OnInit()
 {
-	wxFrame* frame = new Frame(NULL);
+	Frame* frame = new Frame(NULL);
+	
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
+
+	frame->mapPanel.drawCar(10,10);
+	
 
 	return true;
 }
@@ -58,7 +62,7 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxLog::SetActiveTarget(new wxLogTextCtrl(text3));
 	wxLogMessage("test in gui");
 	
-	Map mapPanel = Map(this);
+	mapPanel = Map(this);
 	mapPanel.initMap();
 	// add the panes to the manager
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280, 1280).BestSize(1280, 1280).MaxSize(1280, 1280));
