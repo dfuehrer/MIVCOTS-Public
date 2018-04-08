@@ -24,8 +24,11 @@ public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	Frame(wxWindow* parent);
 	~Frame();
+	Map mapPanel;
+
 private:
 	wxAuiManager m_mgr;
+	
 
 	void onExit(wxCommandEvent &event);
 	void onAbout(wxCommandEvent &event);

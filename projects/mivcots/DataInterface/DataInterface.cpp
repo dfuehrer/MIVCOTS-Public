@@ -48,6 +48,7 @@ void DataInterface::runSerialThread()
 {
 	while(isRunning){
 		
+
 	}
 }
 

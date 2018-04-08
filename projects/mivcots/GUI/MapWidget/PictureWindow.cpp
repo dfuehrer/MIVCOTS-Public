@@ -21,6 +21,20 @@ PictureWindow::PictureWindow(wxWindow* parent, const wxImage& image) : wxWindow(
 	SetSize(width, height);
 }
 
+PictureWindow::PictureWindow(wxWindow* parent, const wxBitmap& image) : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER)
+{
+	int width = image.GetWidth();
+	int height = image.GetHeight();
+	/*double X_Ratio = (double)MaxWidth / (double)width;
+	double Y_Ratio = (double)MaxHeight / (double)height;
+	double Ratio = X_Ratio < Y_Ratio ? X_Ratio : Y_Ratio;
+	wxImage Image = image.Scale((int)(Ratio * width), (int)(Ratio * height));*/
+	Bitmap = image;
+	width = image.GetWidth();
+	height = image.GetHeight();
+	SetSize(width, height);
+}
+
 void PictureWindow::OnPaint(wxPaintEvent& event)
 {
 	wxPaintDC dc(this);
@@ -28,4 +42,10 @@ void PictureWindow::OnPaint(wxPaintEvent& event)
 	{
 		dc.DrawBitmap(Bitmap, 0, 0);
 	}
+}
+
+bool PictureWindow::setBitmap(wxBitmap img)
+{
+	Bitmap = img;
+	return false;
 }

@@ -30,7 +30,7 @@ public:
 	bool newData();
 
 private:
-	DataInterface dataSource;
+	//DataInterface dataSource;
 	DatabaseConnector dataStorage;
 	sharedCache<CarData*> cache;
 	Analysis analysisEngine;

@@ -71,12 +71,13 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>$(SolutionDir)mivcots;$(SolutionDir)Libraries\mariadb_conn\include;$(SolutionDir)mivcots\CarData;$(SolutionDir)mivcots\CarPool;$(SolutionDir)mivcots\InterThreadComm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mivcots;$(SolutionDir)Libraries\mariadb_conn\include;$(SolutionDir)mivcots\CarData;$(SolutionDir)mivcots\CarPool;$(SolutionDir)mivcots\InterThreadComm;$(WXWIN)include;$(WXWIN)include\msvc;$(WXWIN)lib\vc_lib\mswud;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>$(SolutionDir)Libraries\serial_lib\serial.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;$(SolutionDir)Libraries\mariadb_conn\libmariadb.lib;$(SolutionDir)Libraries\mariadb_conn\mariadbclient.lib;version.lib;Shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)Libraries\serial_lib\serial.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;$(SolutionDir)Libraries\mariadb_conn\libmariadb.lib;$(SolutionDir)Libraries\mariadb_conn\mariadbclient.lib;version.lib;Shlwapi.lib;Ws2_32.lib;wxmsw30ud_core.lib;wxbase30ud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(WXWIN)lib\vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

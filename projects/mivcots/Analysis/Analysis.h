@@ -13,7 +13,7 @@ public:
 	~Analysis();
 	
 	// Communication Interface back to MIVCOTS
-	endpoint<CarData, CarData> *interface;
+	//endpoint<CarData, CarData> * interface;
 	std::vector<CarData*> carData;
 
 	std::vector<double> DataPoints;//most recent point will be at the end

@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <atomic>
 #include <iostream>
 #include <thread>
@@ -7,6 +8,9 @@
 #include "CarData.h"
 #include "endpoint.h"
 #include "serial/serial.h"
+
+#include <wx/wx.h>
+#include <wx/app.h>
 
 class DataInterface
 {
