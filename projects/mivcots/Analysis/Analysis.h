@@ -2,26 +2,30 @@
 
 
 #include <vector>
-#include "InterThreadComm\endpoint.h"
-#include "CarData.h"
+#include <string>
+#include "InterThreadComm/endpoint.h"
+#include "InterThreadComm/sharedCache.h"
+#include "CarPool/CarPool.h"
+#include "CarData/CarData.h"
 
 
-class Analysis
+class AnalysisParent
 {
 public:
-	Analysis();
-	~Analysis();
+	AnalysisParent();
+	~AnalysisParent();
+	/* 
+		Initialize Parent Analysis Object:
+			connect to data sources and sinks
+			read config file
+	*/
+	int init(sharedCache<CarData *> boxCache, sharedCache<CarData *> carCache, endpoint<CarData *> updateQueue, CarPool * carPool, std::string configFileName);
 	
-	// Communication Interface back to MIVCOTS
-	//endpoint<CarData, CarData> * interface;
-	std::vector<CarData*> carData;
+	// Spin up threads and stuff
+	int start();
+	// Join all analysis threads, perform cleanup, and exit
+	int stop();
 
-	std::vector<double> DataPoints;//most recent point will be at the end
-	int ControlChart(int GraphPoints);
-	
-	//int Warning;
-	//double AvgData;
-	//double UpperControlLimit;
-	//double LowerControlLimit;
+
 };
 
