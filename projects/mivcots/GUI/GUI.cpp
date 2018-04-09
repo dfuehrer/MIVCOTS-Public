@@ -15,7 +15,8 @@ bool GUI::OnInit()
 
 	frame->mapPanel.drawCar(10,10);
 	
-
+	aMIVCOTS.initSerial(9600, "COM6");
+	aMIVCOTS.startSerial();
 	return true;
 }
 

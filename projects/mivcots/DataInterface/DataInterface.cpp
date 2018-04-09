@@ -2,7 +2,7 @@
 
 DataInterface::DataInterface()
 {
-
+	serialPort = nullptr;
 }
 
 DataInterface::~DataInterface()
@@ -10,8 +10,10 @@ DataInterface::~DataInterface()
 	stop();
 
 	if (serialPort != nullptr) {
-		serialPort->flush();
-		serialPort->close();
+		if (serialPort->isOpen()) {
+			serialPort->flush();
+			serialPort->close();
+		}
 		delete serialPort;
 	}
 
@@ -21,19 +23,39 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 {
 	outputQ = _outputQ;
 	CarSource = _CarSource;
-	serialPort = new serial::Serial(portName, baud);
-
+	
 	if (serialPort == nullptr) {
+		serialPort = new serial::Serial(portName, baud);
+	}
+	else {
+		if (serialPort->isOpen()) {
+			serialPort->flush();
+			serialPort->close();
+		}
+		delete serialPort;
+		serialPort = new serial::Serial(portName, baud);
+	}
+	
+	if (serialPort == nullptr) {
+		wxLogWarning("Failed to open serial port %s", portName);
 		return INITERR;
 	}
 
+	wxLogMessage("Opened serial port %s", portName);
 	return SUCCESS;
 }
 
-void DataInterface::start()
+int DataInterface::start()
 {
 	isRunning.store(true, std::memory_order_relaxed);
 	serialThread = std::thread(&DataInterface::runSerialThread, this);
+
+	if (serialThread.joinable()) {
+		return SUCCESS;
+	}
+	else {
+		return INITERR;
+	}
 }
 
 void DataInterface::stop()
@@ -54,7 +76,7 @@ void DataInterface::runSerialThread()
 		rc = SUCCESS;
 
 		readStr = serialPort->readline();
-
+		//readStr = "#,5,ID,14,ST,3,LT,12345,LG,54321";
 		rc |= CarSource->getCar(&tmpCarData);
 		rc |= parseString(readStr, &tmpCarData);
 
@@ -67,8 +89,10 @@ void DataInterface::runSerialThread()
 	}
 }
 
+// Test string: "#,5,ID,14,ST,3,LT,12345,LG,54321,!"
 int DataInterface::parseString(std::string toParse, CarData** parsed)
 {
+	wxLogDebug("Received: %s", toParse);
 	CarData* newCar = new CarData();
 
 	// Parsing stuff
@@ -86,8 +110,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	tmpKey = "MN";
 
 	// loop through the remainder
-	// Test string: "#,5,ID,14,ST,3,LT,12345,LG,54321,!"
-	while ((tmpKey != ENDOFMSG) && (delimPosRight != std::string::npos)) {
+	while (tmpKey != ENDOFMSG) {
 		// First add the key to the CarData
 		newCar->addKey((char *)(tmpKey.c_str()));
 
@@ -97,6 +120,8 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 
 		// Extract value to a substring
 		tmpValue = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
+
+		wxLogDebug("Reading value: %s", tmpValue);
 
 		// Convert to long
 		try {
@@ -109,12 +134,20 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		// Set the value in the carData
 		newCar->set((char *)(tmpKey.c_str()), tmpLong);
 
+		// In case the message doesn't have an end of msg symbol
+		if (delimPosRight == std::string::npos) {
+			wxLogMessage("Missing End-of-Message symbol");
+			break;
+		}
+
 		// Advance to the next field, which should be a key
-		delimPosLeft = delimPosRight;
+		delimPosLeft = delimPosRight + 1;
 		delimPosRight = toParse.find(DELIMITER, delimPosLeft);
 
 		// Extract key to a substring
 		tmpKey = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
+
+		wxLogDebug("Reading Key: %s", tmpKey);
 	}
 
 	return SUCCESS;

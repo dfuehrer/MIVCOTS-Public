@@ -13,9 +13,17 @@ int MIVCOTS::initialize()
 	return 0;
 }
 
+int MIVCOTS::initSerial(long baud, std::string port) {
+	return dataSource.initialize(port, baud, dataSource_dataStorage.getEndpoint1(), &carSource);
+}
+
 int MIVCOTS::start()
 {
 	return 0;
+}
+
+int MIVCOTS::startSerial() {
+	return dataSource.start();
 }
 
 int MIVCOTS::stop()
