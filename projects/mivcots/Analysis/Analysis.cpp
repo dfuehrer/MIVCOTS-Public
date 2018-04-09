@@ -14,7 +14,13 @@ AnalysisParent::~AnalysisParent()
 
 
 
-int AnalysisParent::init(sharedCache<CarData*> boxCache, sharedCache<CarData*> carCache, endpoint<CarData*> updateQueue, CarPool * carPool, std::string configFileName)
+int AnalysisParent::init(
+	sharedCache<CarData*> * boxCache, 
+	sharedCache<CarData*> * carCache, 
+	endpoint<CarData*> * updateQueue, 
+	CarPool * carPool, 
+	std::string configFileName
+)
 {
 	return 0;
 }

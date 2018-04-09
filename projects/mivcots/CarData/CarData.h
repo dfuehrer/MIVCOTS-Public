@@ -29,6 +29,7 @@ public:
 	~CarData();
 
 	int addKey(char* key);
+	int addKey(std::string key);
 	int initialize(std::vector<char*>* keys, bool clearMap);
 
 	int set(char* key, long newValue);

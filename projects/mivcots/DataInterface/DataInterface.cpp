@@ -9,12 +9,12 @@ DataInterface::~DataInterface()
 {
 	stop();
 
-	if (serialPort != nullptr){
+	if (serialPort != nullptr) {
 		serialPort->flush();
 		serialPort->close();
 		delete serialPort;
 	}
-	
+
 }
 
 int DataInterface::initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ, CarPool* _CarSource)
@@ -22,7 +22,7 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 	outputQ = _outputQ;
 	CarSource = _CarSource;
 	serialPort = new serial::Serial(portName, baud);
-	
+
 	if (serialPort == nullptr) {
 		return INITERR;
 	}
@@ -39,9 +39,9 @@ void DataInterface::start()
 void DataInterface::stop()
 {
 	isRunning.store(false, std::memory_order_relaxed);
-	if (serialThread.joinable()){
+	if (serialThread.joinable()) {
 		serialThread.join();
-	}	
+	}
 }
 
 void DataInterface::runSerialThread()
@@ -50,18 +50,18 @@ void DataInterface::runSerialThread()
 	CarData* tmpCarData;
 	int rc;
 
-	while(isRunning){
+	while (isRunning) {
 		rc = SUCCESS;
 
 		readStr = serialPort->readline();
-		
-		tmpCarData = CarSource->getCar(&tmpCarData);
-		rc |= parseString(readstr, &tempCarData);
+
+		rc |= CarSource->getCar(&tmpCarData);
+		rc |= parseString(readStr, &tmpCarData);
 
 		rc |= outputQ->send(tmpCarData);
 
 		if (rc != SUCCESS) {
-			std::string errormsg = "Serial Thread Error with code: " + to_string(rc);
+			std::string errormsg = "Serial Thread Error with code: " + std::to_string(rc);
 			wxLogWarning(_(errormsg));
 		}
 	}
@@ -84,12 +84,12 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	// Do the first field manually
 	// Replace # with MN for message number
 	tmpKey = "MN";
-	
+
 	// loop through the remainder
 	// Test string: "#,5,ID,14,ST,3,LT,12345,LG,54321,!"
-	while ((tmpKey != ENDOFMSG) && (delimPosRight != std::string::npos) {
+	while ((tmpKey != ENDOFMSG) && (delimPosRight != std::string::npos)) {
 		// First add the key to the CarData
-		newCar->addKey(tmpKey);
+		newCar->addKey((char *)(tmpKey.c_str()));
 
 		// Advance to the next field, which should be a value
 		delimPosLeft = delimPosRight + 1;
@@ -97,12 +97,12 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 
 		// Extract value to a substring
 		tmpValue = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
-		
+
 		// Convert to long
-		try{
+		try {
 			tmpLong = std::stol(tmpValue);
 		}
-		catch(...) {
+		catch (...) {
 			return VALUEERR;
 		}
 
@@ -110,7 +110,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		newCar->set(tmpKey.c_str(), tmpLong);
 
 		// Advance to the next field, which should be a key
-		delimPosLeft = delimPosRight
+		delimPosLeft = delimPosRight;
 		delimPosRight = toParse.find(DELIMITER, delimPosLeft);
 
 		// Extract key to a substring
