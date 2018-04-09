@@ -2,6 +2,11 @@
 #include "CarPool\CarPool.h"
 #include "InterThreadComm\sharedCache.h"
 #include "InterThreadComm\endpoint.h"
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+
 class AnalysisChild
 {
 public:
@@ -15,5 +20,15 @@ public:
 	);
 	virtual int start();
 	virtual int stop();
+
+
+
+protected:
+	sharedCache<CarData*> * boxCache;
+	sharedCache<CarData*> * carCache;
+	endpoint<CarData*> * updateQueue;
+	CarPool * carPool;
+	std::thread analysisThread;
+	std::atomic<bool> isRunning;
 
 };

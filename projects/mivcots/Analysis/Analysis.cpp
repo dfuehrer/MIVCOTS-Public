@@ -1,5 +1,6 @@
 #include "Analysis.h"
-
+#include <wx/log.h>
+#include "AnalysisReturnCodes.h"
 
 
 
@@ -15,14 +16,55 @@ AnalysisParent::~AnalysisParent()
 
 
 int AnalysisParent::init(
-	sharedCache<CarData*> * boxCache, 
-	sharedCache<CarData*> * carCache, 
-	endpoint<CarData*> * updateQueue, 
-	CarPool * carPool, 
+	sharedCache<CarData*> * boxCache,
+	sharedCache<CarData*> * carCache,
+	endpoint<CarData*> * updateQueue,
+	CarPool * carPool,
 	std::string configFileName
 )
 {
-	return 0;
+	int returnCode = 0;
+	if (boxCache != nullptr) {
+		this->boxCache = boxCache;
+	}
+	else {
+		wxLogError("Analysis Parent - Init Function: boxCache Pointer is Null");
+		returnCode |= ERR_BOX_CACHE_PTR_IS_NULL;
+	}
+	if (carCache != nullptr) {
+		this->carCache = carCache;
+	}
+	else {
+		wxLogError("Analysis Parent - Init Function: carCache Pointer is Null");
+		returnCode |= ERR_CAR_CACHE_PTR_IS_NULL;
+		return returnCode;
+	}
+	if (updateQueue != nullptr) {
+		this->updateQueue = updateQueue;
+	}
+	else {
+		wxLogError("Analysis Parent - Init Function: updateQueue Pointer is Null");
+		returnCode |= ERR_UPDATE_QUEUE_PTR_IS_NULL;
+		return returnCode;
+	}
+	if (carPool != nullptr) {
+		this->carPool = carPool;
+	}
+	else {
+		wxLogError("Analysis Parent - Init Function: carPool Pointer is Null");
+		returnCode |= ERR_CAR_CACHE_PTR_IS_NULL;
+		return returnCode;
+	}
+	if (!(configFileName.empty())) {
+		this->configFileName = configFileName;
+	}
+	else {
+		wxLogError("Analysis Parent - Init Function: Config File Name is Empty");
+		returnCode |= WARN_CONFIG_FILENAME_IS_EMPTY;
+	}
+
+
+	return returnCode;
 }
 
 int AnalysisParent::start()
