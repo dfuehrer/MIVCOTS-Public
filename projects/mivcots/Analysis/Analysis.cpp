@@ -3,16 +3,28 @@
 
 
 
-Analysis::Analysis()
+AnalysisParent::AnalysisParent()
 {
 }
 
 
-Analysis::~Analysis()
+AnalysisParent::~AnalysisParent()
 {
 }
 
-int Analysis::init(sharedCache<CarData*> boxCache, sharedCache<CarData*> carCache, endpoint<CarData*> updateQueue, CarPool * carPool)
+
+
+int AnalysisParent::init(sharedCache<CarData*> boxCache, sharedCache<CarData*> carCache, endpoint<CarData*> updateQueue, CarPool * carPool, std::string configFileName)
+{
+	return 0;
+}
+
+int AnalysisParent::start()
+{
+	return 0;
+}
+
+int AnalysisParent::stop()
 {
 	return 0;
 }

@@ -33,7 +33,7 @@ private:
 	DataInterface dataSource;
 	DatabaseConnector dataStorage;
 	sharedCache<CarData*> cache;
-	Analysis analysisEngine;
+	AnalysisParent analysisEngine;
 	CarPool carSource;
 
 	InterThreadComm<CarData*, CarData*> dataSource_dataStorage;
