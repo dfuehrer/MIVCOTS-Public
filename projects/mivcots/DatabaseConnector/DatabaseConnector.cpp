@@ -14,6 +14,8 @@ DatabaseConnector::~DatabaseConnector()
 //n-1. DB manipulation
 //n. shutdownDB();
 
+
+//Private Functions
 int DatabaseConnector::initDB(CarPool* _CarSource) {
 	mysql_init(&mysql);
 	CarSource = _CarSource;
@@ -30,7 +32,7 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 int DatabaseConnector::createTable(int carnum) {
 	int pass = 0;
 	int errorNum = NULL;
-	std::string str1 = "CREATE TABLE car";
+	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
 	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,timestamp BIGINT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
@@ -122,8 +124,50 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 		return 0;
 }
 
+int DatabaseConnector::InsertOrReaplceDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
+	int pass = 0;
+	std::string str1 = "INSERT OR REPLACE INTO car";
+	std::string str2 = "";
+	str2 = std::to_string(carnum);
+	std::string str3 = " (timestamp, ";
+	std::string str4 = columnName;//The type of sensor
+	std::string str5 = ") VALUES (";
+	std::string str6 = std::to_string(datetime);
+	std::string str7 = ", ";
+	std::string str8 = std::to_string(storedata);
+	/*
+	if (datatype == 's') {//s long, u = unsigned long, d = double. Gets data from CarData class
+	long longdata = CarData::get(char* key, long* dest);
+	str8 = std::to_string(longdata);
+	}
+	else if (datatype == 'u') {
+	unsigned long ulongdata = CarData::get(char* key, unsigned long dest);
+	str8 = std::to_string(ulongdata);
+	}
+	else if (datatype == 'd') {
+	double doubledata = CarData::get(char* key, double dest);
+	str8 = std::to_string(doubledata);
+	}
+	else
+	std::cout << "Error with datatype for storing data. Line 119-133. Datatype is " + datatype << std::endl;
+	*/
+	std::string str9 = ");";
+	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
+	const char* cstr = new char[NewCarTable.length() + 1];
+	cstr = new char[NewCarTable.length() + 1];
+	cstr = NewCarTable.c_str();
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 1) {
+		return mysql_errno(&mysql);//Failed
+	}
+	else
+		return 0;
+}
+
 int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
-	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #; 
+	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
+	//Can add sorting of results with "ORDER BY timestamp;"
+	
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " WHERE timestamp > ";
@@ -147,13 +191,14 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 	unsigned int field_cnt = mysql_num_fields(tbl_cols);
 	printf("Number of columns: %d\n", field_cnt);
 	while (row = mysql_fetch_row(result)) {//put into cardata object
-		for (int i = 0; i < field_cnt; i++) {
+		for (unsigned int i = 0; i < field_cnt; i++) {
 			printf("%s\t", row[i]);
 		}
 		printf("\n");
 
 	}
 	mysql_free_result(tbl_cols);
+	mysql_free_result(result);
 	return 0;
 }
 
@@ -295,10 +340,17 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 	}
 }
 
+//Insert OR UPDATE function
+
+
+//Public Functions
 int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
 
 	try {
-		createTable(carnum);
+		if (knownCarTables[carnum] == 0) {
+			createTable(carnum);
+			knownCarTables[carnum] = 1;
+		}
 	}
 	catch (int ErrorNum) {
 		if (ErrorNum != 0 || ErrorNum != 1050) {
@@ -348,5 +400,18 @@ int DatabaseConnector::InitializeDatabase(std::string database) {
 			return 1;
 		}
 	}
+	for (int i = 0; i < 128; i++) {
+		knownCarTables[i] = 0;
+	}
+	return 0;
+}
+
+int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {
+	getDataTimestamp(carnum, minValue, maxValue, outputq);
+	return 0;
+}
+
+int DatabaseConnector::UpdateData(int carnum, int uniqueID, std::string columnName, double updatedValue) {
+	tableUpdate(carnum, uniqueID, columnName, updatedValue);
 	return 0;
 }

@@ -18,6 +18,8 @@ public:
 
 	int AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data);
 	int InitializeDatabase(std::string database);
+	int GetData(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq );
+	int UpdateData(int carnum, int uniqueID, std::string columnName, double updatedValue);
 
 private:
 
@@ -30,6 +32,7 @@ private:
 	char user[32] = "root";
 	char passwd[32] = "somethingsecure";
 	char database[64] = "mivcots";
+	int knownCarTables[128];
 
 	int initDB(CarPool* _CarSource);
 	int addNewColumn(int carnum, std::string columnName, std::string columnType);
@@ -45,5 +48,6 @@ private:
 	int freeResult();
 	int selectDatabase(std::string databaseName);
 	int tableUpdate(int carnum, int uniqueID, std::string columnName, double undatedValue);
+	int InsertOrReaplceDataToTable(int carnum, long long datetime, std::string columnName, double storedata);
 
 };
