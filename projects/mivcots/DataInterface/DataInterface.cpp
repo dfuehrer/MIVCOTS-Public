@@ -107,7 +107,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		}
 
 		// Set the value in the carData
-		newCar->set(tmpKey.c_str(), tmpLong);
+		newCar->set((char *)(tmpKey.c_str()), tmpLong);
 
 		// Advance to the next field, which should be a key
 		delimPosLeft = delimPosRight;

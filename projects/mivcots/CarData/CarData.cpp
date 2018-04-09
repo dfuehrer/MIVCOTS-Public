@@ -26,7 +26,7 @@ int CarData::addKey(char* key)
 
 int CarData::addKey(std::string key)
 {
-	addKey(key.c_str());
+	return addKey((char *)key.c_str());
 }
 
 int CarData::initialize(std::vector<char*>* keys, bool clearMap)
