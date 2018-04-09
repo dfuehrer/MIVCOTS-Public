@@ -20,7 +20,7 @@ public:
 	~DataInterface();
 
 	int initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ, CarPool* _CarSource);
-	void start();
+	int start();
 	void stop();
 
 protected:

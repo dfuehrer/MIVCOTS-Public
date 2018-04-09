@@ -17,9 +17,10 @@ public:
 	typedef sharedCache<CarData*> mCache;
 
 	int initialize();
-
+	int initSerial(long baud, std::string port);
 	// Start and stop the data interface, database, and analysis threads
 	int start();
+	int startSerial();
 	int stop();
 
 	// Read functions for the GUI

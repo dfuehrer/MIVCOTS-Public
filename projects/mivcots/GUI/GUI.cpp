@@ -12,9 +12,11 @@ bool GUI::OnInit()
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
+	
+	// aMIVCOTS.initSerial(9600, "COM6");
+	// aMIVCOTS.startSerial();
 
 	frame->mapPanel.drawCar(32.320264, -111.015069, 90 * 0.01745329252);
-
 
 	return true;
 }
