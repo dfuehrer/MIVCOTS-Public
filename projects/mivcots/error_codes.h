@@ -8,3 +8,5 @@
 #define MUTEXERR 1 << 5
 #define NOTFOUND 1 << 6
 #define INITERR 1 << 7
+#define INVALIDMSGFORMAT 1 << 8
+#define VALUEERR 1 << 9
