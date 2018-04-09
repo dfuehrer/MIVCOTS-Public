@@ -46,15 +46,24 @@ void DataInterface::stop()
 
 void DataInterface::runSerialThread()
 {
+	std::string readStr;
 	while(isRunning){
-		
-
+		readStr = serialPort->readline();
+		outputQ->send(parseString(readStr));
 	}
 }
 
-CarData* DataInterface::parseString(std::string toParse)
+int DataInterface::parseString(std::string toParse, CarData** parsed)
 {
 	CarData* newCar = new CarData();
+
+	size_t delimPos = toParse.find(DELIMITER);
+
+	while (delimPos != std::string::npos) {
+
+	}
+
+
 	return newCar;
 }
 

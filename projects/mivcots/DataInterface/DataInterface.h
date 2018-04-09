@@ -4,13 +4,13 @@
 #include <atomic>
 #include <iostream>
 #include <thread>
-
+#include <wx/wx.h>
+#include <wx/app.h>
 #include "CarData.h"
 #include "endpoint.h"
 #include "serial/serial.h"
 
-#include <wx/wx.h>
-#include <wx/app.h>
+#define DELIMITER ","
 
 class DataInterface
 {
@@ -30,7 +30,7 @@ protected:
 
 	void runSerialThread();
 
-	CarData* parseString(std::string toParse);
+	int parseString(std::string toParse, CarData** parsed);
 
 	serial::Serial* serialPort;
 };

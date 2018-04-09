@@ -34,7 +34,5 @@ wxPanel * Map::getPanel()
 
 bool Map::createWidgets()
 {
-	
-
 	return true;
 }
