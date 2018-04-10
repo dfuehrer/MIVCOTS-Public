@@ -5,7 +5,7 @@
 #include <wx/aui/aui.h>
 
 #include "MapWidget/Map.h"
-
+#include "MIVCOTS.h"
 #include <string.h>
 
 #define FRAMERATE 30
@@ -16,7 +16,7 @@ public:
 	virtual bool OnInit();
 
 private:
-
+	MIVCOTS aMIVCOTS;
 };
 
 class Frame : public wxFrame

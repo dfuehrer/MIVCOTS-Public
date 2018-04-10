@@ -1,5 +1,6 @@
 #include "AnalysisChild.h"
-
+#include "AnalysisReturnCodes.h"
+#include <wx/log.h>
 
 
 AnalysisChild::AnalysisChild()
@@ -18,7 +19,40 @@ int AnalysisChild::init(
 	CarPool * carPool
 )
 {
-	return 0;
+	int returnCode = 0;
+	if (boxCache != nullptr) {
+		this->boxCache = boxCache;
+	}
+	else {
+		wxLogError("Analysis Child - Init Function: boxCache Pointer is Null");
+		returnCode |= ERR_BOX_CACHE_PTR_IS_NULL;
+	}
+	if (carCache != nullptr) {
+		this->carCache = carCache;
+	}
+	else {
+		wxLogError("Analysis Child - Init Function: carCache Pointer is Null");
+		returnCode |= ERR_CAR_CACHE_PTR_IS_NULL;
+		return returnCode;
+	}
+	if (updateQueue != nullptr) {
+		this->updateQueue = updateQueue;
+	}
+	else {
+		wxLogError("Analysis Child - Init Function: updateQueue Pointer is Null");
+		returnCode |= ERR_UPDATE_QUEUE_PTR_IS_NULL;
+		return returnCode;
+	}
+	if (carPool != nullptr) {
+		this->carPool = carPool;
+	}
+	else {
+		wxLogError("Analysis Child - Init Function: carPool Pointer is Null");
+		returnCode |= ERR_CAR_CACHE_PTR_IS_NULL;
+		return returnCode;
+	}
+	
+	return returnCode;
 }
 
 int AnalysisChild::start()

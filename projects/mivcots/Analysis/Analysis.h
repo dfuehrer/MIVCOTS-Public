@@ -7,8 +7,14 @@
 #include "InterThreadComm/sharedCache.h"
 #include "CarPool/CarPool.h"
 #include "CarData/CarData.h"
+#include "AnalysisChild.h"
 #include <wx/wx.h>
 #include <fstream>
+
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 
 class AnalysisParent
@@ -42,6 +48,12 @@ private:
 	CarPool * carPool;
 	std::string configFileName;
 	std::ifstream configFileInputStream;
+	std::mutex analysisStepMutex;
+	std::condition_variable analysisStepConditionVariable;
+
+	std::vector<AnalysisChild *> analysisChildVector;
+	
+
 
 
 };

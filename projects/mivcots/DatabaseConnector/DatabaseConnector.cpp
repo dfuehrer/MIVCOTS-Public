@@ -15,7 +15,8 @@ DatabaseConnector::~DatabaseConnector()
 //n. shutdownDB();
 
 
-//Private Functions
+//////////////////////////////////////////////////////////////////////////Private Functions///////////////////////////////////////////////////////////////////////////
+
 int DatabaseConnector::initDB(CarPool* _CarSource) {
 	mysql_init(&mysql);
 	CarSource = _CarSource;
@@ -117,52 +118,13 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 	cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
 	pass = mysql_query(&mysql, cstr);
-	if (pass == 1) {
-		return mysql_errno(&mysql);//Failed
+	if (pass == 0) {
+		return 0;
 	}
 	else
-		return 0;
+		return mysql_errno(&mysql);//Failed
 }
 
-int DatabaseConnector::InsertOrReaplceDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
-	int pass = 0;
-	std::string str1 = "INSERT OR REPLACE INTO car";
-	std::string str2 = "";
-	str2 = std::to_string(carnum);
-	std::string str3 = " (timestamp, ";
-	std::string str4 = columnName;//The type of sensor
-	std::string str5 = ") VALUES (";
-	std::string str6 = std::to_string(datetime);
-	std::string str7 = ", ";
-	std::string str8 = std::to_string(storedata);
-	/*
-	if (datatype == 's') {//s long, u = unsigned long, d = double. Gets data from CarData class
-	long longdata = CarData::get(char* key, long* dest);
-	str8 = std::to_string(longdata);
-	}
-	else if (datatype == 'u') {
-	unsigned long ulongdata = CarData::get(char* key, unsigned long dest);
-	str8 = std::to_string(ulongdata);
-	}
-	else if (datatype == 'd') {
-	double doubledata = CarData::get(char* key, double dest);
-	str8 = std::to_string(doubledata);
-	}
-	else
-	std::cout << "Error with datatype for storing data. Line 119-133. Datatype is " + datatype << std::endl;
-	*/
-	std::string str9 = ");";
-	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
-	const char* cstr = new char[NewCarTable.length() + 1];
-	cstr = new char[NewCarTable.length() + 1];
-	cstr = NewCarTable.c_str();
-	pass = mysql_query(&mysql, cstr);
-	if (pass == 1) {
-		return mysql_errno(&mysql);//Failed
-	}
-	else
-		return 0;
-}
 
 int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
 	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
@@ -201,65 +163,6 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 	mysql_free_result(result);
 	return 0;
 }
-
-int DatabaseConnector::dropTable(int carnum) {
-	int pass = 0;
-	std::string str1 = "DROP TABLE car";
-	std::string str2 = "";
-	str2 = std::to_string(carnum);
-	std::string finalString = str1 + str2;
-	std::cout << finalString << std::endl;
-	const char* cstr = new char[finalString.length() + 1];
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
-	if (pass == 0) {
-		return 0;
-	}
-	else {
-		return mysql_errno(&mysql);//Failed
-	}
-}
-
-//delete row of data from table   Delete a row(s) from a table.		DELETE from [table name] where [field name] = 'whatever';
-int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
-	int pass = 0;
-	std::string str1 = "DELETE FROM car";
-	std::string str2 = std::to_string(carnum);
-	std::string str3 = " WHERE timestamp = ";
-	std::string str4 = std::to_string(timestamp);
-	std::string str5 = ";";
-	std::string finalString = str1 + str2 + str3 + str4 + str5;
-	const char* cstr = new char[finalString.length() + 1];
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
-	if (pass == 0) {
-		return 0;
-	}
-	else {
-		return mysql_errno(&mysql);//Failed
-	}
-}
-
-//delete column from table  Delete a column.	alter table [table name] drop column [column name];
-int DatabaseConnector::dropColumn(int carnum,std::string columnName) {
-	int pass = 0;
-	std::string str1 = "ALTER TABLE car";
-	std::string str2 = std::to_string(carnum);
-	std::string str3 = " DROP COLUMN ";
-	std::string str4 = columnName;
-	std::string str5 = ";";
-	std::string finalString = str1 + str2 + str3 + str4 + str5;
-	const char* cstr = new char[finalString.length() + 1];
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
-	if (pass == 0) {
-		return 0;
-	}
-	else {
-		return mysql_errno(&mysql);//Failed
-	}
-}
-
 //possibly create database Create a database on the sql server.		create database [databasename];
 int DatabaseConnector::createDatabase(std::string databaseName) {
 	int pass = 0;
@@ -277,19 +180,7 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 	}
 }
 
-//shutdown mysql_shutdown(&mysql)
-int DatabaseConnector::shutdown() {
-	int pass = 0;
-	pass = mysql_query(&mysql, "SHUTDOWN");
-	closeConnection();//calls the close connection function
-	if (pass == 0) {
-		std::cout << "Shutdown Successful" << std::endl;
-		return 0;
-	}
-	else {
-		return mysql_errno(&mysql);//Failed
-	}
-}
+
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
 int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, double updatedValue) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
@@ -343,36 +234,32 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 //Insert OR UPDATE function
 
 
-//Public Functions
+////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
+
 int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
 
 	try {
 		if (knownCarTables[carnum] == 0) {
-			createTable(carnum);
 			knownCarTables[carnum] = 1;
+			throw createTable(carnum);
 		}
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0 || ErrorNum != 1050) {
-			wxLogMessage(_(mysql_error(&mysql)));
-			return 1;
-		}
-	}
-	try {
-		addNewColumn(carnum, sensortype, sensorvar);
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0 || ErrorNum != 1060) {
-			wxLogMessage(_(mysql_error(&mysql)));
-			return 1;
-		}
-	}
-	try {
-	addDataToTable(carnum, datetime, sensortype, data);
 	}
 	catch (int ErrorNum) {
 		if (ErrorNum != 0) {
-			wxLogMessage(_(mysql_error(&mysql)));
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	try {
+		throw addDataToTable(carnum, datetime, sensortype, data);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum == 1054) {
+			addNewColumn(carnum, sensortype, sensorvar);
+			addDataToTable(carnum, datetime, sensortype, data);
+		}
+		else if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return 1;
 		}
 	}
@@ -383,20 +270,20 @@ int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string s
 int DatabaseConnector::InitializeDatabase(std::string database) {
 	initDB(nullptr);
 	try {
-		createDatabase(database);
+		throw createDatabase(database);
 	}
 	catch (int ErrorNum) {
-		if (ErrorNum != 1007 || ErrorNum != 0) {
-			wxLogMessage(_(mysql_error(&mysql)));
+		if (ErrorNum != 1007 && ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return 1;
 		}
 	}
 	try {
-		selectDatabase(database);
+		throw selectDatabase(database);
 	}
 	catch (int ErrorNum) {
 		if (ErrorNum != 0) {
-			wxLogMessage(_(mysql_error(&mysql)));
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return 1;
 		}
 	}
@@ -412,6 +299,95 @@ int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValu
 }
 
 int DatabaseConnector::UpdateData(int carnum, int uniqueID, std::string columnName, double updatedValue) {
-	tableUpdate(carnum, uniqueID, columnName, updatedValue);
+	try {
+		throw tableUpdate(carnum, uniqueID, columnName, updatedValue);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
 	return 0;
 }
+
+//shutdown mysql_shutdown(&mysql)
+int DatabaseConnector::shutdown() {
+	int pass = 0;
+	pass = mysql_query(&mysql, "SHUTDOWN");
+	closeConnection();//calls the close connection function
+	if (pass == 0) {
+		std::cout << "Shutdown Successful" << std::endl;
+		return 0;
+	}
+	else {
+		int ErrorNum = mysql_errno(&mysql);
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;//Failed
+	}
+}
+
+int DatabaseConnector::dropTable(int carnum) {
+	int pass = 0;
+	std::string str1 = "DROP TABLE car";
+	std::string str2 = "";
+	str2 = std::to_string(carnum);
+	std::string finalString = str1 + str2;
+	std::cout << finalString << std::endl;
+	const char* cstr = new char[finalString.length() + 1];
+	cstr = finalString.c_str();
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 0) {
+		return 0;
+	}
+	else {
+		int ErrorNum = mysql_errno(&mysql);
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;//Failed
+	}
+}
+
+//delete row of data from table   Delete a row(s) from a table.		DELETE from [table name] where [field name] = 'whatever';
+int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
+	int pass = 0;
+	std::string str1 = "DELETE FROM car";
+	std::string str2 = std::to_string(carnum);
+	std::string str3 = " WHERE timestamp = ";
+	std::string str4 = std::to_string(timestamp);
+	std::string str5 = ";";
+	std::string finalString = str1 + str2 + str3 + str4 + str5;
+	const char* cstr = new char[finalString.length() + 1];
+	cstr = finalString.c_str();
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 0) {
+		return 0;
+	}
+	else {
+		int ErrorNum = mysql_errno(&mysql);
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;//Failed
+	}
+}
+
+//delete column from table  Delete a column.	alter table [table name] drop column [column name];
+int DatabaseConnector::dropColumn(int carnum, std::string columnName) {
+	int pass = 0;
+	std::string str1 = "ALTER TABLE car";
+	std::string str2 = std::to_string(carnum);
+	std::string str3 = " DROP COLUMN ";
+	std::string str4 = columnName;
+	std::string str5 = ";";
+	std::string finalString = str1 + str2 + str3 + str4 + str5;
+	const char* cstr = new char[finalString.length() + 1];
+	cstr = finalString.c_str();
+	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
+	if (pass == 0) {
+		return 0;
+	}
+	else {
+		int ErrorNum = mysql_errno(&mysql);
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;//Failed
+	}
+}
+
