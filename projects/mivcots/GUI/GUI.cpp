@@ -13,8 +13,8 @@ bool GUI::OnInit()
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
 
-	frame->mapPanel.drawCar(32.320264, -111.015069, 90 * 0.01745329252);
-
+	
+	//frame->timer = wxTimer(frame);
 
 	return true;
 }
@@ -74,6 +74,9 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 
 	// tell the manager to "commit" all the changes just made
 	m_mgr.Update();
+	timer = new wxTimer(this, gui_timer);
+	timer->Start(1000/FRAMERATE);
+
 }
 
 Frame::~Frame()
@@ -95,6 +98,13 @@ void Frame::onAbout(wxCommandEvent & event)
 void Frame::onToggleFullscreen(wxCommandEvent & event)
 {
 	ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER);
+}
+
+void Frame::update(wxTimerEvent &event)
+{
+	wxLogMessage("updating gui");
+	mapPanel.update();
+	Show();
 }
 
 

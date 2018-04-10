@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <wx/dcbuffer.h>
+
 
 
 typedef struct coords_s {
@@ -21,9 +23,16 @@ public:
 
 	bool initMap();
 	wxPanel* getPanel();
+	
 
+	bool refresh();
 	bool drawCar(double lat, double lon, double angle);
+	coords getCoords();
+	bool update();
 
+	double angleTmp;
+	double latTmp;
+	double lonTmp;
 
 
 private:
@@ -34,6 +43,8 @@ private:
 	PictureWindow * picWindow;
 	std::string mapName;
 	coords coordinates;
+	wxBufferedDC* buffDC;
+	wxMemoryDC* dc;
 
 	double latFactor;
 	double lonFactor;

@@ -28,6 +28,11 @@ bool Map::initMap()
 		getCoords(mapName);
 		//printCoords();
 		calcFactors();
+		dc = new wxMemoryDC(*imgBitmap);
+
+		angleTmp = 0;
+		latTmp = 32.235744;
+		lonTmp = -110.953771;
 
 	}
 	else {
@@ -42,33 +47,64 @@ wxPanel * Map::getPanel()
 	return panel;
 }
 
+bool Map::refresh()
+{
+	panel->Refresh();
+	return true;
+}
+
 bool Map::drawCar(double lat, double lon, double angle)
 {
 	if (const char* env_p = std::getenv("MivcotsResources")) {
 		std::string filePath = std::string(env_p) + std::string("maps\\favicon.png");
-		wxImage* tmpimg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
+		wxImage tmpimg = wxImage(filePath, wxBITMAP_TYPE_ANY);
 
-		wxPoint center = wxPoint(tmpimg->GetWidth() / 2, tmpimg->GetHeight() / 2);
-		*tmpimg = tmpimg->Rotate(angle, center);
+		wxPoint center = wxPoint(tmpimg.GetWidth() / 2, tmpimg.GetHeight() / 2);
+		tmpimg = tmpimg.Rotate(angle, center);
 
 		double x = (lon - lonOffset)*lonFactor;
 		double y = -(lat - latOffset)*latFactor;
 
 		wxLogMessage("x=%lf\ty=%lf", x, y);
-		wxBitmap tmp = wxBitmap(*tmpimg);
+		wxBitmap tmp = wxBitmap(tmpimg);
 
-		wxMemoryDC* dc = new wxMemoryDC(*imgBitmap);
+		*imgBitmap = wxBitmap(*imgImg);
+		picWindow->setBitmap(*imgBitmap);
+		buffDC = new wxBufferedDC(dc, *imgBitmap);
 
 		//translating to the center of the image
 		x -= tmp.GetHeight() / 2;
 		y -= tmp.GetWidth() / 2;
-		dc->DrawBitmap(tmp, x, y);
+		buffDC->DrawBitmap(tmp, x, y);
 
-		dc->SelectObject(wxNullBitmap);
+		buffDC->SelectObject(wxNullBitmap);
 
 		picWindow->setBitmap(*imgBitmap);
+		free(buffDC);
 	}
 	return false;
+}
+
+coords Map::getCoords()
+{
+	return coordinates;
+}
+
+bool Map::update()
+{
+	drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
+	angleTmp += 1;
+	latTmp += .001;
+	lonTmp += .001;
+
+	coords coord = getCoords();
+
+	if (latTmp > coord.northEast.first)
+		latTmp = coord.southWest.first;
+	if (lonTmp > coord.northEast.second)
+		lonTmp = coord.southWest.second;
+	refresh();
+	return true;
 }
 
 bool Map::createWidgets()
