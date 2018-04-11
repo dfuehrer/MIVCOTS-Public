@@ -106,7 +106,7 @@ void Frame::onToggleFullscreen(wxCommandEvent & event)
 
 void Frame::update(wxTimerEvent &event)
 {
-	wxLogMessage("updating gui");
+	//wxLogMessage("updating gui");
 	mapPanel.update();
 	Show();
 }

@@ -2,7 +2,7 @@
 
 Map::Map(wxWindow *parent)
 {
-	panel = new wxPanel(parent, wxID_ANY);
+	this->parent = parent;
 }
 
 Map::Map()
@@ -15,6 +15,7 @@ Map::~Map()
 
 bool Map::initMap()
 {
+	panel = new wxPanel(parent, wxID_ANY);
 	mapName = "map1";
 	wxImage::AddHandler(new wxPNGHandler);
 
@@ -29,6 +30,7 @@ bool Map::initMap()
 		//printCoords();
 		calcFactors();
 		dc = new wxMemoryDC(*imgBitmap);
+		buffDC = new wxBufferedDC(dc, *imgBitmap);
 
 		angleTmp = 0;
 		latTmp = 32.235744;
@@ -65,22 +67,22 @@ bool Map::drawCar(double lat, double lon, double angle)
 		double x = (lon - lonOffset)*lonFactor;
 		double y = -(lat - latOffset)*latFactor;
 
-		wxLogMessage("x=%lf\ty=%lf", x, y);
+		//wxLogMessage("x=%lf\ty=%lf", x, y);
 		wxBitmap tmp = wxBitmap(tmpimg);
 
 		*imgBitmap = wxBitmap(*imgImg);
 		picWindow->setBitmap(*imgBitmap);
-		buffDC = new wxBufferedDC(dc, *imgBitmap);
-
+		
 		//translating to the center of the image
 		x -= tmp.GetHeight() / 2;
 		y -= tmp.GetWidth() / 2;
+		buffDC->SelectObject(*imgBitmap);
 		buffDC->DrawBitmap(tmp, x, y);
 
 		buffDC->SelectObject(wxNullBitmap);
 
 		picWindow->setBitmap(*imgBitmap);
-		free(buffDC);
+		//free(buffDC);
 	}
 	return false;
 }

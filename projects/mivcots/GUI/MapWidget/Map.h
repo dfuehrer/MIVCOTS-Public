@@ -36,7 +36,7 @@ public:
 
 
 private:
-	
+	wxWindow * parent;
 	wxPanel * panel;
 	const wxImage *imgImg;
 	wxBitmap *imgBitmap;
