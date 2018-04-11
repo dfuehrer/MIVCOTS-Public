@@ -77,7 +77,7 @@ bool Map::drawCar(double lat, double lon, double angle)
 		x -= tmp.GetHeight() / 2;
 		y -= tmp.GetWidth() / 2;
 		buffDC->SelectObject(*imgBitmap);
-		buffDC->DrawBitmap(tmp, x, y);
+		buffDC->DrawBitmap(tmp, x, y, true);
 
 		buffDC->SelectObject(wxNullBitmap);
 
