@@ -34,7 +34,7 @@ public:
 	// startIter points to the oldest element
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
-	int readData()
+	//int readData()
 	int releaseReadLock();
 
 	bool newRawData();
