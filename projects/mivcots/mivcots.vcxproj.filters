@@ -57,6 +57,9 @@
     <ClCompile Include="Analysis\AnalysisChild.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InterThreadComm\CacheBank.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -105,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Analysis\AnalysisChild.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterThreadComm\CacheBank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -29,6 +29,7 @@
     <ClCompile Include="GUI\MapWidget\Map.cpp" />
     <ClCompile Include="GUI\MapWidget\PictureWindow.cpp" />
     <ClCompile Include="GUI\Plotting\Plotting.cpp" />
+    <ClCompile Include="InterThreadComm\CacheBank.cpp" />
     <ClCompile Include="InterThreadComm\sharedCache.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
   </ItemGroup>
@@ -44,6 +45,7 @@
     <ClInclude Include="GUI\MapWidget\Map.h" />
     <ClInclude Include="GUI\MapWidget\PictureWindow.h" />
     <ClInclude Include="GUI\Plotting\Plotting.h" />
+    <ClInclude Include="InterThreadComm\CacheBank.h" />
     <ClInclude Include="InterThreadComm\sharedCache.h" />
     <ClInclude Include="InterThreadComm\endpoint.h" />
     <ClInclude Include="InterThreadComm\InterThreadComm.h" />
