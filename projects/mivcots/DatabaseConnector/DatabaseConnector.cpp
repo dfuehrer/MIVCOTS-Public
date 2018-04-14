@@ -85,8 +85,10 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 }
 
 //Add Data to Table. EIther use Insert into or possibly update.
+//int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
-	int pass = 0;
+int pass = 0;
+	//inputqadd.receive();
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
@@ -96,22 +98,6 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 	std::string str6 = std::to_string(datetime);
 	std::string str7 = ", ";
 	std::string str8 = std::to_string(storedata);
-	/*
-	if (datatype == 's') {//s long, u = unsigned long, d = double. Gets data from CarData class
-		long longdata = CarData::get(char* key, long* dest);
-		str8 = std::to_string(longdata);
-	}
-	else if (datatype == 'u') {
-		unsigned long ulongdata = CarData::get(char* key, unsigned long dest);
-		str8 = std::to_string(ulongdata);
-	}
-	else if (datatype == 'd') {
-		double doubledata = CarData::get(char* key, double dest);
-		str8 = std::to_string(doubledata);
-	}
-	else
-		std::cout << "Error with datatype for storing data. Line 119-133. Datatype is " + datatype << std::endl;
-	*/
 	std::string str9 = ");";
 	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
 	const char* cstr = new char[NewCarTable.length() + 1];
@@ -126,10 +112,12 @@ int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::strin
 }
 
 
-int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
-	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
+//int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
+int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue) {
+//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
-	
+	int pass = 0;
+	int numRow = 0;
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " WHERE timestamp > ";
@@ -140,30 +128,36 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 	std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
 	const char* cstr = new char[finalString.length() + 1];
 	cstr = finalString.c_str();
-	mysql_query(&mysql, cstr);
-	result = mysql_store_result(&mysql);
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 0) {
+		result = mysql_store_result(&mysql);
+		str1 = "car";
+		str2 = std::to_string(carnum);
+		std::string TableName = str1 + str2;
+		const char* cstr1 = new char[TableName.length() + 1];
+		cstr1 = TableName.c_str();
+		MYSQL_RES *tbl_cols = mysql_list_fields(&mysql, cstr1, "f%");
 
-	str1 = "car";
-	str2 = std::to_string(carnum);
-	std::string TableName = str1 + str2;
-	const char* cstr1 = new char[TableName.length() + 1];
-	cstr1 = TableName.c_str();
-	MYSQL_RES *tbl_cols = mysql_list_fields(&mysql, cstr1 , "f%");
-	
-	unsigned int field_cnt = mysql_num_fields(tbl_cols);
-	printf("Number of columns: %d\n", field_cnt);
-	while (row = mysql_fetch_row(result)) {//put into cardata object
-		for (unsigned int i = 0; i < field_cnt; i++) {
-			printf("%s\t", row[i]);
+		unsigned int field_cnt = mysql_num_fields(tbl_cols);
+		printf("Number of columns: %d\n", field_cnt);
+		while (row = mysql_fetch_row(result)) {//put into cardata object
+			for (unsigned int i = 0; i < field_cnt; i++) {
+				//outputq.send(row[i]);
+				carRowData[numRow][i] = row[i];
+				printf("%s\t", row[i]);
+			}
+			numRow++;
+			printf("\n");
+
 		}
-		printf("\n");
-
+		mysql_free_result(tbl_cols);
+		mysql_free_result(result);
+		return 0;
 	}
-	mysql_free_result(tbl_cols);
-	mysql_free_result(result);
-	return 0;
+	else
+		return mysql_errno(&mysql);//Failed
 }
-//possibly create database Create a database on the sql server.		create database [databasename];
+//Create database Create a database on the sql server.		create database [databasename];
 int DatabaseConnector::createDatabase(std::string databaseName) {
 	int pass = 0;
 	std::string str1 = "CREATE DATABASE ";
@@ -180,11 +174,38 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 	}
 }
 
+//Get Column names and associated types from database 
 
+int DatabaseConnector::getColumnTypes(int carnum) {
+	int pass = 0;
+	int rowNum = 0;
+	unsigned int numColumns = 0;
+	std::string str1 = "SHOW COLUMNS FROM car";
+	std::string str2 = std::to_string(carnum);
+	std::string finalString = str1 + str2;
+	const char* cstr = new char[finalString.length() + 1];
+	cstr = finalString.c_str();
+	pass = mysql_query(&mysql, cstr);
+	if (pass == 0) {
+		result = mysql_store_result(&mysql);
+		while ((row = mysql_fetch_row(result))) {
+			for (int i = 0; i <= 2; i++) {
+				columnDataTypes[rowNum][i] = row[i];
+				wxLogMessage(_(row[i]));
+			}
+			rowNum++;
+		}
+		return 0;
+	}
+	else {
+		return mysql_errno(&mysql);//Failed
+	}
+}
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
-int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, double updatedValue) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
-	int pass = 0;
+//int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputqupdate) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
+int DatabaseConnector::tableUpdate(int carnum, int uniqueID, std::string columnName, double updatedValue) {
+int pass = 0;
 	std::string str1 = "UPDATE car";
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " SET ";
@@ -231,41 +252,10 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 	}
 }
 
-//Insert OR UPDATE function
+//Add Sanatize Function that cleans inputq and breaks it up into something usable for storing. AKA strings
 
 
 ////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
-
-int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
-
-	try {
-		if (knownCarTables[carnum] == 0) {
-			knownCarTables[carnum] = 1;
-			throw createTable(carnum);
-		}
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
-	}
-	try {
-		throw addDataToTable(carnum, datetime, sensortype, data);
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum == 1054) {
-			addNewColumn(carnum, sensortype, sensorvar);
-			addDataToTable(carnum, datetime, sensortype, data);
-		}
-		else if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
-	}
-	
-	return 0;
-}
 
 int DatabaseConnector::InitializeDatabase(std::string database) {
 	initDB(nullptr);
@@ -293,8 +283,57 @@ int DatabaseConnector::InitializeDatabase(std::string database) {
 	return 0;
 }
 
-int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {
-	getDataTimestamp(carnum, minValue, maxValue, outputq);
+int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
+
+	try {
+		if (knownCarTables[carnum] == 0) {
+			knownCarTables[carnum] = 1;
+			throw createTable(carnum);
+		}
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
+
+	try {
+		throw addDataToTable(carnum, datetime, sensortype, data);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum == 1054) {
+			addNewColumn(carnum, sensortype, sensorvar);
+			addDataToTable(carnum, datetime, sensortype, data);
+		}
+		else if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValue) {
+	try {
+		throw getDataTimestamp(carnum, minValue, maxValue);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
+	try {
+		throw getColumnTypes(carnum);
+	}
+	catch (int ErrorNum) {
+		if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return 1;
+		}
+	}
 	return 0;
 }
 

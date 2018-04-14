@@ -18,6 +18,7 @@ TEST(DatabaseTests, DropColumnRowAndTableTest) {
 	int updateUniqueID = 5;
 	long long dropDateTime = 2018033004040050;
 	DatabaseConnector test;
+	//CarData* car;
 
 	ASSERT_EQ(test.InitializeDatabase(database), 0);
 	for (int i = 0; i < addDataIterations; i++) {
