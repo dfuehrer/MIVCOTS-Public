@@ -21,7 +21,9 @@ Use the command "git clone --recurse-submodules -j8 https://github.com/pdxfrog/M
    See https://wiki.wxwidgets.org/Adding_an_Environment_Variable_under_Windows
    
    Make sure to include a backslash on the end: "C:\wxWidgets-3.0.3\\"
-   
+
+## Other Requirements
+1. Add another environemnt variable "C:\Users\Sean\Documents\MIVCOTS_SOFTWARE\projects\mivcots\Resources\" with the variable name "MivcotsResources"
 ## Testing with com0com
 
 Install com0com https://sourceforge.net/projects/com0com/
