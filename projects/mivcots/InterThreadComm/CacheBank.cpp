@@ -57,6 +57,8 @@ int CacheBank::feed(CarData* toFeed)
 	long carNum;
 	rc |= toFeed->get("ID", &carNum);
 
+	wxLogDebug("Inserting data for car number %d", carNum);
+
 	CMMiter loc;
 	int rc2 = addCarNum(carNum, &loc);
 	if (rc2 != ELEMENTEXISTS) {

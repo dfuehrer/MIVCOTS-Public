@@ -13,6 +13,8 @@
 #define DELIMITER ","
 #define ENDOFMSG "!"
 
+// TODO: strip all whitespace
+
 class DataInterface
 {
 public:

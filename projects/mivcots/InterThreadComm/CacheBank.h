@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <wx/wx.h>
 
 #include "Analysis.h"
 #include "CarData.h"
