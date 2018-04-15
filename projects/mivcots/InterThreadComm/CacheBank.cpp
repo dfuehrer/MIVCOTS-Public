@@ -2,15 +2,7 @@
 
 CacheBank::CacheBank()
 {
-	// Add a car module but don't start the analysis for car 0 (the box)
-	carModule* toInsert = new carModule;
-	carModuleMap[0] = toInsert;
 
-	toInsert->cache.initialize(maxCacheSize,
-		toInsert->inputQ.getEndpoint2(),
-		toInsert->updateQ.getEndpoint2());
-
-	carNums.push_back(0);
 }
 
 CacheBank::~CacheBank()
@@ -34,6 +26,16 @@ int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsign
 	carSource = _carSource;
 	cfgFileName = _cfgFileName;
 	maxCacheSize = _maxCacheSize;
+
+	// Add a car module but don't start the analysis for car 0 (the box)
+	carModule* toInsert = new carModule;
+	carModuleMap[0] = toInsert;
+
+	toInsert->cache.initialize(maxCacheSize,
+		toInsert->inputQ.getEndpoint2(),
+		toInsert->updateQ.getEndpoint2());
+
+	carNums.push_back(0);
 
 	return SUCCESS;
 }

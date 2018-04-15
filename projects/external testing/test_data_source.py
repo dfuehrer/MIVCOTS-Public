@@ -11,7 +11,7 @@ with open("testdata.csv") as f:
 while 1:
     for line in data:
         print("#," + line.replace("\n","") + ",!\n")
-        line = line.replace("\n","") + ",!\n"
-        ser.write("#," + line.encode("utf-8"))
+        line = "#," + line.replace("\n","") + ",!\n"
+        ser.write(line.encode("utf-8"))
         #ser.write(line.replace("\n","") + ",!\n")
         time.sleep(1)
