@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "DatabaseConnector/DatabaseConnector.h"
-#include "DatabaseConnector\DatabaseConnector.cpp"
-
+#include "DatabaseConnector/DatabaseConnector.cpp"
+#include "CacheBank.h"
 //Returns 0 for success or 1 for fail
 
 TEST(DatabaseTests, DropColumnRowAndTableTest) {
@@ -20,7 +20,7 @@ TEST(DatabaseTests, DropColumnRowAndTableTest) {
 	DatabaseConnector test;
 	//CarData* car;
 
-	ASSERT_EQ(test.InitializeDatabase(database), 0);
+	//ASSERT_EQ(test.InitializeDatabase(database), 0);
 	for (int i = 0; i < addDataIterations; i++) {
 		EXPECT_EQ(test.AddData(carnum, sensortype, sensorvar, datetime, data), 0);
 		datetime = datetime + 10;

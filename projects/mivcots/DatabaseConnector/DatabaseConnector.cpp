@@ -15,6 +15,7 @@ int DatabaseConnector::initialize(endpoint<CarData*>* _dataQ, endpoint<CarData*>
 	boxDataQ = _boxDataQ;
 	carSource = _carSource;
 	outputCache = _outputCache;
+	return SUCCESS;
 }
 
 int DatabaseConnector::start()
@@ -346,37 +347,29 @@ int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string s
 }
 
 int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValue) {
-	try {
-		throw getDataTimestamp(carnum, minValue, maxValue);
+	int ErrorNum = getDataTimestamp(carnum, minValue, maxValue);
+	if (ErrorNum != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
-	}
-	try {
-		throw getColumnTypes(carnum);
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
+
+	int ErrorNum2 = getColumnTypes(carnum);
+
+	if (ErrorNum2 != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
 	return 0;
 }
 
 int DatabaseConnector::UpdateData(int carnum, int uniqueID, std::string columnName, double updatedValue) {
-	try {
-		throw tableUpdate(carnum, uniqueID, columnName, updatedValue);
+	
+	int ErrorNum = tableUpdate(carnum, uniqueID, columnName, updatedValue);
+	if (ErrorNum != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
-	}
+
 	return 0;
 }
 
@@ -470,7 +463,7 @@ void DatabaseConnector::runDatabaseThread()
 			outputCache->feed(receivedData);
 		}
 
-		while (boxDataQ->receiveQsize > 0) {
+		while (boxDataQ->receiveQsize() > 0) {
 			boxDataQ->receive(&receivedBoxData);
 			outputCache->feed(receivedBoxData);
 		}
