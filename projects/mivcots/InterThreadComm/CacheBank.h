@@ -1,12 +1,15 @@
 #pragma once
 
 #include <map>
+#include <wx/wx.h>
 
 #include "Analysis.h"
 #include "CarData.h"
 #include "CarPool.h"
 #include "InterThreadComm.h"
 #include "sharedCache.h"
+
+// TODO thread safe vector
 
 typedef struct carModule_t {
 	sharedCache<CarData*> cache;
@@ -30,10 +33,15 @@ public:
 	typedef sharedCache<CarData*> mCache;
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
-	
+	int releaseReadLock(long carNum);
+	bool newRawData(long carNum);
+	bool newAnalyzedData(long carNum);
+
 	// Start/stop analyses
 	int startAnalyses();
 	int stopAnalyses();
+
+	std::vector<long> carNums;
 
 private:
 	std::map<int, carModule*> carModuleMap;

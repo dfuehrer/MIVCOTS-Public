@@ -6,6 +6,7 @@
 #include <thread>
 #include <sstream>
 #include <string.h>
+#include "CacheBank.h"
 #include "CarPool.h"
 #include "InterThreadComm.h"
 
@@ -16,7 +17,12 @@ public:
 	DatabaseConnector();
 	~DatabaseConnector();
 
-	std::string carRowData[6000][6000];
+	int initialize(endpoint<CarData*>* _dataQ, endpoint<CarData*>* _boxDataQ, CarPool* _carSource, CacheBank* _outputCache);
+
+	int start();
+	int stop();
+
+	//std::string carRowData[6000][6000];
 
 	//int AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data, endpoint <CarData*, CarData* > inputqadd);
 	int AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data);
@@ -31,6 +37,15 @@ public:
 	int dropColumn(int carnum, std::string columnName);
 
 private:
+
+	std::atomic<bool> isRunning;
+	std::thread databaseThread;
+	void runDatabaseThread();
+
+	endpoint<CarData*>* dataQ;
+	endpoint<CarData*>* boxDataQ;
+	CarPool* carSource;
+	CacheBank* outputCache;
 
 	MYSQL mysql;
 	MYSQL_RES *result;

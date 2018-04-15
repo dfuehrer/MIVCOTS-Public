@@ -1,8 +1,47 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <vector>
+#include <wx/wx.h>
 
+typedef struct dataValue_st {
+	union data_u {
+		long s;
+		unsigned long u;
+		double d;
+	};
+
+	data_u data;
+
+} dataValue;
+
+class CarData
+{
+public:
+	CarData();
+	~CarData();
+
+	int addKey(std::string key);
+
+	int set(std::string key, long newValue);
+	int set(std::string key, unsigned long newValue);
+	int set(std::string key, double newValue);
+
+	int get(std::string key, long* dest);
+	int get(std::string key, unsigned long* dest);
+	int get(std::string key, double* dest);
+
+	void printCar();
+
+protected:
+	typedef std::map<std::string, dataValue> dataMap_t;
+	dataMap_t dataMap;
+
+	inline int find_key(std::string key, dataMap_t::iterator* iter);
+};
+
+/*
 #define KEYLENGTH 3
 
 typedef struct dataValue_st {
@@ -40,10 +79,12 @@ public:
 	int get(char* key, unsigned long* dest);
 	int get(char* key, double* dest);	
 
+	void printCar();
+
 protected:
 	typedef std::map<char*, dataValue, cStrCmp> dataMap_t;
 	dataMap_t dataMap;
 
 	inline int find_key(char* key, dataMap_t::iterator* iter);
 };
-
+*/

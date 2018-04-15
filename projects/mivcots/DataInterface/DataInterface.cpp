@@ -1,5 +1,29 @@
 #include "DataInterface.h"
 
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+		std::not1(std::ptr_fun<int, int>(std::isspace))));
+	return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(),
+		std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+	return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+	return ltrim(rtrim(s));
+}
+
 DataInterface::DataInterface()
 {
 	serialPort = nullptr;
@@ -80,11 +104,15 @@ void DataInterface::runSerialThread()
 		rc |= CarSource->getCar(&tmpCarData);
 		rc |= parseString(readStr, &tmpCarData);
 
-		rc |= outputQ->send(tmpCarData);
-
+		
+		//tmpCarData->printCar();
 		if (rc != SUCCESS) {
 			std::string errormsg = "Serial Thread Error with code: " + std::to_string(rc);
 			wxLogWarning(_(errormsg));
+		}
+		else {
+			outputQ->send(tmpCarData);
+			//wxLogDebug("Data Interface sent a cardata");
 		}
 	}
 }
@@ -92,8 +120,7 @@ void DataInterface::runSerialThread()
 // Test string: "#,5,ID,14,ST,3,LT,12345,LG,54321,!"
 int DataInterface::parseString(std::string toParse, CarData** parsed)
 {
-	wxLogDebug("Received: %s", toParse);
-	CarData* newCar = new CarData();
+	//wxLogDebug("Received: %s", toParse);
 
 	// Parsing stuff
 	size_t delimPosRight = toParse.find(DELIMITER); // Find the first comma
@@ -112,7 +139,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	// loop through the remainder
 	while (tmpKey != ENDOFMSG) {
 		// First add the key to the CarData
-		newCar->addKey((char *)(tmpKey.c_str()));
+		(*parsed)->addKey(tmpKey);
 
 		// Advance to the next field, which should be a value
 		delimPosLeft = delimPosRight + 1;
@@ -121,7 +148,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		// Extract value to a substring
 		tmpValue = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
 
-		wxLogDebug("Reading value: %s", tmpValue);
+		//wxLogDebug("Reading value: %s", tmpValue);
 
 		// Convert to long
 		try {
@@ -132,7 +159,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		}
 
 		// Set the value in the carData
-		newCar->set((char *)(tmpKey.c_str()), tmpLong);
+		(*parsed)->set(tmpKey, tmpLong);
 
 		// In case the message doesn't have an end of msg symbol
 		if (delimPosRight == std::string::npos) {
@@ -146,9 +173,11 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 
 		// Extract key to a substring
 		tmpKey = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
+		trim(tmpKey);
 
-		wxLogDebug("Reading Key: %s", tmpKey);
+		//wxLogDebug("Reading Key: %s", tmpKey);
 	}
 
+	//(*parsed)->printCar();
 	return SUCCESS;
 }

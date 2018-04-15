@@ -26,7 +26,7 @@ int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>*
 	feedQ = _feedQ;
 	updateQ = _updateQ;
 
-	slock = new std::shared_lock<std::shared_mutex>(smtx);
+	slock = new std::shared_lock<std::shared_mutex>(smtx, std::defer_lock);
 
 	if (slock == nullptr) {
 		return MUTEXERR;
@@ -39,7 +39,6 @@ int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>*
 int sharedCache<CarData*>::feedCache()
 {
 	std::unique_lock<std::shared_mutex> ulock(smtx);
-	ulock.lock();
 
 	CarData* received;
 	int rc = feedQ->receive(&received);

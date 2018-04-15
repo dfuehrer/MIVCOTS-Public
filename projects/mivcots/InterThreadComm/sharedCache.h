@@ -48,7 +48,7 @@ private:
 	std::deque<T> buffer;
 	std::deque<T> analyzedData;		// For the GUI
 	std::shared_mutex smtx;
-	std::shared_lock<std::shared_mutex>* slock;
+	mutable std::shared_lock<std::shared_mutex>* slock;
 	
 	int findItem(T toFind, int* ind);
 };
