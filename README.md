@@ -23,10 +23,17 @@ Use the command "git clone --recurse-submodules -j8 https://github.com/pdxfrog/M
    Make sure to include a backslash on the end: "C:\wxWidgets-3.0.3\\"
    
 ## Testing with com0com
+
 Install com0com https://sourceforge.net/projects/com0com/
-### After running com0com add a pair and then rename the ports to COM42 and COM43 and then hit apply
+
+* After running com0com add a pair and then rename the ports to COM42 and COM43 and then hit apply
+
 Install python 3 https://www.python.org/downloads/ (make sure to include it in the PATH)
+
 Open a command prompt and use pip to install serial and pyserial
-'''pip install serial
-pip install pyserial'''
+
+``` pip install serial```
+
+```pip install pyserial```
+
 Double click the test_data_source.py file to run the com testing
