@@ -10,7 +10,11 @@ MIVCOTS::~MIVCOTS()
 
 int MIVCOTS::initialize()
 {
-	return 0;
+	int rc = SUCCESS;
+	rc |= dataStorage.initialize(dataSource_dataStorage.getEndpoint2(), 
+		boxDataSource_dataStorage.getEndpoint2(), &carSource, &cacheBank);
+	rc |= cacheBank.initialize(&carSource, "", 40);
+	return rc;
 }
 
 int MIVCOTS::initSerial(long baud, std::string port) {
@@ -19,7 +23,9 @@ int MIVCOTS::initSerial(long baud, std::string port) {
 
 int MIVCOTS::start()
 {
-	return 0;
+	int rc = SUCCESS;
+	rc |= dataStorage.start();
+	return rc;
 }
 
 int MIVCOTS::startSerial() {
@@ -31,23 +37,23 @@ int MIVCOTS::stop()
 	return 0;
 }
 
-int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter)
+int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum)
 {
-	return cache.readCache(startIter, endIter);
+	return cacheBank.readCache(carNum, startIter, endIter);
 }
 
-int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length)
+int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum, unsigned int length)
 {
-	return cache.readCache(startIter, endIter, length);
+	return cacheBank.readCache(carNum, startIter, endIter, length);
 }
 
-int MIVCOTS::endCacheRead()
+int MIVCOTS::endCacheRead(long carNum)
 {
-	return cache.releaseReadLock();
+	return cacheBank.releaseReadLock(carNum);
 }
 
-bool MIVCOTS::newData()
+bool MIVCOTS::newData(long carNum)
 {
-	return cache.newRawData() || cache.newAnalyzedData();
+	return cacheBank.newRawData(carNum) || cacheBank.newAnalyzedData(carNum);
 }
 

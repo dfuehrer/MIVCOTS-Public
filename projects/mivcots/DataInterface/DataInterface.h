@@ -38,4 +38,3 @@ protected:
 	serial::Serial* serialPort;
 	CarPool* CarSource;
 };
-

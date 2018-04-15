@@ -13,8 +13,10 @@ bool GUI::OnInit()
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
 	
-	 aMIVCOTS.initSerial(115200, "COM43");
-	 aMIVCOTS.startSerial();
+	aMIVCOTS.initialize();
+	aMIVCOTS.start();
+	aMIVCOTS.initSerial(115200, "COM43");
+	aMIVCOTS.startSerial();
 	
 	//frame->timer = wxTimer(frame);
 	frame->mapPanel.drawCar(32.320264, -111.015069, 90 * 0.01745329252);

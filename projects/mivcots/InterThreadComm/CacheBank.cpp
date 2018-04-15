@@ -9,6 +9,8 @@ CacheBank::CacheBank()
 	toInsert->cache.initialize(maxCacheSize,
 		toInsert->inputQ.getEndpoint2(),
 		toInsert->updateQ.getEndpoint2());
+
+	carNums.push_back(0);
 }
 
 CacheBank::~CacheBank()
@@ -64,6 +66,7 @@ int CacheBank::feed(CarData* toFeed)
 	if (rc2 != ELEMENTEXISTS) {
 		rc |= rc2;
 	}
+	rc |= loc->second->inputQ.getEndpoint1()->send(toFeed);
 	rc |= loc->second->cache.feedCache();
 	return  rc;
 }
@@ -76,6 +79,21 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter, unsigned int length)
 {
 	return carModuleMap.at(carNum)->cache.readCache(startIter, endIter, length);
+}
+
+int CacheBank::releaseReadLock(long carNum)
+{
+	return carModuleMap.at(carNum)->cache.releaseReadLock();
+}
+
+bool CacheBank::newRawData(long carNum)
+{
+	return carModuleMap.at(carNum)->cache.newRawData();
+}
+
+bool CacheBank::newAnalyzedData(long carNum)
+{
+	return carModuleMap.at(carNum)->cache.newAnalyzedData();
 }
 
 int CacheBank::startAnalyses()
@@ -126,13 +144,16 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 			toInsert->inputQ.getEndpoint2(),
 			toInsert->updateQ.getEndpoint2());
 
-		rc |= toInsert->analysis.init(&(carModuleMap.at(0)->cache),
+		toInsert->analysis.init(&(carModuleMap.at(0)->cache),
 			&(toInsert->cache), toInsert->updateQ.getEndpoint1(),
 			carSource, cfgFileName);
 
 		if (isStarted) {
 			rc |= toInsert->analysis.start();
 		}
+
+		carNums.push_back(carNum);
+		*loc = carModuleMap.find(carNum);
 		return rc;
 	}
 	else {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Analysis.h"
+#include "CacheBank.h"
 #include "CarData.h"
 #include "CarPool.h"
 #include "DataInterface.h"
@@ -8,6 +9,7 @@
 #include "InterThreadComm.h"
 #include "sharedCache.h"
 
+//TODO: send analyzed data back to datastorage
 class MIVCOTS
 {
 public:
@@ -24,22 +26,21 @@ public:
 	int stop();
 
 	// Read functions for the GUI
-	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter);
-	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
-	int endCacheRead();
+	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum);
+	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum, unsigned int length);
+	int endCacheRead(long carNum);
 
-	bool newData();
+	bool newData(long carNum);
 
 private:
 	DataInterface dataSource;
 	DatabaseConnector dataStorage;
-	sharedCache<CarData*> cache;
+	CacheBank cacheBank;
 	AnalysisParent analysisEngine;
 	CarPool carSource;
 
 	InterThreadComm<CarData*, CarData*> dataSource_dataStorage;
-	InterThreadComm<CarData*, CarData*> dataStorage_cache;
+	InterThreadComm<CarData*, CarData*> boxDataSource_dataStorage;
 	InterThreadComm<CarData*, CarData*> analysis_dataStorage;
-	InterThreadComm<CarData*, CarData*> analysis_cache;
 };
 

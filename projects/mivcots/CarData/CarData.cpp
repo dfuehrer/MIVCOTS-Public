@@ -9,6 +9,125 @@ CarData::~CarData()
 {
 }
 
+int CarData::addKey(std::string key)
+{
+	if (dataMap.find(key) == dataMap.end()) {
+		dataMap[key].data.u = 0;
+		return SUCCESS;
+	}
+	else {
+		return ELEMENTEXISTS;
+	}
+}
+
+int CarData::set(std::string key, long newValue)
+{
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		iter->second.data.s = newValue;
+	}
+
+	return rc;
+}
+
+int CarData::set(std::string key, unsigned long newValue)
+{
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		iter->second.data.u = newValue;
+	}
+
+	return rc;
+}
+
+int CarData::set(std::string key, double newValue)
+{
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		iter->second.data.d = newValue;
+	}
+
+	return rc;
+}
+
+int CarData::get(std::string key, long * dest)
+{
+	if (dest == nullptr) {
+		return NULLPTRERR;
+	}
+
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		*dest = iter->second.data.s;
+	}
+
+	return rc;
+}
+
+int CarData::get(std::string key, unsigned long * dest)
+{
+	if (dest == nullptr) {
+		return NULLPTRERR;
+	}
+
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		*dest = iter->second.data.u;
+	}
+
+	return rc;
+}
+
+int CarData::get(std::string key, double * dest)
+{
+	if (dest == nullptr) {
+		return NULLPTRERR;
+	}
+
+	dataMap_t::iterator iter;
+	int rc = find_key(key, &iter);
+
+	if (rc == SUCCESS) {
+		*dest = iter->second.data.d;
+	}
+
+	return rc;
+}
+
+void CarData::printCar()
+{
+	for (dataMap_t::iterator iter = dataMap.begin(); iter != dataMap.end(); ++iter) {
+		wxLogDebug("Key %s, Value %d", iter->first, iter->second.data.s);
+	}
+}
+
+inline int CarData::find_key(std::string key, dataMap_t::iterator* iter)
+{
+	if (iter == nullptr) {
+		return NULLPTRERR;
+	}
+
+	*iter = dataMap.find(key);
+
+	if (*iter == dataMap.end()) {
+		return OUTOFRANGE;
+	}
+	else {
+		return SUCCESS;
+	}
+}
+
+/*
 int CarData::addKey(char* key) 
 {
 	if (key == nullptr) {
@@ -132,6 +251,13 @@ int CarData::get(char* key, double* dest)
 	return rc;
 }
 
+void CarData::printCar()
+{
+	for (dataMap_t::iterator iter = dataMap.begin(); iter != dataMap.end(); ++iter) {
+		wxLogDebug("Key %s, Value %d", iter->first, iter->second.data.s);
+	}
+}
+
 inline int CarData::find_key(char* key, dataMap_t::iterator* iter) 
 {
 	if ((iter == nullptr) || (key == nullptr)) {
@@ -147,3 +273,4 @@ inline int CarData::find_key(char* key, dataMap_t::iterator* iter)
 		return SUCCESS;
 	}
 }
+*/
