@@ -69,6 +69,7 @@ int CacheBank::feed(CarData* toFeed)
 	rc |= loc->second->inputQ.getEndpoint1()->send(toFeed);
 	rc |= loc->second->cache.feedCache();
 	return  rc;
+	//return 0;
 }
 
 int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter)

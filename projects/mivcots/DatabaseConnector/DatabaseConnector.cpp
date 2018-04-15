@@ -290,24 +290,21 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 
 int DatabaseConnector::InitializeDatabase(std::string database) {
 	initDB(nullptr);
-	try {
-		throw createDatabase(database);
+
+	int ErrorNum = createDatabase(database);
+
+	if (ErrorNum != 1007 && ErrorNum != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 1007 && ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
+
+	int ErrorNum2 = selectDatabase(database);
+
+	if (ErrorNum2 != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-	try {
-		throw selectDatabase(database);
-	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
-	}
+
 	for (int i = 0; i < 128; i++) {
 		knownCarTables[i] = 0;
 	}
@@ -315,34 +312,24 @@ int DatabaseConnector::InitializeDatabase(std::string database) {
 }
 
 int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
-
-	try {
-		if (knownCarTables[carnum] == 0) {
-			knownCarTables[carnum] = 1;
-			throw createTable(carnum);
-		}
+	int ErrorNum = 0;
+	if (knownCarTables[carnum] == 0) {
+		knownCarTables[carnum] = 1;
+		ErrorNum = createTable(carnum);
 	}
-	catch (int ErrorNum) {
-		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
+	if (ErrorNum != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-
-	try {
-		throw addDataToTable(carnum, datetime, sensortype, data);
+	int ErrorNum2 = addDataToTable(carnum, datetime, sensortype, data);
+	if (ErrorNum2 == 1054) {
+		addNewColumn(carnum, sensortype, sensorvar);
+		addDataToTable(carnum, datetime, sensortype, data);
 	}
-	catch (int ErrorNum) {
-		if (ErrorNum == 1054) {
-			addNewColumn(carnum, sensortype, sensorvar);
-			addDataToTable(carnum, datetime, sensortype, data);
-		}
-		else if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-			return 1;
-		}
+	else if (ErrorNum2 != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
 	}
-	
 	return 0;
 }
 
