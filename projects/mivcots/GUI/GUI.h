@@ -5,9 +5,12 @@
 #include <wx/aui/aui.h>
 
 #include "MapWidget/Map.h"
+#include "StatusWidget/StatusWidget.h"
 #include "MIVCOTS.h"
 #include <string.h>
+#include "serial/serial.h"
 
+#include <vector>
 #define FRAMERATE 30
 
 
@@ -17,13 +20,16 @@ public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	Frame(wxWindow* parent, MIVCOTS* aMIVCOTS);
 	~Frame();
+	
 	Map mapPanel;
+	StatusWidget statusWidget;
 	//wxTimer *timer;
 	
 	void onExit(wxCommandEvent &event);
 private:
 	wxAuiManager m_mgr;
 	MIVCOTS* aMIVCOTS;
+	
 	
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);

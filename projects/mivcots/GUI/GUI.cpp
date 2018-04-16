@@ -7,14 +7,23 @@ IMPLEMENT_APP(GUI);
 
 bool GUI::OnInit()
 {
-	
-
 	frame = new Frame(NULL, &aMIVCOTS);
 
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
-	
+	std::vector<serial::PortInfo> devices_found = serial::list_ports();
+
+	std::vector<serial::PortInfo>::iterator iter = devices_found.begin();
+
+	while (iter != devices_found.end())
+	{
+		serial::PortInfo device = *iter++;
+
+		wxLogMessage("(%s, %s, %s)\n", device.port.c_str(), device.description.c_str(),
+			device.hardware_id.c_str());
+	}
+
 	aMIVCOTS.initialize();
 	aMIVCOTS.start();
 	aMIVCOTS.initSerial(115200, "COM43");
@@ -77,9 +86,6 @@ Frame::Frame(wxWindow * parent, MIVCOTS* aMIVCOTS) : wxFrame(parent, -1, _("wxAU
 	m_mgr.SetManagedWindow(this);
 
 	// create several text controls
-	wxTextCtrl* text1 = new wxTextCtrl(this, -1, _("Pane 1 - sample text"),
-		wxDefaultPosition, wxSize(200, 150),
-		wxNO_BORDER | wxTE_MULTILINE);
 
 	wxTextCtrl* text2 = new wxTextCtrl(this, -1, _("Pane 2 - sample text"),
 		wxDefaultPosition, wxSize(200, 150),
@@ -95,10 +101,14 @@ Frame::Frame(wxWindow * parent, MIVCOTS* aMIVCOTS) : wxFrame(parent, -1, _("wxAU
 
 	mapPanel = Map(this);
 	mapPanel.initMap(aMIVCOTS);
+
+	statusWidget = StatusWidget(this);
+	statusWidget.initStatusWidget(aMIVCOTS);
+
 	// add the panes to the manager
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280, 1280).BestSize(1280, 1280).MaxSize(1280, 1280));
 
-	m_mgr.AddPane(text1, wxLEFT, wxT("Pane Number One"));
+	m_mgr.AddPane(statusWidget.getPanel(), wxLEFT, wxT("Status"));
 	m_mgr.AddPane(text2, wxBOTTOM, wxT("Pane Number Two"));
 	m_mgr.AddPane(text3, wxBOTTOM);
 
