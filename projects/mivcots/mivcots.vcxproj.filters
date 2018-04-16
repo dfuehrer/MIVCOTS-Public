@@ -60,6 +60,9 @@
     <ClCompile Include="InterThreadComm\CacheBank.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\StatusWidget\StatusWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InterThreadComm\CacheBank.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\StatusWidget\StatusWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
