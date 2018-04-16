@@ -118,11 +118,12 @@ bool Map::update()
 				angleTmp = course / 100.0;
 			}
 			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
+			aMIVCOTS->endCacheRead(i);
 		}
 		else {
 			wxLogDebug("Couldn't read cache");
 		}
-		aMIVCOTS->endCacheRead(i);
+		
 	}
 	
 	//angleTmp += 1;

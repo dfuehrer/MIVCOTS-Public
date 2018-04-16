@@ -92,6 +92,11 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
 
 	slock->lock();
 
+	if (buffer.size() == 0) {
+		slock->unlock();
+		return EMPTYQUEUE;
+	}
+
 	*startIter = buffer.begin();
 	*endIter = buffer.end();
 
@@ -108,6 +113,11 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 	}
 
 	slock->lock();
+
+	if (buffer.size() == 0) {
+		slock->unlock();
+		return EMPTYQUEUE;
+	}
 
 	*startIter = buffer.begin();
 	*endIter = buffer.begin() + length;

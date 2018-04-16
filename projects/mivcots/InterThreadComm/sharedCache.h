@@ -13,6 +13,7 @@
 // TODO: vector of pointers where position corresponds to number of analyses. 
 // Update to latest on updateCache() and find position on request. Add new
 // read function
+// TODO: pass cardata* back to carpool to delete
 
 template <class T> class sharedCache
 {

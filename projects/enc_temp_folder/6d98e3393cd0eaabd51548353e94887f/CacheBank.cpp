@@ -86,7 +86,7 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 
 int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter, unsigned int length)
 {
-	//std::lock_guard<std::mutex> lock(cmmMtx);
+	std::lock_guard<std::mutex> lock(cmmMtx);
 	if (isNewCarNum(carNum)) {
 		return NOTFOUND;
 	}
@@ -101,7 +101,7 @@ int CacheBank::releaseReadLock(long carNum)
 
 bool CacheBank::newRawData(long carNum)
 {
-	//std::lock_guard<std::mutex> lock(cmmMtx);
+	std::lock_guard<std::mutex> lock(cmmMtx);
 	return carModuleMap.at(carNum)->cache.newRawData();
 }
 

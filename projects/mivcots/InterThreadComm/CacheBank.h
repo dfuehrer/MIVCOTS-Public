@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <mutex>
 #include <wx/wx.h>
 
 #include "Analysis.h"
@@ -45,6 +46,7 @@ public:
 
 private:
 	std::map<int, carModule*> carModuleMap;
+	std::mutex cmmMtx;
 	std::string cfgFileName;
 	CarPool* carSource;
 	unsigned int maxCacheSize;
