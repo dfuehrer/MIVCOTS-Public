@@ -91,13 +91,15 @@ Frame::Frame(wxWindow * parent, MIVCOTS* aMIVCOTS) : wxFrame(parent, -1, _("wxAU
 		wxDefaultPosition, wxSize(200, 150),
 		wxNO_BORDER | wxTE_MULTILINE);
 
-	wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window\n"),
+	log = new wxTextCtrl(this, -1, wxEmptyString,
 		wxDefaultPosition, wxSize(200, 150),
-		wxNO_BORDER | wxTE_MULTILINE);
+		wxNO_BORDER | wxTE_MULTILINE | wxTE_READONLY);
 
 	//adding log to gui
-	wxLog::SetActiveTarget(new wxLogTextCtrl(text3));
+	wxLog::SetActiveTarget(new wxLogTextCtrl(log));
 	wxLogMessage("test in gui");
+	//log->SaveFile("test.txt");
+	
 
 	mapPanel = Map(this);
 	mapPanel.initMap(aMIVCOTS);
@@ -106,20 +108,26 @@ Frame::Frame(wxWindow * parent, MIVCOTS* aMIVCOTS) : wxFrame(parent, -1, _("wxAU
 	statusWidget.initStatusWidget(aMIVCOTS);
 
 	// add the panes to the manager
+	m_mgr.SetFlags(m_mgr.GetFlags() ^ wxAUI_MGR_LIVE_RESIZE);
+
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280, 1280).BestSize(1280, 1280).MaxSize(1280, 1280));
 
 	m_mgr.AddPane(statusWidget.getPanel(), wxLEFT, wxT("Status"));
 	m_mgr.AddPane(text2, wxBOTTOM, wxT("Pane Number Two"));
-	m_mgr.AddPane(text3, wxBOTTOM);
+	m_mgr.AddPane(log, wxBOTTOM, wxT("Log"));
 
 
 	// tell the manager to "commit" all the changes just made
 	m_mgr.Update();
+
+	logTimer = new wxTimer(this, log_timer);
+	logTimer->Start(LOG_FREQUENCY);
 }
 
 Frame::~Frame()
 {
 	m_mgr.UnInit();
+	logTimer->Stop();
 }
 
 void Frame::onAbout(wxCommandEvent & event)
@@ -131,4 +139,16 @@ void Frame::onAbout(wxCommandEvent & event)
 void Frame::onToggleFullscreen(wxCommandEvent & event)
 {
 	ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER);
+}
+
+void Frame::update(wxTimerEvent & event)
+{
+	wxString str = log->GetValue();
+	if (!str.empty()) {
+		log->Clear();
+		std::ofstream file;
+		file.open("log.txt", std::ios::out | std::ios::app);
+		file << str;
+		file.close();
+	}
 }
