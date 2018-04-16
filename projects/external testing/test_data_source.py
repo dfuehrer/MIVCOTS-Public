@@ -32,4 +32,4 @@ while 1:
         line = "#," + line.replace("\n","") + ",!\n"
         ser.write(line.encode("utf-8"))
         #ser.write(line.replace("\n","") + ",!\n")
-        time.sleep(1)
+        time.sleep(0.5)

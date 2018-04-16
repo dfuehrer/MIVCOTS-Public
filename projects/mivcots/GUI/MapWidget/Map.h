@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include <wx/dcbuffer.h>
+#include "MIVCOTS.h"
 
 
 
@@ -21,7 +22,7 @@ public:
 	Map();
 	~Map();
 
-	bool initMap();
+	bool initMap(MIVCOTS* aMIVCOTS);
 	wxPanel* getPanel();
 	
 
@@ -45,6 +46,7 @@ private:
 	coords coordinates;
 	wxBufferedDC* buffDC;
 	wxMemoryDC* dc;
+	MIVCOTS* aMIVCOTS;
 
 	double latFactor;
 	double lonFactor;

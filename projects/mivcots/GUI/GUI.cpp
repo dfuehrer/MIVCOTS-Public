@@ -7,7 +7,9 @@ IMPLEMENT_APP(GUI);
 
 bool GUI::OnInit()
 {
-	Frame* frame = new Frame(NULL);
+	
+
+	frame = new Frame(NULL, &aMIVCOTS);
 
 	SetTopWindow(frame);
 	frame->Show();
@@ -21,15 +23,39 @@ bool GUI::OnInit()
 	//frame->timer = wxTimer(frame);
 	frame->mapPanel.drawCar(32.320264, -111.015069, 90 * 0.01745329252);
 
+	timer = new wxTimer(this, gui_timer);
+	timer->Start(1000 / FRAMERATE);
 
 	return true;
 }
 
+void GUI::update(wxTimerEvent & event)
+{
+	//wxLogMessage("updating gui");
+	frame->mapPanel.update();
+	frame->Show();
+	
+}
 
-Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
+void GUI::onExit(wxCommandEvent & event)
+{
+	timer->Stop();
+	frame->Close(true);
+	free(timer);
+}
+
+void GUI::OnQuit(wxCloseEvent & evt)
+{
+	timer->Stop();
+	frame->GetParent()->Close(true);
+}
+
+
+Frame::Frame(wxWindow * parent, MIVCOTS* aMIVCOTS) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxDefaultPosition, wxDefaultSize,
 	wxDEFAULT_FRAME_STYLE)
 {
+	this->aMIVCOTS = aMIVCOTS;
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_EXIT);
 
@@ -62,14 +88,13 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxTextCtrl* text3 = new wxTextCtrl(this, -1, _("Main content window\n"),
 		wxDefaultPosition, wxSize(200, 150),
 		wxNO_BORDER | wxTE_MULTILINE);
-	/*wxStreamToTextRedirector redirect(text3);
-	std::cout << "cout test" << std::endl;
-	printf("printf test\n");*/
+
+	//adding log to gui
 	wxLog::SetActiveTarget(new wxLogTextCtrl(text3));
 	wxLogMessage("test in gui");
 
 	mapPanel = Map(this);
-	mapPanel.initMap();
+	mapPanel.initMap(aMIVCOTS);
 	// add the panes to the manager
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280, 1280).BestSize(1280, 1280).MaxSize(1280, 1280));
 
@@ -80,19 +105,11 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 
 	// tell the manager to "commit" all the changes just made
 	m_mgr.Update();
-	timer = new wxTimer(this, gui_timer);
-	timer->Start(1000/FRAMERATE);
-
 }
 
 Frame::~Frame()
 {
 	m_mgr.UnInit();
-}
-
-void Frame::onExit(wxCommandEvent & event)
-{
-	Close(true);
 }
 
 void Frame::onAbout(wxCommandEvent & event)
@@ -105,13 +122,3 @@ void Frame::onToggleFullscreen(wxCommandEvent & event)
 {
 	ShowFullScreen(!IsFullScreen(), wxFULLSCREEN_NOBORDER);
 }
-
-void Frame::update(wxTimerEvent &event)
-{
-	//wxLogMessage("updating gui");
-	mapPanel.update();
-	Show();
-}
-
-
-

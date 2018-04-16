@@ -13,12 +13,12 @@ Map::~Map()
 {
 }
 
-bool Map::initMap()
+bool Map::initMap(MIVCOTS* aMIVCOTS)
 {
 	panel = new wxPanel(parent, wxID_ANY);
 	mapName = "map1";
 	wxImage::AddHandler(new wxPNGHandler);
-
+	this->aMIVCOTS = aMIVCOTS;
 	if (const char* env_p = std::getenv("MivcotsResources")) {
 		wxLogMessage(_(env_p));
 		std::string mapPath = std::string(env_p) + std::string("maps/") + mapName + std::string(".png");
@@ -70,7 +70,7 @@ bool Map::drawCar(double lat, double lon, double angle)
 		//wxLogMessage("x=%lf\ty=%lf", x, y);
 		wxBitmap tmp = wxBitmap(tmpimg);
 
-		*imgBitmap = wxBitmap(*imgImg);
+		
 		picWindow->setBitmap(*imgBitmap);
 		
 		//translating to the center of the image
@@ -94,17 +94,47 @@ coords Map::getCoords()
 
 bool Map::update()
 {
-	drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
-	angleTmp += 1;
-	latTmp += .001;
-	lonTmp += .001;
+	*imgBitmap = wxBitmap(*imgImg);
 
-	coords coord = getCoords();
+	sharedCache<CarData*>::cacheIter startIter; 
+	sharedCache<CarData*>::cacheIter endIter;
+	for (int i = 0; i < 2; i++) {
+		long lat = -1;
+		long lon = -1;
+		long course = -1;
+		int rc = SUCCESS;
+		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
+		if (rc == SUCCESS) {
+			for (startIter; startIter != endIter; startIter++) {
+				(*startIter)->get("LT", &lat);
+				(*startIter)->get("LG", &lon);
+				(*startIter)->get("CS", &course);
 
-	if (latTmp > coord.northEast.first)
-		latTmp = coord.southWest.first;
-	if (lonTmp > coord.northEast.second)
-		lonTmp = coord.southWest.second;
+			}
+			
+			if (lat != -1 && lon != -1 && course != -1) {
+				latTmp = lat / 1000000.0;
+				lonTmp = lon / 1000000.0;
+				angleTmp = course / 100.0;
+			}
+			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
+		}
+		else {
+			wxLogDebug("Couldn't read cache");
+		}
+		aMIVCOTS->endCacheRead(i);
+	}
+	
+	//angleTmp += 1;
+	//latTmp += .001;
+	//lonTmp += .001;
+
+	//coords coord = getCoords();
+
+	//if (latTmp > coord.northEast.first)
+	//	latTmp = coord.southWest.first;
+	//if (lonTmp > coord.northEast.second)
+	//	lonTmp = coord.southWest.second;
 	refresh();
 	return true;
 }

@@ -10,48 +10,56 @@
 
 #define FRAMERATE 30
 
-class GUI: public wxApp
-{
-public:
-	virtual bool OnInit();
-
-private:
-	MIVCOTS aMIVCOTS;
-};
 
 class Frame : public wxFrame
 {
 public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
-	Frame(wxWindow* parent);
+	Frame(wxWindow* parent, MIVCOTS* aMIVCOTS);
 	~Frame();
 	Map mapPanel;
-	wxTimer *timer;
+	//wxTimer *timer;
 	
-
+	void onExit(wxCommandEvent &event);
 private:
 	wxAuiManager m_mgr;
+	MIVCOTS* aMIVCOTS;
 	
-	
-
-	void onExit(wxCommandEvent &event);
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);
-	void update(wxTimerEvent &event);
+	
 	wxDECLARE_EVENT_TABLE();
 };
+class GUI : public wxApp
+{
+public:
+	wxTimer* timer;
 
+	virtual bool OnInit();
+	void OnQuit(wxCloseEvent& evt);
+
+private:
+	Frame * frame;
+	MIVCOTS aMIVCOTS;
+	void update(wxTimerEvent &event);
+	void onExit(wxCommandEvent &event);
+	
+	wxDECLARE_EVENT_TABLE();
+};
 enum
 {
 	gui_timer = wxID_HIGHEST,
 	toggleFullscreen
 };
+wxBEGIN_EVENT_TABLE(GUI, wxApp)
+	EVT_TIMER(gui_timer, GUI::update)
+	EVT_MENU(wxID_EXIT, GUI::onExit)
+wxEND_EVENT_TABLE()
 
 wxBEGIN_EVENT_TABLE(Frame, wxFrame)
-	EVT_MENU(wxID_EXIT, Frame::onExit)
 	EVT_MENU(wxID_ABOUT, Frame::onAbout)
 	EVT_MENU(toggleFullscreen, Frame::onToggleFullscreen)
-	EVT_TIMER(gui_timer, Frame::update)
+	//EVT_CLOSE(GUI::OnQuit)
 wxEND_EVENT_TABLE()
 
 
