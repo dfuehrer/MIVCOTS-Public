@@ -52,9 +52,33 @@ int sharedCache<CarData*>::feedCache()
 		delete buffer.front();
 		buffer.pop_front();
 	}
+	else if (buffer.size() == 0) {
+		buffer.push_front(received);
+		ulock.unlock();
+		return SUCCESS;
+	}
 
+	/*
+	long newTime, insertTime;
+	std::deque<CarData*>::reverse_iterator insertIter = buffer.rbegin();
+
+	received->get("TM", &newTime);
+	(*insertIter)->get("TM", &insertTime);
+
+	while (newTime < insertTime) {
+		++insertIter;
+		if (insertIter == buffer.rend()) {
+			buffer.push_front(received);
+			ulock.unlock();
+			return SUCCESS;
+		}
+		(*insertIter)->get("TM", &insertTime);
+	}
+	
+	buffer.insert(insertIter.base(), received);
+	*/
+	
 	buffer.push_back(received);
-
 	ulock.unlock();
 	return SUCCESS;
 }

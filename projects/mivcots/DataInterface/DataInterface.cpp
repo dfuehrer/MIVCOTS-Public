@@ -32,15 +32,6 @@ DataInterface::DataInterface()
 DataInterface::~DataInterface()
 {
 	stop();
-
-	if (serialPort != nullptr) {
-		if (serialPort->isOpen()) {
-			serialPort->flush();
-			serialPort->close();
-		}
-		delete serialPort;
-	}
-
 }
 
 int DataInterface::initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ, CarPool* _CarSource)
@@ -82,11 +73,36 @@ int DataInterface::start()
 	}
 }
 
-void DataInterface::stop()
+int DataInterface::stop()
 {
 	isRunning.store(false, std::memory_order_relaxed);
 	if (serialThread.joinable()) {
 		serialThread.join();
+	}
+
+	if (serialPort != nullptr) {
+		if (serialPort->isOpen()) {
+			serialPort->flush();
+			serialPort->close();
+		}
+		delete serialPort;
+	}
+
+	return SUCCESS;
+}
+
+bool DataInterface::isSerialRunning()
+{
+	return isRunning.load(std::memory_order_relaxed);
+}
+
+bool DataInterface::portOpen()
+{
+	if (serialPort == nullptr) {
+		return false;
+	}
+	else {
+		return serialPort->isOpen();
 	}
 }
 
