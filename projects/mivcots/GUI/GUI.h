@@ -17,6 +17,7 @@
 #include <vector>
 #define FRAMERATE 30
 #define LOG_FREQUENCY 60000 //once a minute
+#define DEFAULT_SERIAL "COM43"
 
 
 class Frame : public wxFrame

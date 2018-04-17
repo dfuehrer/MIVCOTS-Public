@@ -52,7 +52,6 @@ void GUI::onExit(wxCommandEvent & event)
 
 void Frame::comStart(wxCommandEvent & event)
 {
-	wxLogMessage("Button preesed");
 	int selection = comComboBox->GetSelection();
 	if (!(aMIVCOTS->serialOpen())) {
 		if (selection == wxNOT_FOUND) {
@@ -65,6 +64,7 @@ void Frame::comStart(wxCommandEvent & event)
 		}
 	}
 	else {
+		wxLogMessage("Closed serial port");
 		aMIVCOTS->stopSerial();
 		openComButton->SetLabel("Start");
 	}
@@ -181,11 +181,17 @@ bool Frame::createUIPanel()
 
 
 	wxStaticText* comText = new wxStaticText(uiPanel, wxID_ANY, "com list");
+	int j = 0;
 	for (unsigned int i = 0; i < comObjects.size(); i++) {
 		m_arrItems.Add((comObjects.at(i).c_str()));
+		if (comObjects.at(i) == DEFAULT_SERIAL) {
+			j = i;
+		}
 	}
 	comComboBox = new wxComboBox(uiPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_arrItems);
+	comComboBox->SetSelection(j);
 	openComButton = new wxButton(uiPanel, comStartButton, "Start");
+	
 
 	fgs->Add(comText);
 	fgs->Add(comComboBox);
