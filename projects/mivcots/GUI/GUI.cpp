@@ -193,9 +193,9 @@ bool Frame::createUIPanel()
 	openComButton = new wxButton(uiPanel, comStartButton, "Start");
 	
 
-	fgs->Add(comText);
-	fgs->Add(comComboBox);
-	fgs->Add(openComButton);
+	fgs->Add(comText,wxSizerFlags(1).Center());
+	fgs->Add(comComboBox, wxSizerFlags(1).Center());
+	fgs->Add(openComButton, wxSizerFlags(1).Center());
 
 	hbox->Add(fgs, 1, wxALL | wxEXPAND, 15);
 	uiPanel->SetSizer(hbox);
