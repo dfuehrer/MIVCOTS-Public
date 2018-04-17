@@ -121,7 +121,7 @@ bool Map::update()
 			aMIVCOTS->endCacheRead(i);
 		}
 		else {
-			wxLogDebug("Couldn't read cache");
+				wxLogDebug("Couldn't read cache");
 		}
 		
 	}
