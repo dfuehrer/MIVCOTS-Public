@@ -54,14 +54,19 @@ void Frame::comStart(wxCommandEvent & event)
 {
 	wxLogMessage("Button preesed");
 	int selection = comComboBox->GetSelection();
-	if (selection == wxNOT_FOUND) {
-		wxLogMessage("No com port selected");
+	if (!(aMIVCOTS->serialOpen())) {
+		if (selection == wxNOT_FOUND) {
+			wxLogMessage("No com port selected");
+		}
+		else {
+			aMIVCOTS->initSerial(115200, comObjects.at(selection));
+			aMIVCOTS->startSerial();
+			openComButton->SetLabel("Stop");
+		}
 	}
 	else {
-		aMIVCOTS->initSerial(115200, comObjects.at(selection));
-		aMIVCOTS->startSerial();
-		openComButton->SetLabel("Stop");
-		openComButton->Enable(false);
+		aMIVCOTS->stopSerial();
+		openComButton->SetLabel("Start");
 	}
 	
 	return;
