@@ -31,5 +31,6 @@ while 1:
         #print("#," + line.replace("\n","") + ",!\n")
         #line = "#," + line.replace("\n","") + ",!\n"
         ser.write(line.encode("utf-8"))
+        print(line)
         #ser.write(line.replace("\n","") + ",!\n")
         time.sleep(0.5)
