@@ -23,6 +23,8 @@ public:
 	// Start and stop the data interface, database, and analysis threads
 	int start();
 	int startSerial();
+	bool serialOpen();
+	int stopSerial();
 	int stop();
 
 	// Read functions for the GUI

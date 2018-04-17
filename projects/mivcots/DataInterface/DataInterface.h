@@ -13,7 +13,7 @@
 #define DELIMITER ","
 #define ENDOFMSG "!"
 
-// TODO: strip all whitespace
+// TODO: concatenate timestamps
 
 class DataInterface
 {
@@ -23,7 +23,9 @@ public:
 
 	int initialize(std::string portName, long int baud, endpoint<CarData*>* _outputQ, CarPool* _CarSource);
 	int start();
-	void stop();
+	int stop();
+	bool isSerialRunning();
+	bool portOpen();
 
 protected:
 	std::atomic<bool> isRunning;
