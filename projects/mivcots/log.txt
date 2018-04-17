@@ -19948,3 +19948,29 @@
 16:57:00: Error: Analysis Parent - Init Function: Config File Name is Empty
 18:03:57: test in gui
 18:03:57: C:\Users\Sean\Documents\MIVCOTS_SOFTWARE\projects\mivcots\Resources\
+18:14:10: test in gui
+18:14:10: C:\Users\Sean\Documents\MIVCOTS_SOFTWARE\projects\mivcots\Resources\
+18:14:54: Button preesed
+18:14:54: No com port selected
+18:14:56: Button preesed
+18:14:56: No com port selected
+18:14:58: Button preesed
+18:14:58: No com port selected
+18:14:58: Button preesed
+18:14:58: No com port selected
+18:14:59: Button preesed
+18:14:59: No com port selected
+18:15:04: Button preesed
+18:15:04: Opened serial port COM43
+18:15:04: Error: Analysis Parent - Init Function: Config File Name is Empty
+18:19:59: Button preesed
+18:19:59: Opened serial port COM43
+18:26:37: test in gui
+18:26:37: C:\Users\Sean\Documents\MIVCOTS_SOFTWARE\projects\mivcots\Resources\
+18:27:56: Button preesed
+18:27:56: No com port selected
+18:29:40: test in gui
+18:29:40: C:\Users\Sean\Documents\MIVCOTS_SOFTWARE\projects\mivcots\Resources\
+18:29:51: Button preesed
+18:29:51: Opened serial port COM43
+18:29:51: Error: Analysis Parent - Init Function: Config File Name is Empty

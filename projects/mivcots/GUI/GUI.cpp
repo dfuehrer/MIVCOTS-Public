@@ -22,7 +22,6 @@ bool GUI::OnInit()
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
 
-
 	aMIVCOTS.initialize();
 	aMIVCOTS.start();
 	
@@ -54,8 +53,17 @@ void GUI::onExit(wxCommandEvent & event)
 void Frame::comStart(wxCommandEvent & event)
 {
 	wxLogMessage("Button preesed");
-	aMIVCOTS->initSerial(115200, "COM43");
-	aMIVCOTS->startSerial();
+	int selection = comComboBox->GetSelection();
+	if (selection == wxNOT_FOUND) {
+		wxLogMessage("No com port selected");
+	}
+	else {
+		aMIVCOTS->initSerial(115200, comObjects.at(selection));
+		aMIVCOTS->startSerial();
+		openComButton->SetLabel("Stop");
+		openComButton->Enable(false);
+	}
+	
 	return;
 }
 
