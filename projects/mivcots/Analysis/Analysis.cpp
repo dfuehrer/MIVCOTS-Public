@@ -61,6 +61,7 @@ int AnalysisParent::init(
 	else {
 		wxLogError("Analysis Parent - Init Function: Config File Name is Empty");
 		returnCode |= WARN_CONFIG_FILENAME_IS_EMPTY;
+
 	}
 
 
@@ -69,11 +70,22 @@ int AnalysisParent::init(
 
 int AnalysisParent::start()
 {
+	int returnCode = 0;
+	analysisChildVector.push_back(new AnalysisChild);
+	returnCode = analysisChildVector.begin().operator*()->init(boxCache, carCache, updateQueue, carPool);
+	if (returnCode) {
+		return returnCode;
+	}
+	returnCode = analysisChildVector.begin().operator*()->start();
 	return 0;
 }
 
 int AnalysisParent::stop()
 {
+	while (analysisChildVector.size() > 0) {
+		analysisChildVector.back()->stop();
+	}
+	analysisChildVector.clear();
 	return 0;
 }
 
