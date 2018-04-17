@@ -62,6 +62,17 @@ int AnalysisChild::start()
 
 int AnalysisChild::stop()
 {
+	isRunning = false;
+	analysisThread.join();
+	return 0;
+}
+
+int AnalysisChild::runThread()
+{
+	isRunning = true;
+	while (isRunning) {	// Keep going as long as the thread is alive
+		
+	}
 	return 0;
 }
 
