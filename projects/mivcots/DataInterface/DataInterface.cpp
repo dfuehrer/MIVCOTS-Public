@@ -56,6 +56,7 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 		return INITERR;
 	}
 
+	serialPort->setTimeout(0, 500, 0, 500, 0);
 	wxLogMessage("Opened serial port %s", portName);
 	return SUCCESS;
 }
@@ -86,6 +87,7 @@ int DataInterface::stop()
 			serialPort->close();
 		}
 		delete serialPort;
+		serialPort = nullptr;
 	}
 
 	return SUCCESS;
@@ -116,6 +118,9 @@ void DataInterface::runSerialThread()
 		rc = SUCCESS;
 
 		readStr = serialPort->readline();
+		if (readStr.empty()) {
+			continue; // Read timed out - probably no data
+		}
 		//readStr = "#,5,ID,14,ST,3,LT,12345,LG,54321";
 		rc |= CarSource->getCar(&tmpCarData);
 		rc |= parseString(readStr, &tmpCarData);
