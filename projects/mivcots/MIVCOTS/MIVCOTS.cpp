@@ -32,6 +32,16 @@ int MIVCOTS::startSerial() {
 	return dataSource.start();
 }
 
+bool MIVCOTS::serialOpen()
+{
+	return dataSource.isSerialRunning();
+}
+
+int MIVCOTS::stopSerial()
+{
+	return dataSource.stop();
+}
+
 int MIVCOTS::stop()
 {
 	return 0;

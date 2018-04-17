@@ -106,9 +106,9 @@ bool Map::update()
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
 			for (startIter; startIter != endIter; startIter++) {
-				(*startIter)->get("LT", &lat);
-				(*startIter)->get("LG", &lon);
-				(*startIter)->get("CS", &course);
+				(*startIter)->get("AD", &lat);
+				(*startIter)->get("AE", &lon);
+				(*startIter)->get("AG", &course);
 
 			}
 			
