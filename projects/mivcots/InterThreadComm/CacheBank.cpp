@@ -35,8 +35,6 @@ int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsign
 		toInsert->inputQ.getEndpoint2(),
 		toInsert->updateQ.getEndpoint2());
 
-	carNums.push_back(0);
-
 	return SUCCESS;
 }
 
@@ -132,6 +130,19 @@ int CacheBank::stopAnalyses()
 	return rc;
 }
 
+int CacheBank::getCarNums(std::vector<long>* toWrite)
+{
+	if (toWrite == nullptr) {
+		return NULLPTRERR;
+	}
+	CMMiter iter;
+	for (iter = carModuleMap.begin(); iter != carModuleMap.end(); ++iter) {
+		toWrite->push_back(iter->first);
+	}
+
+	return SUCCESS;
+}
+
 bool CacheBank::isNewCarNum(long carNum, CMMiter* loc)
 {
 	*loc = carModuleMap.find(carNum);
@@ -166,7 +177,6 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 			rc |= toInsert->analysis.start();
 		}
 
-		carNums.push_back(carNum);
 		*loc = carModuleMap.find(carNum);
 		return rc;
 	}

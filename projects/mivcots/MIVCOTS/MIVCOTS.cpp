@@ -67,3 +67,8 @@ bool MIVCOTS::newData(long carNum)
 	return cacheBank.newRawData(carNum) || cacheBank.newAnalyzedData(carNum);
 }
 
+int MIVCOTS::getCarNums(std::vector<long>* toWrite)
+{
+	return cacheBank.getCarNums(toWrite);
+}
+

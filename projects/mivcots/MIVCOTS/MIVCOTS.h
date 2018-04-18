@@ -33,6 +33,7 @@ public:
 	int endCacheRead(long carNum);
 
 	bool newData(long carNum);
+	int getCarNums(std::vector<long>* toWrite);
 
 private:
 	DataInterface dataSource;

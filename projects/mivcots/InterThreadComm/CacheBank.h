@@ -10,7 +10,8 @@
 #include "InterThreadComm.h"
 #include "sharedCache.h"
 
-// TODO thread safe vector
+// TODO: thread safety without deadlocks
+// minor TODO: make getCarNums() more efficient
 
 typedef struct carModule_t {
 	sharedCache<CarData*> cache;
@@ -41,8 +42,8 @@ public:
 	// Start/stop analyses
 	int startAnalyses();
 	int stopAnalyses();
-
-	std::vector<long> carNums;
+	
+	int getCarNums(std::vector<long>* toWrite);
 
 private:
 	std::map<int, carModule*> carModuleMap;
