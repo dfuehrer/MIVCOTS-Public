@@ -135,6 +135,9 @@ int CacheBank::getCarNums(std::vector<long>* toWrite)
 	if (toWrite == nullptr) {
 		return NULLPTRERR;
 	}
+
+	toWrite->empty();
+
 	CMMiter iter;
 	for (iter = carModuleMap.begin(); iter != carModuleMap.end(); ++iter) {
 		toWrite->push_back(iter->first);
