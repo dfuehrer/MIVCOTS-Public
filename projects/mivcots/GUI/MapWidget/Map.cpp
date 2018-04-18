@@ -13,9 +13,11 @@ Map::~Map()
 {
 }
 
-bool Map::initMap(MIVCOTS* aMIVCOTS)
+bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<int>* activeCars)
 {
 	panel = new wxPanel(parent, wxID_ANY);
+	this->activeCars = activeCars;
+
 	mapName = "map1";
 	wxImage::AddHandler(new wxPNGHandler);
 	this->aMIVCOTS = aMIVCOTS;
@@ -98,18 +100,18 @@ bool Map::update()
 
 	sharedCache<CarData*>::cacheIter startIter; 
 	sharedCache<CarData*>::cacheIter endIter;
-	for (int i = 0; i < 2; i++) {
+	for(int i : *activeCars) {
 		long lat = -1;
 		long lon = -1;
 		long course = -1;
 		int rc = SUCCESS;
+
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
 			for (startIter; startIter != endIter; startIter++) {
 				(*startIter)->get("AD", &lon);
 				(*startIter)->get("AE", &lat);
 				(*startIter)->get("AG", &course);
-
 			}
 			
 			if (lat != -1 && lon != -1 && course != -1) {
@@ -119,11 +121,11 @@ bool Map::update()
 			}
 			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
 			aMIVCOTS->endCacheRead(i);
+			refresh();
 		}
 		else {
 				wxLogDebug("Couldn't read cache");
 		}
-		
 	}
 	
 	//angleTmp += 1;
@@ -136,7 +138,7 @@ bool Map::update()
 	//	latTmp = coord.southWest.first;
 	//if (lonTmp > coord.northEast.second)
 	//	lonTmp = coord.southWest.second;
-	refresh();
+	
 	return true;
 }
 
