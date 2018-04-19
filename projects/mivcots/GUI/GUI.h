@@ -31,9 +31,9 @@ public:
 	//StatusWidget statusWidget;
 	std::vector<StatusWidget> statusWidgets;
 	std::vector<std::string> comObjects;
-	std::vector<int>* activeCars;
+	std::vector<long>* activeCars;
 
-	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<int>* activeCars);
+	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
 	
 	//wxTimer *timer;
 	//void onExit(wxCommandEvent &event);
@@ -56,7 +56,7 @@ private:
 	void comStart(wxCommandEvent &event);
 	void carSelect(wxCommandEvent &event);
 	bool createUIPanel();
-	StatusWidget* createStatusWidget(int carID);
+	StatusWidget* createStatusWidget(long carID);
 	bool createStatusWidgets();
 	
 	void checkForNewCars();
@@ -75,7 +75,7 @@ public:
 private:
 	Frame * frame;
 	MIVCOTS aMIVCOTS;
-	std::vector<int> activeCars;
+	std::vector<long> activeCars;
 
 	void update(wxTimerEvent &event);
 	void onExit(wxCommandEvent &event);

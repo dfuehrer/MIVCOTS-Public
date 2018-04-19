@@ -13,7 +13,7 @@ Map::~Map()
 {
 }
 
-bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<int>* activeCars)
+bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 {
 	panel = new wxPanel(parent, wxID_ANY);
 	this->activeCars = activeCars;

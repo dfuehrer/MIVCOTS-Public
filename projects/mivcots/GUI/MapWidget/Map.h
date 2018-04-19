@@ -22,7 +22,7 @@ public:
 	Map();
 	~Map();
 
-	bool initMap(MIVCOTS* aMIVCOTS, std::vector<int>* activeCars);
+	bool initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
 	wxPanel* getPanel();
 	
 
@@ -34,7 +34,7 @@ public:
 	double angleTmp;
 	double latTmp;
 	double lonTmp;
-	std::vector<int>* activeCars;
+	std::vector<long>* activeCars;
 
 
 private:

@@ -13,7 +13,7 @@ StatusWidget::~StatusWidget()
 {
 }
 
-int StatusWidget::getCarID()
+long StatusWidget::getCarID()
 {
 	return carID;
 }
@@ -23,7 +23,7 @@ wxPanel * StatusWidget::getPanel()
 	return panel;
 }
 
-bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, int carID)
+bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->carID = carID;

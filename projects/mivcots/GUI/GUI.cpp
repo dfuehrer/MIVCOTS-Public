@@ -18,6 +18,9 @@ bool GUI::OnInit()
 	}
 
 	frame->comObjects.push_back("COM43");
+	activeCars.push_back(0);
+	activeCars.push_back(1);
+
 
 	frame->initFrame(&aMIVCOTS, &activeCars);
 	SetTopWindow(frame);
@@ -80,18 +83,17 @@ void Frame::carSelect(wxCommandEvent & event)
 		wxLogMessage("No car selected");
 		return;
 	}
-	wxLogMessage("Selected car %d", activeCars->at(selection));
-	wxAuiPaneInfoArray panes = m_mgr.GetAllPanes();
-	for (unsigned int i = 0; i < panes.GetCount(); i++) {
-		std::string tmp = panes.Item(i).caption;
-		tmp.erase(0, 3);
-		if (!(panes.Item(i).IsShown()) && tmp == std::to_string(selection)) {
-
-			wxAuiPaneInfo& tmpPane = m_mgr.GetPane(panes.Item(i).caption);	//figure out why this doesn't reopen
-			tmpPane.Show();
-			
-			m_mgr.Update();
+	bool found = false;
+	for (unsigned int i = 0; i < statusWidgets.size(); i++) {
+		if (activeCars->at(selection) == statusWidgets.at(i).getCarID()) {
+			found = true;
 		}
+	}
+	if (!found) {
+		createStatusWidget(activeCars->at(selection));
+	}
+	else {
+		wxLogMessage("Car%d is already open", activeCars->at(selection));
 	}
 }
 
@@ -115,7 +117,7 @@ Frame::~Frame()
 	logTimer->Stop();
 }
 
-bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<int>* activeCars)
+bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->activeCars = activeCars;
@@ -235,19 +237,23 @@ bool Frame::createUIPanel()
 	return false;
 }
 
-StatusWidget* Frame::createStatusWidget(int carID)
+StatusWidget* Frame::createStatusWidget(long carID)
 {
 	StatusWidget* statusWidget = new StatusWidget(this);
 	statusWidget->initStatusWidget(aMIVCOTS, carID);
 
 	statusWidgets.push_back(*statusWidget);
 
+	wxString cap = wxString(wxT("Car" + std::to_string(carID)));
+	m_mgr.AddPane(statusWidget->getPanel(), wxAuiPaneInfo().Name(wxT("Car" + std::to_string(carID))).DestroyOnClose(true).Caption(cap));
+
+	m_mgr.Update();
 	return statusWidget;
 }
 
 bool Frame::createStatusWidgets()
 {
-	for (int i : *activeCars) {
+	for (long i : *activeCars) {
 		bool found = false;
 		for (StatusWidget temp : statusWidgets) {
 			if (temp.getCarID() == i) {
@@ -255,24 +261,29 @@ bool Frame::createStatusWidgets()
 			}
 		}
 		if (!found) {
-			m_mgr.AddPane(createStatusWidget(i)->getPanel(), wxLEFT, wxT("Car" + std::to_string(i)));
-		}
+			createStatusWidget(i);
+			}
 	}
-	m_mgr.Update();
 	return true;
 }
 
 void Frame::checkForNewCars()
 {
 	//bs test code that should be replaced when we can get a list of cars from paul
-	int newCar = activeCars->size();
+	//long newCar = activeCars->size();
 	//
-	activeCars->push_back(newCar);
-	createStatusWidgets();
-	carComboBox->Append(std::to_string(newCar));
+	//activeCars->push_back(newCar);
+	//createStatusWidgets();
+	//carComboBox->Append(std::to_string(newCar));
 }
 
 void Frame::paneClosed(wxAuiManagerEvent & event)
 {
-	wxLogMessage("closed " + event.GetPane()->caption);
+	wxLogMessage("Closed " + event.GetPane()->caption);
+	for (unsigned int i = 0; i < statusWidgets.size(); i++) {
+		std::string tmp = "Car"+std::to_string(statusWidgets.at(i).getCarID());
+		if (event.GetPane()->caption == tmp) {
+			statusWidgets.erase(statusWidgets.begin() + i);
+		}
+	}
 }

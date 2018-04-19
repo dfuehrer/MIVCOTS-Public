@@ -8,15 +8,15 @@ public:
 	StatusWidget();
 	~StatusWidget();
 	
-	int getCarID();
+	long getCarID();
 	wxPanel* getPanel();
-	bool initStatusWidget(MIVCOTS* aMIVCOTS, int carID);
+	bool initStatusWidget(MIVCOTS* aMIVCOTS, long carID);
 private:
 	wxWindow * parent;
 	wxPanel * panel;
 	MIVCOTS* aMIVCOTS;
 
-	int carID;
+	long carID;
 };
 
 
