@@ -18,9 +18,9 @@ bool GUI::OnInit()
 	}
 
 	frame->comObjects.push_back("COM43");
-	activeCars.push_back(0);
-	activeCars.push_back(1);
-
+	/*activeCars.push_back(0);
+	activeCars.push_back(1);*/
+	aMIVCOTS.getCarNums(&activeCars);
 
 	frame->initFrame(&aMIVCOTS, &activeCars);
 	SetTopWindow(frame);
@@ -30,10 +30,8 @@ bool GUI::OnInit()
 	aMIVCOTS.initialize();
 	aMIVCOTS.start();
 	
-	
-
-	timer = new wxTimer(this, gui_timer);
-	timer->Start(1000 / FRAMERATE);
+	timer = new wxTimer(this, gui_timer);	
+	timer->Start(1000 / FRAMERATE);		//main update thread
 
 	return true;
 }
@@ -43,6 +41,7 @@ void GUI::update(wxTimerEvent & event)
 	//wxLogMessage("updating gui");
 	frame->mapPanel.update();
 	frame->Show();
+	//frame->checkForNewCars(); //this seems like a bad thing to do every frame
 	
 }
 
@@ -71,7 +70,8 @@ void Frame::comStart(wxCommandEvent & event)
 		aMIVCOTS->stopSerial();
 		openComButton->SetLabel("Start");
 	}
-	
+	//aMIVCOTS->getCarNums(activeCars);
+	//carCheckTimer->StartOnce(1000);	//hacky way to get all the cars after serial opens
 	return;
 }
 
@@ -97,12 +97,16 @@ void Frame::carSelect(wxCommandEvent & event)
 	}
 }
 
+void Frame::onEraseBackground(wxEraseEvent & event)
+{
+	//doing nothing on purpose
+}
+
 void GUI::OnQuit(wxCloseEvent & evt)
 {
 	timer->Stop();
 	frame->GetParent()->Close(true);
 }
-
 
 Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxDefaultPosition, wxDefaultSize,
@@ -169,6 +173,10 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 
 	logTimer = new wxTimer(this, log_timer);
 	logTimer->Start(LOG_FREQUENCY);
+
+	carCheckTimer = new wxTimer(this, checkCarTimer);	//check if we have new cars every 5 seconds
+	carCheckTimer->Start(5000);
+
 	return true;
 }
 
@@ -193,6 +201,17 @@ void Frame::update(wxTimerEvent & event)
 		file << str;
 		file.close();
 	}
+}
+
+void Frame::onCarCombo(wxCommandEvent & event)
+{
+	carComboOpen = true;
+	checkForNewCars();
+}
+
+void Frame::onCarComboClose(wxCommandEvent & event)
+{
+	carComboOpen = false;
 }
 
 bool Frame::createUIPanel()
@@ -224,7 +243,7 @@ bool Frame::createUIPanel()
 		car_arr.Add(std::to_string(i));
 	}
 	wxStaticText* carText = new wxStaticText(uiPanel, wxID_ANY, "Car list");
-	carComboBox = new wxComboBox(uiPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, car_arr);
+	carComboBox = new wxComboBox(uiPanel, carCombo, wxEmptyString, wxDefaultPosition, wxDefaultSize, car_arr);
 	carComboBox->SetSelection(0);
 	changeCarButton = new wxButton(uiPanel, carSelectButton, "Open");
 	
@@ -269,12 +288,21 @@ bool Frame::createStatusWidgets()
 
 void Frame::checkForNewCars()
 {
-	//bs test code that should be replaced when we can get a list of cars from paul
-	//long newCar = activeCars->size();
-	//
-	//activeCars->push_back(newCar);
-	//createStatusWidgets();
-	//carComboBox->Append(std::to_string(newCar));
+	aMIVCOTS->getCarNums(activeCars);
+	int sel = carComboBox->GetSelection();
+	carComboBox->Clear();
+	for (long id : *activeCars) {
+		carComboBox->Append(std::to_string(id));
+	}
+	carComboBox->SetSelection(sel);
+}
+
+void Frame::checkForNewCarsTimer(wxTimerEvent & event)
+{
+	if (!carComboOpen) {	//if combo is not open check for new car
+		checkForNewCars();
+	}	
+	
 }
 
 void Frame::paneClosed(wxAuiManagerEvent & event)

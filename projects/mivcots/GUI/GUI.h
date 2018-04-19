@@ -32,34 +32,40 @@ public:
 	std::vector<StatusWidget> statusWidgets;
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
+	
 
 	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
-	
+	void checkForNewCars();
+	void checkForNewCarsTimer(wxTimerEvent &event);
+	void onEraseBackground(wxEraseEvent &event);
 	//wxTimer *timer;
 	//void onExit(wxCommandEvent &event);
 private:
 	wxAuiManager m_mgr;
 	MIVCOTS* aMIVCOTS;
 	wxTimer* logTimer;
+	wxTimer* carCheckTimer;
 	wxTextCtrl* log;
 	wxPanel* uiPanel;
 	wxComboBox* comComboBox;
 	wxButton* openComButton;
 	wxComboBox* carComboBox;
 	wxButton* changeCarButton;
+	bool carComboOpen = false;
 	
 	
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);
 	void update(wxTimerEvent &event);
-
+	void onCarCombo(wxCommandEvent &event);
+	void onCarComboClose(wxCommandEvent &event);
 	void comStart(wxCommandEvent &event);
 	void carSelect(wxCommandEvent &event);
 	bool createUIPanel();
 	StatusWidget* createStatusWidget(long carID);
 	bool createStatusWidgets();
 	
-	void checkForNewCars();
+	
 	void paneClosed(wxAuiManagerEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
@@ -87,8 +93,10 @@ enum
 	gui_timer = wxID_HIGHEST,
 	log_timer,
 	toggleFullscreen,
+	checkCarTimer,
 	comStartButton,
 	carSelectButton,
+	carCombo,
 	auiManager
 };
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
@@ -100,10 +108,13 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_MENU(wxID_ABOUT, Frame::onAbout)
 	EVT_MENU(toggleFullscreen, Frame::onToggleFullscreen)
 	EVT_TIMER(log_timer, Frame::update)
+	EVT_TIMER(checkCarTimer, Frame::checkForNewCarsTimer)
 	EVT_BUTTON(comStartButton, Frame::comStart)
 	EVT_BUTTON(carSelectButton, Frame::carSelect)
 	EVT_AUI_PANE_CLOSE(Frame::paneClosed)
-
+	EVT_COMBOBOX_DROPDOWN(carCombo, Frame::onCarCombo)
+	EVT_COMBOBOX_CLOSEUP(carCombo, Frame::onCarComboClose)
+	EVT_ERASE_BACKGROUND(Frame::onEraseBackground)
 	//EVT_CLOSE(GUI::OnQuit)
 wxEND_EVENT_TABLE()
 
