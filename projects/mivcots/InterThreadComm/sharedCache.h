@@ -32,9 +32,13 @@ public:
 	int feedCache();
 	int updateCache();
 
+	// Start cache read
+	int acquireReadLock();
+
 	// startIter points to the oldest element
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
+
 	//int readData()
 	int releaseReadLock();
 

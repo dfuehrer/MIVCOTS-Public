@@ -28,6 +28,7 @@ public:
 	int stop();
 
 	// Read functions for the GUI
+	int acquireReadLock(long carNum);
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum);
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum, unsigned int length);
 	int endCacheRead(long carNum);

@@ -73,6 +73,14 @@ int CacheBank::feed(CarData* toFeed)
 	//return 0;
 }
 
+int CacheBank::acquireReadLock(long carNum)
+{
+	if (isNewCarNum(carNum)) {
+		return NOTFOUND;
+	}
+	return carModuleMap.at(carNum)->cache.acquireReadLock();
+}
+
 int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
