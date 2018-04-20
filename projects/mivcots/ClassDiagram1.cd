@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AnalysisParent" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAQQAAKAxgAAAAEBCAAAAgAAYAAAAYQAAEAgA=</HashCode>
+      <FileName>Analysis\Analysis.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AnalysisChild" Collapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAQQAACAhgAAAAACAIAAAgAAYACAAIAIAEAgA=</HashCode>
+      <FileName>Analysis\AnalysisChild.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CarData" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAQQQAgAAAAAAAAAABAAEAAAAgA=</HashCode>
+      <FileName>CarData\CarData.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CarPool" Collapsed="true">
+    <Position X="14" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAE=</HashCode>
+      <FileName>CarPool\CarPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DatabaseConnector" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAgEGAEEMCAAIBhBIWABQCiAAA0AgACBAoACQCAASA=</HashCode>
+      <FileName>DatabaseConnector\DatabaseConnector.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataInterface" Collapsed="true">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAEAAAAAABgAIEIAAAAACAgAAAAAgAAACEAABA=</HashCode>
+      <FileName>DataInterface\DataInterface.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Frame" Collapsed="true">
+    <Position X="12.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EACBAYAggCIAAEgAABAECEEAVMAAhABAgADCAAAECAE=</HashCode>
+      <FileName>GUI\GUI.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GUI" Collapsed="true">
+    <Position X="14" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAEABAAkAAAAARAAAAAAQAEAAA=</HashCode>
+      <FileName>GUI\GUI.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StatusWidget" Collapsed="true">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAgEAAADAQAAAAAAAAAAAAABAAAAAAUAAAAA=</HashCode>
+      <FileName>GUI\StatusWidget\StatusWidget.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CacheBank" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAABAAAAQAAAEQNEGAAAgAoAAAAAAKAgAAgAI=</HashCode>
+      <FileName>InterThreadComm\CacheBank.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sharedCache&lt;T&gt;" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAEABAAAAgAAAEAMAAIAAgCAQAAAgBAAiAEAAA=</HashCode>
+      <FileName>InterThreadComm\sharedCache.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="endpoint&lt;T1, T2&gt;" Collapsed="true">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAwAAAAAAAAABAAAEAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>InterThreadComm\endpoint.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InterThreadComm&lt;T1, T2&gt;" Collapsed="true">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAACAwAAAAAAACABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>InterThreadComm\InterThreadComm.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="lockedQueue&lt;T&gt;" Collapsed="true">
+    <Position X="8.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAJAAAAAAAIAAAIAAAAAAAICAAAAIAAAgAAA=</HashCode>
+      <FileName>InterThreadComm\lockedQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MIVCOTS" Collapsed="true">
+    <Position X="12.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIADEYAAAAAAIAAsAAMAAAGAAAghAAAAABAIAgAAAAA=</HashCode>
+      <FileName>MIVCOTS\MIVCOTS.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Map" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ICAAAEIBQBEAIAJAAQEkAEAAAAAAACBQCAAISQSFAAA=</HashCode>
+      <FileName>GUI\MapWidget\Map.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureWindow" Collapsed="true">
+    <Position X="14" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAgAAAAAAAAgAgAAAAAAAAAAAAAAAAAAAEBA=</HashCode>
+      <FileName>GUI\MapWidget\PictureWindow.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="dataValue_st" Collapsed="true">
+    <Position X="4.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>CarData\CarData.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="carModule_t" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAACAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAQ=</HashCode>
+      <FileName>InterThreadComm\CacheBank.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="coords_s" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\MapWidget\Map.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="dataValue" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CarData\CarData.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="carModule" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>InterThreadComm\CacheBank.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="coords" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\MapWidget\Map.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="__unnamed_enum_0009_1" Collapsed="true">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAgAAAQAAAAFE=</HashCode>
+      <FileName>GUI\GUI.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

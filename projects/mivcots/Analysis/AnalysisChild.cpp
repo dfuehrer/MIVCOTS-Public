@@ -16,7 +16,11 @@ int AnalysisChild::init(
 	sharedCache<CarData*> * boxCache, 
 	sharedCache<CarData*> * carCache, 
 	endpoint<CarData*> * updateQueue, 
-	CarPool * carPool
+	CarPool * carPool,
+	std::mutex * analysisFinishedCounterMutex,
+	int * analysisFinishedCounterInt,
+	std::mutex * analysisStepMutex,
+	std::condition_variable * analysisStepConditionVariable
 )
 {
 	int returnCode = 0;
@@ -51,6 +55,11 @@ int AnalysisChild::init(
 		returnCode |= ERR_CAR_CACHE_PTR_IS_NULL;
 		return returnCode;
 	}
+	// TODO: Add error checking here
+	this->analysisFinishedCounterMutex = analysisFinishedCounterMutex;
+	this->analysisFinishedCounterInt = analysisFinishedCounterInt;
+	this->analysisStepMutex = analysisStepMutex;
+	this->analysisStepConditionVariable = analysisStepConditionVariable;
 	
 	return returnCode;
 }
@@ -62,17 +71,44 @@ int AnalysisChild::start()
 
 int AnalysisChild::stop()
 {
-	isRunning = false;
+	isRunning.store(false, std::memory_order_relaxed);
+	// some other stuff needs to happen here
 	analysisThread.join();
 	return 0;
 }
 
 int AnalysisChild::runThread()
 {
-	isRunning = true;
-	while (isRunning) {	// Keep going as long as the thread is alive
+	isRunning.store(true,std::memory_order_relaxed);// TODO: move this outside of the thread
+	this->setup();
+	while (isRunning.load(std::memory_order_relaxed)) {	// Keep going as long as the thread is alive
 		
+		// wait to be notified
+		std::unique_lock<std::mutex> analysisStepLock(*analysisStepMutex);
+		analysisStepConditionVariable->wait(analysisStepLock);// TODO: add loop
+		analysisStepLock.unlock();
+		// TODO: Check for spurious wakeup
+
+
+		// do things
+		this->loop();
+
+		// increment semaphore
+		std::unique_lock<std::mutex> analysisFinishedCounterLock(*analysisFinishedCounterMutex);	// Create lock and block until mutex is locked
+		analysisFinishedCounterInt++;	// Increment Semaphore
+		analysisFinishedCounterLock.unlock();	// Unlock mutex 
+
 	}
+	return 0;
+}
+
+int AnalysisChild::setup()
+{
+	return 0;
+}
+
+int AnalysisChild::loop()
+{
 	return 0;
 }
 
