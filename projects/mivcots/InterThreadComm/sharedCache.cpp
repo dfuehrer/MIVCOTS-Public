@@ -86,7 +86,6 @@ int sharedCache<CarData*>::feedCache()
 int sharedCache<CarData*>::updateCache()
 {
 	std::unique_lock<std::shared_mutex> ulock(smtx);
-	ulock.lock();
 
 	int rc = SUCCESS;
 
