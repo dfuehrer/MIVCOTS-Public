@@ -61,13 +61,13 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 	}
 }
 
-int DatabaseConnector::createTable(int carnum) {
+int DatabaseConnector::createTable(long carnum) {
 	int pass = 0;
 	int errorNum = NULL;
 	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
-	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,timestamp BIGINT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
+	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,Date LONG,Time LONG,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
 	const char* cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
@@ -80,7 +80,7 @@ int DatabaseConnector::createTable(int carnum) {
 	}
 }
 
-int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::string columnType) {
+int DatabaseConnector::addNewColumn(long carnum, std::string columnName, std::string columnType) {
 	int columnFound = 0;
 	std::string str1 = columnName;
 	const char wild = NULL;
@@ -116,21 +116,35 @@ int DatabaseConnector::addNewColumn(int carnum, std::string columnName, std::str
 }
 
 //Add Data to Table. EIther use Insert into or possibly update.
-//int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
-int DatabaseConnector::addDataToTable(int carnum, long long datetime, std::string columnName, double storedata) {
+//int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
+int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
+int i;
+long carIDNum, date, time;
+long data;//change to std::string when overload implemented
+									//create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
+									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	//inputqadd.receive();
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
-	str2 = std::to_string(carnum);
-	std::string str3 = " (timestamp, ";
-	std::string str4 = columnName;//The type of sensor
+	str2 = std::to_string(receivedData->get(ID,&carIDNum));
+	std::string str3 = " (Date,Time";
+	std::string str4;
+	for (i = 0; i < numKeys; i++) {
+		str4.append(",");
+		str4.append("addKeyMap");//Paul is making map to get column names*****
+	}
 	std::string str5 = ") VALUES (";
-	std::string str6 = std::to_string(datetime);
-	std::string str7 = ", ";
-	std::string str8 = std::to_string(storedata);
-	std::string str9 = ");";
-	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9;
+	std::string str6 = std::to_string(receivedData->get(DATE,&date));//get the values for the date 
+	str6.append(",");
+	str6.append(std::to_string(receivedData->get(TIME, &time)));//get the value for the time
+	std::string str7;
+	for (i = 0; i < numKeys; i++) {
+		str7.append(",");
+		str7.append(std::to_string(receivedData->get("addKeyMap",&data)));//get all of the key values***** will also need map to have dataTypes
+	}
+	std::string str8 = ");";
+	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8;
 	const char* cstr = new char[NewCarTable.length() + 1];
 	cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
@@ -143,8 +157,8 @@ int pass = 0;
 }
 
 
-//int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
-int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long long maxValue) {
+//int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
+int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long long maxValue) {
 //SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
 	int pass = 0;
@@ -174,7 +188,7 @@ int DatabaseConnector::getDataTimestamp(int carnum, long long minValue, long lon
 		while (row = mysql_fetch_row(result)) {//put into cardata object
 			for (unsigned int i = 0; i < field_cnt; i++) {
 				//outputq.send(row[i]);
-				//carRowData[numRow][i] = row[i];
+				carRowData[numRow][i] = *row[i];
 				printf("%s\t", row[i]);
 			}
 			numRow++;
@@ -205,11 +219,10 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 	}
 }
 
-//Get Column names and associated types from database 
-
-int DatabaseConnector::getColumnTypes(int carnum) {
+//Get Column names and associated types from database run on init and make function to append to this list when a new column is added
+//column names will be unique key 
+int DatabaseConnector::getColumnTypes(long carnum) {
 	int pass = 0;
-	int rowNum = 0;
 	unsigned int numColumns = 0;
 	std::string str1 = "SHOW COLUMNS FROM car";
 	std::string str2 = std::to_string(carnum);
@@ -221,11 +234,12 @@ int DatabaseConnector::getColumnTypes(int carnum) {
 		result = mysql_store_result(&mysql);
 		while ((row = mysql_fetch_row(result))) {
 			for (int i = 0; i <= 2; i++) {
-				columnDataTypes[rowNum][i] = row[i];
-				wxLogMessage(_(row[i]));
+				columnDataTypes[endpointOfColumnTypeList][i] = row[i];
+				wxLogDebug(_(row[i]));
 			}
-			rowNum++;
+			endpointOfColumnTypeList++;
 		}
+		mysql_free_result(result);
 		return 0;
 	}
 	else {
@@ -234,8 +248,8 @@ int DatabaseConnector::getColumnTypes(int carnum) {
 }
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
-//int DatabaseConnector::tableUpdate(int carnum, int uniqueID,std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputqupdate) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
-int DatabaseConnector::tableUpdate(int carnum, int uniqueID, std::string columnName, double updatedValue) {
+//int DatabaseConnector::tableUpdate(long carnum, int uniqueID,std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputqupdate) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
+int DatabaseConnector::tableUpdate(long carnum, int uniqueID, std::string columnName, double updatedValue) {
 int pass = 0;
 	std::string str1 = "UPDATE car";
 	std::string str2 = std::to_string(carnum);
@@ -290,7 +304,7 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 
 int DatabaseConnector::InitializeDatabase(std::string database) {
 	initDB(nullptr);
-
+	endpointOfColumnTypeList = 0;
 	int ErrorNum = createDatabase(database);
 
 	if (ErrorNum != 1007 && ErrorNum != 0) {
@@ -305,51 +319,58 @@ int DatabaseConnector::InitializeDatabase(std::string database) {
 		return 1;
 	}
 
+	int ErrorNum3 = getColumnTypes(1);
+
+	if (ErrorNum3 != 0 || ErrorNum3 != 1146) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return 1;
+	}
+
 	for (int i = 0; i < 128; i++) {
 		knownCarTables[i] = 0;
 	}
 	return 0;
 }
 
-int DatabaseConnector::AddData(int carnum, std::string sensortype, std::string sensorvar, long long datetime, double data) {
+int DatabaseConnector::AddData(CarData *receivedData) {
 	int ErrorNum = 0;
-	if (knownCarTables[carnum] == 0) {
-		knownCarTables[carnum] = 1;
-		ErrorNum = createTable(carnum);
+	long carnum;
+	if (knownCarTables[receivedData->get(ID,&carnum)] == 0) {
+		knownCarTables[receivedData->get(ID, &carnum)] = 1;
+		ErrorNum = createTable(receivedData->get(ID, &carnum));
 	}
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
 	}
-	int ErrorNum2 = addDataToTable(carnum, datetime, sensortype, data);
-	if (ErrorNum2 == 1054) {
-		addNewColumn(carnum, sensortype, sensorvar);
-		addDataToTable(carnum, datetime, sensortype, data);
-	}
-	else if (ErrorNum2 != 0) {
+	
+	int ErrorNum2 = addDataToTable(receivedData);
+	 if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
 	}
 	return 0;
 }
 
-int DatabaseConnector::GetData(int carnum, long long minValue, long long maxValue) {
+int DatabaseConnector::GetData(long carnum, long long minValue, long long maxValue) {
 	int ErrorNum = getDataTimestamp(carnum, minValue, maxValue);
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
 	}
-
-	int ErrorNum2 = getColumnTypes(carnum);
-
-	if (ErrorNum2 != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+	CarData* receivedBoxData;
+	while (isRunning) {
+		while (boxDataQ->receiveQsize() > 0) {
+			boxDataQ->receive(&receivedBoxData);
+			outputCache->feed(receivedBoxData);
+			/////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		}
 	}
+
 	return 0;
 }
 
-int DatabaseConnector::UpdateData(int carnum, int uniqueID, std::string columnName, double updatedValue) {
+int DatabaseConnector::UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue) {
 	
 	int ErrorNum = tableUpdate(carnum, uniqueID, columnName, updatedValue);
 	if (ErrorNum != 0) {
@@ -376,7 +397,7 @@ int DatabaseConnector::shutdown() {
 	}
 }
 
-int DatabaseConnector::dropTable(int carnum) {
+int DatabaseConnector::dropTable(long carnum) {
 	int pass = 0;
 	std::string str1 = "DROP TABLE car";
 	std::string str2 = "";
@@ -397,7 +418,7 @@ int DatabaseConnector::dropTable(int carnum) {
 }
 
 //delete row of data from table   Delete a row(s) from a table.		DELETE from [table name] where [field name] = 'whatever';
-int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
+int DatabaseConnector::dropRowFromTable(long carnum, long long timestamp) {
 	int pass = 0;
 	std::string str1 = "DELETE FROM car";
 	std::string str2 = std::to_string(carnum);
@@ -419,7 +440,7 @@ int DatabaseConnector::dropRowFromTable(int carnum, long long timestamp) {
 }
 
 //delete column from table  Delete a column.	alter table [table name] drop column [column name];
-int DatabaseConnector::dropColumn(int carnum, std::string columnName) {
+int DatabaseConnector::dropColumn(long carnum, std::string columnName) {
 	int pass = 0;
 	std::string str1 = "ALTER TABLE car";
 	std::string str2 = std::to_string(carnum);
@@ -447,6 +468,7 @@ void DatabaseConnector::runDatabaseThread()
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
+			//AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
 			wxLogDebug("Database connector sent a cardata object");
