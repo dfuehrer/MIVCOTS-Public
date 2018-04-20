@@ -25,10 +25,6 @@ PictureWindow::PictureWindow(wxWindow* parent, const wxBitmap& image) : wxWindow
 {
 	int width = image.GetWidth();
 	int height = image.GetHeight();
-	/*double X_Ratio = (double)MaxWidth / (double)width;
-	double Y_Ratio = (double)MaxHeight / (double)height;
-	double Ratio = X_Ratio < Y_Ratio ? X_Ratio : Y_Ratio;
-	wxImage Image = image.Scale((int)(Ratio * width), (int)(Ratio * height));*/
 	Bitmap = image;
 	width = image.GetWidth();
 	height = image.GetHeight();

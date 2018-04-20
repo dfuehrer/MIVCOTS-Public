@@ -30,7 +30,21 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 		baseStationimg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
 
 		std::string mapPath = std::string(env_p) + std::string("maps/") + mapName + std::string(".png");
-		imgImg = new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		//probably change to tmp
+		//imgImg =  new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		wxImage *tmpImg = new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		int xSize = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
+		int ySize = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
+		wxLogMessage("x size: %d\ty size: %d", xSize,ySize);
+		double MaxWidth = xSize * 0.66;
+		double MaxHeight = ySize * 0.66;
+		
+		double X_Ratio = (double)MaxWidth / (double)tmpImg->GetWidth();
+		double Y_Ratio = (double)MaxHeight / (double)tmpImg->GetHeight();
+		double Ratio = X_Ratio < Y_Ratio ? X_Ratio : Y_Ratio;
+		tmpImg->Rescale((int)(Ratio * tmpImg->GetWidth()), (int)(Ratio * tmpImg->GetHeight()));
+		imgImg = (const wxImage*)tmpImg;
+
 		imgBitmap = new wxBitmap(*imgImg);
 		picWindow = new PictureWindow(panel, *imgBitmap);
 
@@ -145,18 +159,6 @@ bool Map::update()
 
 		aMIVCOTS->endCacheRead(i);
 	}
-	
-	//angleTmp += 1;
-	//latTmp += .001;
-	//lonTmp += .001;
-
-	//coords coord = getCoords();
-
-	//if (latTmp > coord.northEast.first)
-	//	latTmp = coord.southWest.first;
-	//if (lonTmp > coord.northEast.second)
-	//	lonTmp = coord.southWest.second;
-	
 	return true;
 }
 
