@@ -1,6 +1,7 @@
 #include "AnalysisChild.h"
 #include "AnalysisReturnCodes.h"
 #include <wx/log.h>
+#include "key_defines.h"
 
 
 AnalysisChild::AnalysisChild()
@@ -109,16 +110,31 @@ int AnalysisChild::setup()
 #define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
 int AnalysisChild::loop()
 {
-	sharedCache<CarData *>::cacheIter * startIter, *endIter, *tempIter;
-	carCache->readCache(startIter, endIter);
+	
+	sharedCache<CarData *>::cacheIter startIter, endIter, tempIter;
+	carCache->readCache(&startIter, &endIter);
 	for (tempIter = startIter; tempIter != endIter; tempIter++) {
-		long analysisCount;
-		(**tempIter)->get(ANALYSIS_COUNT, &analysisCount);
+		unsigned long analysisCount;
+		(*tempIter)->get(ANALYSIS_COUNT, &analysisCount);
 		if (analysisCount == 0) {
 			// get new CarData
+			CarData * tempCarDataPtr;
+			carPool->getCar(&tempCarDataPtr);
 			// update analysis count
+			tempCarDataPtr->set(ANALYSIS_COUNT, (unsigned long)1);
 			// do analysis
+			long latRaw = 0, lonRaw = 0, angleRaw = 0;
+			(*tempIter)->get(std::string(LAT), &latRaw);
+			(*tempIter)->get(std::string(LON), &lonRaw);
+			(*tempIter)->get(std::string(HEADING), &angleRaw);
+			tempCarDataPtr->set(std::string(LAT), (double)latRaw / 1000000.0);
+			tempCarDataPtr->set(std::string(LON), (double)lonRaw / 1000000.0);
+			tempCarDataPtr->set(std::string(HEADING), (double)angleRaw / 100.0);
+
 			// push to update Queue
+			updateQueue->send(tempCarDataPtr);
+			
+			
 		}
 	}
 	return 0;
