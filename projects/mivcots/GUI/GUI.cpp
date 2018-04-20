@@ -106,6 +106,7 @@ void GUI::OnQuit(wxCloseEvent & evt)
 {
 	timer->Stop();
 	frame->GetParent()->Close(true);
+	aMIVCOTS.~MIVCOTS();
 }
 
 Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),

@@ -6,6 +6,7 @@
 
 #include "endpoint.h"
 #include "error_codes.h"
+#include "CarData.h"
 
 // TODO: use a condition variable to give priority to updates
 // TODO: maintain time ordering on insert
@@ -44,7 +45,9 @@ public:
 
 	bool newRawData();
 	bool newAnalyzedData();
-	int findItem(T toFind, int* ind);
+	int find(CarData * toFind, cacheIter * iter);
+	int find(CarData * toFind, int* ind);
+	
 
 private:
 	unsigned int maxSize;
@@ -55,6 +58,6 @@ private:
 	std::deque<T> analyzedData;		// For the GUI
 	std::shared_mutex smtx;
 	mutable std::shared_lock<std::shared_mutex>* slock;
-	
+	int findItem(T toFind, int* ind);
 	
 };

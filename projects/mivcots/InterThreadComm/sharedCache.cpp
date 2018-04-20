@@ -199,3 +199,19 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 
 	return NOTFOUND;
 }
+
+
+int sharedCache<CarData*>::find(CarData*toFind, cacheIter* iter) {
+	int index = 0;
+	int returnCode = SUCCESS;
+	returnCode = this->findItem(toFind, &index);
+	*iter = this->buffer.begin() + index;
+	return returnCode;
+}
+
+
+int sharedCache<CarData*>::find(CarData * toFind, int * ind)
+{
+	return this->findItem(toFind, ind);
+	
+}

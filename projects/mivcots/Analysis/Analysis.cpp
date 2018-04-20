@@ -134,18 +134,22 @@ int AnalysisParent::loop()
 	}
 
 	for (CarData* currentCarDataPtr : analysisAggregationSet) {
-		CarData* tempCarDataPtr;
-		carPool->getCar(&tempCarDataPtr);
-
-		//analysisUpdateQueue
+		CarData* tempCarDataMergedPtr;
+		carPool->getCar(&tempCarDataMergedPtr);						// Allocate a CarData 
+		sharedCache<CarData*>::cacheIter tempCarDataOriginalIter;
+		carCache->find(currentCarDataPtr, &tempCarDataOriginalIter);// grab iterators to originals
+		(*tempCarDataMergedPtr) += *(*tempCarDataOriginalIter);		// copy original to update slot
+		(*tempCarDataMergedPtr) += (*currentCarDataPtr);			// apply updates to copies
+		//analysisUpdateQueue.push_back(tempCarDataMergedPtr);
+		updateQueue->send(tempCarDataMergedPtr);					// Send stuff back to cache
+		// TODO: add second queue for sending stuff back to database
+		// push updated copies into databases and cache update queues
+		
 	}
-
-
-	// grab copies of originals
-	// apply updates to copies
-	// push updated copies into databases and cache update queues
 	// release read lock on cache
+	carCache->releaseReadLock();
 	// try acquire write lock on cache
+	carCache->updateCache();
 
 	return 0;
 }
@@ -167,34 +171,3 @@ int AnalysisParent::aggregate()
 	return 0;
 }
 
-//int Analysis::ControlChart(int GraphPoints) {
-//	int i = 0;
-//	double DataPointSum = 0;
-//	double StandDeviation = 0;
-//	double TopEqn = 0;
-//	double UpperControlLimit = 0;
-//	double LowerControlLimit = 0;
-//	double AvgData = 0;
-//	double Warning = 0;
-//	//begin Initializaatshion
-//	for (i = 0; i < GraphPoints - 1; i++) {
-//		DataPointSum = DataPoints[i] + DataPointSum;
-//	}
-//	AvgData = DataPointSum / (GraphPoints - 1);
-//	for (i = 0; i < GraphPoints - 1; i++) {
-//		TopEqn = pow(DataPoints[i] - DataPointSum, 2)+ TopEqn;
-//	}
-//	StandDeviation = pow(TopEqn / (GraphPoints - 1), 0.5);
-//	UpperControlLimit = DataPointSum + StandDeviation;
-//	LowerControlLimit = DataPointSum - StandDeviation;
-//
-//	if (DataPoints[GraphPoints] >= UpperControlLimit) {
-//		Warning = 1;
-//	}
-//	if (DataPoints[GraphPoints] <= LowerControlLimit) {
-//		Warning = 1;
-//	}
-//	else
-//		Warning = 0; 
-//	return 0;
-//}

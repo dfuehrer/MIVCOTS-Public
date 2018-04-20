@@ -5,6 +5,7 @@
 #include <string>
 #include "InterThreadComm/endpoint.h"
 #include "InterThreadComm/lockedQueue.h"
+#include "InterThreadComm\sharedCache.h"
 #include "CarPool/CarPool.h"
 #include "CarData/CarData.h"
 #include "AnalysisChild.h"

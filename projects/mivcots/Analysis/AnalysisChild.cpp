@@ -106,9 +106,21 @@ int AnalysisChild::setup()
 {
 	return 0;
 }
-
+#define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
 int AnalysisChild::loop()
 {
+	sharedCache<CarData *>::cacheIter * startIter, *endIter, *tempIter;
+	carCache->readCache(startIter, endIter);
+	for (tempIter = startIter; tempIter != endIter; tempIter++) {
+		long analysisCount;
+		(**tempIter)->get(ANALYSIS_COUNT, &analysisCount);
+		if (analysisCount == 0) {
+			// get new CarData
+			// update analysis count
+			// do analysis
+			// push to update Queue
+		}
+	}
 	return 0;
 }
 
