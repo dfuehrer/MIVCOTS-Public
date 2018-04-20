@@ -42,7 +42,7 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 		double X_Ratio = (double)MaxWidth / (double)tmpImg->GetWidth();
 		double Y_Ratio = (double)MaxHeight / (double)tmpImg->GetHeight();
 		double Ratio = X_Ratio < Y_Ratio ? X_Ratio : Y_Ratio;
-		tmpImg->Rescale((int)(Ratio * tmpImg->GetWidth()), (int)(Ratio * tmpImg->GetHeight()));
+		tmpImg->Rescale((int)(Ratio * tmpImg->GetWidth()), (int)(Ratio * tmpImg->GetHeight()), wxIMAGE_QUALITY_HIGH);
 		imgImg = (const wxImage*)tmpImg;
 
 		imgBitmap = new wxBitmap(*imgImg);
