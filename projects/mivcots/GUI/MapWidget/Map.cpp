@@ -115,6 +115,14 @@ bool Map::update()
 		long course = -1;
 		int rc = SUCCESS;
 
+		rc = aMIVCOTS->acquireReadLock(i);
+
+		if (rc != SUCCESS) {
+			wxLogDebug("Couldn't read cache for car %d", i);
+			aMIVCOTS->endCacheRead(i);
+			continue;
+		}
+
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
 			for (startIter; startIter != endIter; startIter++) {
@@ -129,12 +137,13 @@ bool Map::update()
 				angleTmp = course / 100.0;
 			}
 			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252, i);
-			aMIVCOTS->endCacheRead(i);
 			refresh();
 		}
 		else {
-				wxLogDebug("Couldn't read cache");
+			wxLogDebug("Couldn't read cache for car %d", i);
 		}
+
+		aMIVCOTS->endCacheRead(i);
 	}
 	
 	//angleTmp += 1;

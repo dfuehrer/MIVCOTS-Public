@@ -33,6 +33,7 @@ public:
 
 	// Read cache functions
 	typedef sharedCache<CarData*> mCache;
+	int acquireReadLock(long carNum);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
 	int releaseReadLock(long carNum);

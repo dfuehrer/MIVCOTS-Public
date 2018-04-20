@@ -86,7 +86,6 @@ int sharedCache<CarData*>::feedCache()
 int sharedCache<CarData*>::updateCache()
 {
 	std::unique_lock<std::shared_mutex> ulock(smtx);
-	ulock.lock();
 
 	int rc = SUCCESS;
 
@@ -109,15 +108,19 @@ int sharedCache<CarData*>::updateCache()
 	return rc;
 }
 
+int sharedCache<CarData*>::acquireReadLock()
+{
+	slock->lock();
+	return SUCCESS;
+}
+
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
 	if ((startIter == nullptr) || (endIter == nullptr)) {
 		return NULLPTRERR;
 	}
 
-	slock->lock();
-
 	if (buffer.size() == 0) {
-		slock->unlock();
+		
 		return EMPTYQUEUE;
 	}
 
@@ -136,10 +139,8 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 		return OUTOFRANGE;
 	}
 
-	slock->lock();
-
 	if (buffer.size() == 0) {
-		slock->unlock();
+		
 		return EMPTYQUEUE;
 	}
 

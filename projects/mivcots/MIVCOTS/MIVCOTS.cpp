@@ -47,6 +47,11 @@ int MIVCOTS::stop()
 	return 0;
 }
 
+int MIVCOTS::acquireReadLock(long carNum)
+{
+	return cacheBank.acquireReadLock(carNum);
+}
+
 int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum)
 {
 	return cacheBank.readCache(carNum, startIter, endIter);
