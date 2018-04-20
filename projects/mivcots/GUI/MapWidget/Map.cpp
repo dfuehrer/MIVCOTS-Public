@@ -225,8 +225,8 @@ void Map::printCoords()
 
 bool Map::calcFactors()
 {
-	latFactor = (1280) / (coordinates.northEast.first - coordinates.southWest.first);
-	lonFactor = (1280) / (coordinates.northEast.second - coordinates.southWest.second);
+	latFactor = (imgImg->GetHeight()) / (coordinates.northEast.first - coordinates.southWest.first);
+	lonFactor = (imgImg->GetWidth()) / (coordinates.northEast.second - coordinates.southWest.second);
 
 	latOffset = coordinates.northEast.first;
 	lonOffset = coordinates.southWest.second;
