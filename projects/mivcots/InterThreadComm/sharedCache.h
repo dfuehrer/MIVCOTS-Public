@@ -44,6 +44,7 @@ public:
 
 	bool newRawData();
 	bool newAnalyzedData();
+	int findItem(T toFind, int* ind);
 
 private:
 	unsigned int maxSize;
@@ -55,5 +56,5 @@ private:
 	std::shared_mutex smtx;
 	mutable std::shared_lock<std::shared_mutex>* slock;
 	
-	int findItem(T toFind, int* ind);
+	
 };
