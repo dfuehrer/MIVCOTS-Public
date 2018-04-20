@@ -70,22 +70,66 @@ int AnalysisParent::init(
 
 int AnalysisParent::start()
 {
-	int returnCode = 0;
-	analysisChildVector.push_back(new AnalysisChild);
-	returnCode = analysisChildVector.begin().operator*()->init(boxCache, carCache, updateQueue, carPool);
-	if (returnCode) {
-		return returnCode;
-	}
-	returnCode = analysisChildVector.begin().operator*()->start();
+	
 	return 0;
 }
 
 int AnalysisParent::stop()
+
 {
-	while (analysisChildVector.size() > 0) {
+	//TODO: Make sure to call delete on all the stuff that start() calls new on.
+	while (analysisChildVector.size() > 0) {	// TODO: This should be a for loop
 		analysisChildVector.back()->stop();
 	}
 	analysisChildVector.clear();
+	return 0;
+}
+
+int AnalysisParent::runAnalysisThread()
+{
+	isRunning.store(true, std::memory_order_relaxed);
+	setup();
+	while (isRunning.load(std::memory_order_relaxed)) {
+		loop();
+	}
+	return 0;
+}
+
+int AnalysisParent::setup()
+{
+	int returnCode = SUCCESS;
+	analysisChildVector.push_back(new AnalysisChild);
+	returnCode = analysisChildVector.begin().operator*()->init(
+		boxCache,
+		carCache,
+		updateQueue,
+		carPool,
+		&analysisFinishedCounterMutex,
+		&analysisFinishedCounterInt,
+		&analysisStepMutex,
+		&analysisStepConditionVariable
+	);
+	if (returnCode) {
+		return returnCode;
+	}
+	returnCode = analysisChildVector.begin().operator*()->start();
+	return returnCode;
+}
+
+int AnalysisParent::loop()
+{
+	// acquire read lock on cache
+
+	// notify all
+	// while counter is less than length of children vector
+		// aggregate stuff in output queues from children
+	// finish aggregating
+	// grab copies of originals
+	// apply updates to copies
+	// push updated copies into databases and cache update queues
+	// release read lock on cache
+	// try acquire write lock on cache
+
 	return 0;
 }
 

@@ -54,6 +54,10 @@
     <ClInclude Include="InterThreadComm\lockedQueue.h" />
     <ClInclude Include="MIVCOTS\MIVCOTS.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{61DF4A44-CBEF-42EB-A1B9-71C2F662DC19}</ProjectGuid>
