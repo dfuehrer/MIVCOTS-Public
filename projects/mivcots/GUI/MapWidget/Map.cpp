@@ -20,11 +20,31 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 
 	mapName = "map1";
 	wxImage::AddHandler(new wxPNGHandler);
+	
 	this->aMIVCOTS = aMIVCOTS;
 	if (const char* env_p = std::getenv("MivcotsResources")) {
 		wxLogMessage(_(env_p));
+		std::string carPath = std::string(env_p) + std::string("maps\\favicon.png");
+		carimg = new wxImage(carPath, wxBITMAP_TYPE_ANY);
+		std::string filePath = std::string(env_p) + std::string("maps\\base.png");
+		baseStationimg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
+
 		std::string mapPath = std::string(env_p) + std::string("maps/") + mapName + std::string(".png");
-		imgImg = new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		//probably change to tmp
+		//imgImg =  new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		wxImage *tmpImg = new wxImage(mapPath, wxBITMAP_TYPE_PNG);
+		int xSize = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
+		int ySize = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
+		wxLogMessage("x size: %d\ty size: %d", xSize,ySize);
+		double MaxWidth = xSize * 0.66;
+		double MaxHeight = ySize * 0.66;
+		
+		double X_Ratio = (double)MaxWidth / (double)tmpImg->GetWidth();
+		double Y_Ratio = (double)MaxHeight / (double)tmpImg->GetHeight();
+		double Ratio = X_Ratio < Y_Ratio ? X_Ratio : Y_Ratio;
+		tmpImg->Rescale((int)(Ratio * tmpImg->GetWidth()), (int)(Ratio * tmpImg->GetHeight()), wxIMAGE_QUALITY_HIGH);
+		imgImg = (const wxImage*)tmpImg;
+
 		imgBitmap = new wxBitmap(*imgImg);
 		picWindow = new PictureWindow(panel, *imgBitmap);
 
@@ -57,35 +77,38 @@ bool Map::refresh()
 	return true;
 }
 
-bool Map::drawCar(double lat, double lon, double angle)
+bool Map::drawCar(double lat, double lon, double angle, int carID)
 {
-	if (const char* env_p = std::getenv("MivcotsResources")) {
-		std::string filePath = std::string(env_p) + std::string("maps\\favicon.png");
-		wxImage tmpimg = wxImage(filePath, wxBITMAP_TYPE_ANY);
-
-		wxPoint center = wxPoint(tmpimg.GetWidth() / 2, tmpimg.GetHeight() / 2);
-		tmpimg = tmpimg.Rotate(angle, center);
-
-		double x = (lon - lonOffset)*lonFactor;
-		double y = -(lat - latOffset)*latFactor;
-
-		//wxLogMessage("x=%lf\ty=%lf", x, y);
-		wxBitmap tmp = wxBitmap(tmpimg);
-
-		
-		picWindow->setBitmap(*imgBitmap);
-		
-		//translating to the center of the image
-		x -= tmp.GetHeight() / 2;
-		y -= tmp.GetWidth() / 2;
-		buffDC->SelectObject(*imgBitmap);
-		buffDC->DrawBitmap(tmp, x, y, true);
-
-		buffDC->SelectObject(wxNullBitmap);
-
-		picWindow->setBitmap(*imgBitmap);
-		//free(buffDC);
+	wxImage tmpimg;
+	if (carID == 0) {
+		tmpimg = baseStationimg->Copy();
 	}
+	else {
+		tmpimg = carimg->Copy();
+	}
+	wxPoint center = wxPoint(tmpimg.GetWidth() / 2, tmpimg.GetHeight() / 2);
+	tmpimg = tmpimg.Rotate(angle, center);
+
+	double x = (lon - lonOffset)*lonFactor;
+	double y = -(lat - latOffset)*latFactor;
+
+	//wxLogMessage("x=%lf\ty=%lf", x, y);
+	wxBitmap tmp = wxBitmap(tmpimg);
+
+		
+	picWindow->setBitmap(*imgBitmap);
+		
+	//translating to the center of the image
+	x -= tmp.GetHeight() / 2;
+	y -= tmp.GetWidth() / 2;
+	buffDC->SelectObject(*imgBitmap);
+	buffDC->DrawBitmap(tmp, x, y, true);
+
+	buffDC->SelectObject(wxNullBitmap);
+
+	picWindow->setBitmap(*imgBitmap);
+	//free(buffDC);
+	//}
 	return false;
 }
 
@@ -127,7 +150,7 @@ bool Map::update()
 				lonTmp = lon / 1000000.0;
 				angleTmp = course / 100.0;
 			}
-			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252);
+			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252, i);
 			refresh();
 		}
 		else {
@@ -136,18 +159,6 @@ bool Map::update()
 
 		aMIVCOTS->endCacheRead(i);
 	}
-	
-	//angleTmp += 1;
-	//latTmp += .001;
-	//lonTmp += .001;
-
-	//coords coord = getCoords();
-
-	//if (latTmp > coord.northEast.first)
-	//	latTmp = coord.southWest.first;
-	//if (lonTmp > coord.northEast.second)
-	//	lonTmp = coord.southWest.second;
-	
 	return true;
 }
 
@@ -214,8 +225,8 @@ void Map::printCoords()
 
 bool Map::calcFactors()
 {
-	latFactor = (1280) / (coordinates.northEast.first - coordinates.southWest.first);
-	lonFactor = (1280) / (coordinates.northEast.second - coordinates.southWest.second);
+	latFactor = (imgImg->GetHeight()) / (coordinates.northEast.first - coordinates.southWest.first);
+	lonFactor = (imgImg->GetWidth()) / (coordinates.northEast.second - coordinates.southWest.second);
 
 	latOffset = coordinates.northEast.first;
 	lonOffset = coordinates.southWest.second;

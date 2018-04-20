@@ -27,7 +27,7 @@ public:
 	
 
 	bool refresh();
-	bool drawCar(double lat, double lon, double angle);
+	bool drawCar(double lat, double lon, double angle, int carID);
 	coords getCoords();
 	bool update();
 
@@ -48,6 +48,9 @@ private:
 	wxBufferedDC* buffDC;
 	wxMemoryDC* dc;
 	MIVCOTS* aMIVCOTS;
+	//wxImage* carImg;
+	const wxImage *carimg;
+	const wxImage *baseStationimg;
 
 	double latFactor;
 	double lonFactor;

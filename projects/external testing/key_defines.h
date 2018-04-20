@@ -1,3 +1,5 @@
+#include<vector>
+#include<string>
 #define numKeys 16
 #define ID "AA"
 #define DATE "AB"
@@ -15,3 +17,4 @@
 #define MAG_X "AN"
 #define MAG_Y "AO"
 #define MAG_Z "AP"
+std::vector<std::string> keyList {ID,DATE,TIME,LON,LAT,ALTITUDE,HEADING,ACC_X,ACC_Y,ACC_Z,GYR_X,GYR_Y,GYR_X,MAG_X,MAG_Y,MAG_Z}
