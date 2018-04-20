@@ -70,7 +70,7 @@ int AnalysisParent::init(
 
 int AnalysisParent::start()
 {
-	
+
 	return 0;
 }
 
@@ -119,17 +119,51 @@ int AnalysisParent::setup()
 int AnalysisParent::loop()
 {
 	// acquire read lock on cache
-
+	carCache->acquireReadLock();
 	// notify all
+	std::unique_lock<std::mutex> analysisStepLock(analysisStepMutex);
+	analysisStepInt = true;
+	analysisStepConditionVariable.notify_all();
 	// while counter is less than length of children vector
+	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < analysisChildVector.size()) {
 		// aggregate stuff in output queues from children
-	// finish aggregating
+		this->aggregate();
+	}
+	while (analysisChildrenUpdateQueue.size()) {
+		this->aggregate();// finish aggregating
+	}
+
+	for (CarData* currentCarDataPtr : analysisAggregationSet) {
+		CarData* tempCarDataPtr;
+		carPool->getCar(&tempCarDataPtr);
+
+		//analysisUpdateQueue
+	}
+
+
 	// grab copies of originals
 	// apply updates to copies
 	// push updated copies into databases and cache update queues
 	// release read lock on cache
 	// try acquire write lock on cache
 
+	return 0;
+}
+
+int AnalysisParent::aggregate()
+{
+	CarData * tmpCarDataPtr; // Create temporary Car Data Pointer
+	analysisChildrenUpdateQueue.pop(&tmpCarDataPtr); // Pop item from analysisChildrenUpdateQueue
+	if (tmpCarDataPtr == nullptr) {
+		return NULLPTRERR;
+	}
+	std::pair<std::set<CarData*, carTimeStampCompareLess>::iterator, bool> tmpPair = analysisAggregationSet.insert(tmpCarDataPtr);// TODO: add typedef for the iterator... seriously
+	if (!(tmpPair.second)) {
+		*(*(tmpPair.first)) += (*tmpCarDataPtr);	// Insert Item into analysisAggregationQueue or Merge into existing update entry
+		// TODO: release the memory associated with this car in a less terrifying way
+		delete tmpCarDataPtr;
+	}
+	// TODO: get rid of the memory leak (it should be fixed, but leaving this here until we know for sure)
 	return 0;
 }
 

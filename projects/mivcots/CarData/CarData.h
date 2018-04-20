@@ -31,6 +31,8 @@ public:
 	int get(std::string key, long* dest);
 	int get(std::string key, unsigned long* dest);
 	int get(std::string key, double* dest);
+	
+	CarData & operator+=(CarData & rhs);
 
 	void printCar();
 
@@ -39,6 +41,17 @@ protected:
 	dataMap_t dataMap;
 
 	inline int find_key(std::string key, dataMap_t::iterator* iter);
+	
+};
+
+// This feels wrong, but apparently it works...
+struct carTimeStampCompareLess {
+	bool operator()(CarData * lhs, CarData * rhs) {
+		long lhsTimeStamp, rhsTimeStamp;
+		lhs->get(std::string("TM"), &lhsTimeStamp);
+		rhs->get(std::string("TM"), &rhsTimeStamp);
+		return lhsTimeStamp < rhsTimeStamp;
+	}
 };
 
 /*

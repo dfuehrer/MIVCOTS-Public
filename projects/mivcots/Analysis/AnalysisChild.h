@@ -18,7 +18,7 @@ public:
 		endpoint<CarData *> * updateQueue,
 		CarPool * carPool,
 		std::mutex * analysisFinishedCounterMutex,
-		int * analysisFinishedCounterInt,
+		std::atomic<int> * analysisFinishedCounterInt,
 		std::mutex * analysisStepMutex,
 		std::condition_variable * analysisStepConditionVariable
 	);
@@ -40,7 +40,7 @@ protected:
 	std::condition_variable * analysisStepConditionVariable;
 
 	std::mutex * analysisFinishedCounterMutex;
-	int * analysisFinishedCounterInt;
+	std::atomic<int> * analysisFinishedCounterInt;
 
 	virtual int setup();
 	virtual int loop();

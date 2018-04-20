@@ -18,7 +18,7 @@ int AnalysisChild::init(
 	endpoint<CarData*> * updateQueue, 
 	CarPool * carPool,
 	std::mutex * analysisFinishedCounterMutex,
-	int * analysisFinishedCounterInt,
+	std::atomic<int> * analysisFinishedCounterInt,
 	std::mutex * analysisStepMutex,
 	std::condition_variable * analysisStepConditionVariable
 )

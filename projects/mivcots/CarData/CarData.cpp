@@ -104,6 +104,17 @@ int CarData::get(std::string key, double * dest)
 	return rc;
 }
 
+// Adds all elements of rhs to lhs
+// rhs wins all conflicts
+// if rhs and lhs have same members, functions as = operator
+CarData & CarData::operator+=(CarData & rhs)
+{
+	for (dataMap_t::iterator iter = rhs.dataMap.begin(); iter != rhs.dataMap.end(); ++iter) {
+		this->dataMap[iter->first] = iter->second;
+	}
+	return *this;
+}
+
 void CarData::printCar()
 {
 	for (dataMap_t::iterator iter = dataMap.begin(); iter != dataMap.end(); ++iter) {
@@ -126,6 +137,8 @@ inline int CarData::find_key(std::string key, dataMap_t::iterator* iter)
 		return SUCCESS;
 	}
 }
+
+
 
 /*
 int CarData::addKey(char* key) 
