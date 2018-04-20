@@ -9,7 +9,7 @@
 #include "CacheBank.h"
 #include "CarPool.h"
 #include "InterThreadComm.h"
-
+#include "key_defines.h"
 
 class DatabaseConnector
 {

@@ -52,6 +52,7 @@
     <ClInclude Include="InterThreadComm\endpoint.h" />
     <ClInclude Include="InterThreadComm\InterThreadComm.h" />
     <ClInclude Include="InterThreadComm\lockedQueue.h" />
+    <ClInclude Include="key_defines.h" />
     <ClInclude Include="MIVCOTS\MIVCOTS.h" />
   </ItemGroup>
   <ItemGroup>

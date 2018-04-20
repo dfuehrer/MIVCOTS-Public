@@ -1,3 +1,6 @@
+#pragma once
+#include<vector>
+#include<string>
 #define numKeys 16
 #define ID "AA"
 #define DATE "AB"
@@ -11,7 +14,8 @@
 #define ACC_Z "AJ"
 #define GYR_X "AK"
 #define GYR_Y "AL"
-#define GYR_X "AM"
+#define GYR_Z "AM"
 #define MAG_X "AN"
 #define MAG_Y "AO"
 #define MAG_Z "AP"
+static std::vector<std::string> keyList{ ID,DATE,TIME,LON,LAT,ALTITUDE,HEADING,ACC_X,ACC_Y,ACC_Z,GYR_X,GYR_Y,GYR_X,MAG_X,MAG_Y,MAG_Z };
