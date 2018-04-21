@@ -48,8 +48,8 @@ protected:
 struct carTimeStampCompareLess {
 	bool operator()(CarData * lhs, CarData * rhs) {
 		long lhsTimeStamp, rhsTimeStamp;
-		lhs->get(std::string("TM"), &lhsTimeStamp);
-		rhs->get(std::string("TM"), &rhsTimeStamp);
+		lhs->get(std::string("TMS"), &lhsTimeStamp);
+		rhs->get(std::string("TMS"), &rhsTimeStamp);
 		return lhsTimeStamp < rhsTimeStamp;
 	}
 };

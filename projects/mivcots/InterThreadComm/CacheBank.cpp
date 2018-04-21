@@ -58,7 +58,7 @@ int CacheBank::feed(CarData* toFeed)
 	}
 	int rc = SUCCESS;
 	long carNum;
-	rc |= toFeed->get("AA", &carNum);
+	rc |= toFeed->get("AAS", &carNum);
 
 	wxLogDebug("Inserting data for car number %d", carNum);
 

@@ -160,7 +160,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	// loop through the remainder
 	while (tmpKey != ENDOFMSG) {
 		// First add the key to the CarData
-		(*parsed)->addKey(tmpKey);
+		(*parsed)->addKey(tmpKey + "S");
 
 		// Advance to the next field, which should be a value
 		delimPosLeft = delimPosRight + 1;
@@ -180,7 +180,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		}
 
 		// Set the value in the carData
-		(*parsed)->set(tmpKey, tmpLong);
+		(*parsed)->set(tmpKey + "S", tmpLong);
 
 		// In case the message doesn't have an end of msg symbol
 		if (delimPosRight == std::string::npos) {

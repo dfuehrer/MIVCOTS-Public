@@ -1,8 +1,5 @@
 #include "sharedCache.h"
 
-#include <mutex>
-#include "CarData.h"
-
 sharedCache<CarData*>::sharedCache()
 {
 }
@@ -178,12 +175,12 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 	int middle;
 
 	unsigned long toFindTimeStamp, searchTimeStamp;
-	toFind->get("TM", &toFindTimeStamp);
+	toFind->get(TIME, &toFindTimeStamp);
 
 	while (left <= right) {
 		middle = (left + right) / 2;
 
-		buffer.at(middle)->get("TM", &searchTimeStamp);
+		buffer.at(middle)->get(TIME, &searchTimeStamp);
 
 		if (searchTimeStamp == toFindTimeStamp) {
 			*ind = middle;

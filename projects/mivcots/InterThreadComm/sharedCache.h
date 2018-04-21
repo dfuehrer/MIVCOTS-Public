@@ -7,6 +7,7 @@
 #include "endpoint.h"
 #include "error_codes.h"
 #include "CarData.h"
+#include "key_defines.h"
 
 // TODO: use a condition variable to give priority to updates
 // TODO: maintain time ordering on insert
