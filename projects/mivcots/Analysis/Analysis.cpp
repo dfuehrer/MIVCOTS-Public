@@ -123,6 +123,7 @@ int AnalysisParent::loop()
 	// notify all
 	std::unique_lock<std::mutex> analysisStepLock(analysisStepMutex);
 	analysisStepInt = true;
+	analysisStepLock.unlock();
 	analysisStepConditionVariable.notify_all();
 	// while counter is less than length of children vector
 	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < analysisChildVector.size()) {
@@ -147,6 +148,10 @@ int AnalysisParent::loop()
 		
 	}
 	analysisAggregationSet.clear();
+
+	analysisStepLock.lock();
+	analysisStepInt = true;
+	analysisStepLock.unlock();
 	// release read lock on cache
 	carCache->releaseReadLock();
 	// try acquire write lock on cache

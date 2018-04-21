@@ -25,12 +25,9 @@ public:
 
 	std::string carRowData[100];
 
-	//int AddData(long carnum, std::string sensortype, std::string sensorvar, long long datetime, double data, endpoint <CarData*, CarData* > inputqadd);
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
-	//int GetData(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq );
 	int GetData(long carnum, long long minValue, long long maxValue);
-	//int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputq);
 	int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue);
 	int shutdown();
 	int dropTable(long carnum);
@@ -63,11 +60,8 @@ private:
 
 	int initDB(CarPool* _CarSource);
 	int addNewColumn(CarData *receivedData);
-	//int addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd);
 	int addDataToTable(CarData *receivedData);
-	//int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue, endpoint <CarData*, CarData* > inputqupdate);
 	int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue);
-	//int getDataTimestamp(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq);
 	int getDataTimestamp(long carnum, long long minValue, long long maxValue);
 	int createDatabase();
 	int createTable(CarData *receivedData);

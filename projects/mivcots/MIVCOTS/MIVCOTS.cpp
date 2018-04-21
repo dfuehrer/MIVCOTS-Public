@@ -25,6 +25,7 @@ int MIVCOTS::start()
 {
 	int rc = SUCCESS;
 	rc |= dataStorage.start();
+	cacheBank.startAnalyses();
 	return rc;
 }
 

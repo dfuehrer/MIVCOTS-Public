@@ -124,6 +124,8 @@ int CacheBank::startAnalyses()
 		rc |= iter->second->analysis.start();
 	}
 
+	isStarted = true;
+
 	return rc;
 }
 
@@ -134,6 +136,8 @@ int CacheBank::stopAnalyses()
 	for (iter = carModuleMap.begin(); iter != carModuleMap.end(); ++iter) {
 		rc |= iter->second->analysis.stop();
 	}
+
+	isStarted = false;
 
 	return rc;
 }
