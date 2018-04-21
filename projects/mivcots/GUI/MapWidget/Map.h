@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <wx/dcbuffer.h>
 #include "MIVCOTS.h"
+#include "key_defines.h"
 
 
 

@@ -106,6 +106,7 @@ void GUI::OnQuit(wxCloseEvent & evt)
 {
 	timer->Stop();
 	frame->GetParent()->Close(true);
+	aMIVCOTS.stop();
 	aMIVCOTS.~MIVCOTS();
 }
 

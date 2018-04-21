@@ -124,9 +124,9 @@ bool Map::update()
 	sharedCache<CarData*>::cacheIter startIter; 
 	sharedCache<CarData*>::cacheIter endIter;
 	for(int i : *activeCars) {
-		long lat = -1;
-		long lon = -1;
-		long course = -1;
+		double lat = -1;
+		double lon = -1;
+		double course = -1;
 		int rc = SUCCESS;
 
 		rc = aMIVCOTS->acquireReadLock(i);
@@ -140,18 +140,22 @@ bool Map::update()
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
 			for (startIter; startIter != endIter; startIter++) {
-				(*startIter)->get("ADS", &lon);
-				(*startIter)->get("AES", &lat);
-				(*startIter)->get("AGS", &course);
+				if ((*startIter)->get(std::string(LON)+"D", &lon) |
+					(*startIter)->get(std::string(LON)+"D", &lat) |
+					(*startIter)->get(std::string(LON)+"D", &course) != SUCCESS) {
+				}
+				else {
+					drawCar(lat, lon, course * 0.01745329252, i);
+					refresh();
+				}
 			}
 			
-			if (lat != -1 && lon != -1 && course != -1) {
+			/*if (lat != -1 && lon != -1 && course != -1) {
 				latTmp = lat / 1000000.0;
 				lonTmp = lon / 1000000.0;
 				angleTmp = course / 100.0;
-			}
-			drawCar(latTmp, lonTmp, angleTmp * 0.01745329252, i);
-			refresh();
+			}*/
+			
 		}
 		else {
 			wxLogDebug("Couldn't read cache for car %d", i);
