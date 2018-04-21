@@ -83,7 +83,8 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	int columnFound = 0;
 	long carIDNum;
-	int i;
+	std::map<std::string, std::string> ::iterator iter;
+
 	//std::string str1 = columnName;
 	//const char wild = NULL;
 	//result = mysql_list_tables(&mysql, wild);
@@ -95,14 +96,14 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	//		}
 	//	}
 	//}
-	for (i = 0;i <= numKeys; i++) {
+	for (iter = keyMap.begin();iter !=keyMap.end(); iter++) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
 		str2 = std::to_string(receivedData->get(ID,&carIDNum));
 		std::string str3 = " ADD ";
-		std::string str4 = keyList[i];
+		std::string str4 = iter->second;//columnName
 		std::string str5 = " ";
-		std::string str6 = ID;//needs to be incremented through showing the type
+		std::string str6 = "LONG";//columnType
 		std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6;
 		const char* cstr = new char[NewCarTable.length() + 1];
 		cstr = NewCarTable.c_str();
@@ -116,27 +117,27 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 //int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
-int i;
 long carIDNum, date, time;
 long data;//change to std::string when overload implemented
-									//create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
+std::map<std::string, std::string> ::iterator iter;
+		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
 	str2 = std::to_string(receivedData->get(ID,&carIDNum));
 	std::string str3 = " (";
-	for (i = 1; i < numKeys; i++) {
-		if (i != 1) {
-			str3.append(",");
-		}
-		str3.append(keyList[i]);//Paul is making map to get column names*****
+	iter = keyMap.begin();
+	iter++;
+	for (iter; iter != keyMap.end(); iter++) {
+		str3.append(",");
+		str3.append(iter->second);//Paul is making map to get column names*****
 	}
 	std::string str7 = ") VALUES (";
-	for (i = 1; i < numKeys; i++) {
-		if (i != 1) {
-			str7.append(",");
-		}
-		str7.append(std::to_string(receivedData->get(keyList[i],&data)));//get all of the key values***** will also need map to have dataTypes
+	iter = keyMap.begin();
+	iter++;
+	for (iter; iter != keyMap.end(); iter++) {
+		str7.append(",");
+		str7.append(std::to_string(receivedData->get(iter->second,&data)));//get all of the key values***** will also need map to have dataTypes
 	}
 	std::string str8 = ");";
 	std::string NewCarTable = str1 + str2 + str3  + str7 + str8;

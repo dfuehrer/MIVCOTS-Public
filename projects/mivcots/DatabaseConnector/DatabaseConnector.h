@@ -10,6 +10,7 @@
 #include "CarPool.h"
 #include "InterThreadComm.h"
 #include "key_defines.h"
+#include "error_codes.h"
 
 class DatabaseConnector
 {
