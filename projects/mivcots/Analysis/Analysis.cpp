@@ -70,7 +70,7 @@ int AnalysisParent::init(
 
 int AnalysisParent::start()
 {
-
+	analysisParentThread = std::thread(&AnalysisParent::runAnalysisThread, this);
 	return 0;
 }
 
@@ -119,14 +119,13 @@ int AnalysisParent::setup()
 int AnalysisParent::loop()
 {
 	// acquire read lock on cache
-	carCache->acquireReadLock();
 	// notify all
 	std::unique_lock<std::mutex> analysisStepLock(analysisStepMutex);
 	analysisStepInt = true;
 	analysisStepLock.unlock();
 	analysisStepConditionVariable.notify_all();
 	// while counter is less than length of children vector
-	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < analysisChildVector.size()) {
+	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < (int)analysisChildVector.size()) {
 		// aggregate stuff in output queues from children
 		this->aggregate();
 	}
@@ -162,7 +161,7 @@ int AnalysisParent::loop()
 
 int AnalysisParent::aggregate()
 {
-	CarData * tmpCarDataPtr; // Create temporary Car Data Pointer
+	CarData * tmpCarDataPtr = nullptr; // Create temporary Car Data Pointer
 	analysisChildrenUpdateQueue.pop(&tmpCarDataPtr); // Pop item from analysisChildrenUpdateQueue
 	if (tmpCarDataPtr == nullptr) {
 		return ERR_NULLPTR;
