@@ -109,7 +109,6 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 		const char* cstr = new char[NewCarTable.length() + 1];
 		cstr = NewCarTable.c_str();
 		mysql_query(&mysql, cstr);
-		mysql_free_result(result);
 	}
 	return SUCCESS;
 }
@@ -119,7 +118,12 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
 long carIDNum;
-long data;//change to std::string when overload implemented
+long LongData;//change to std::string when overload implemented
+unsigned long ULongData;
+double DoubleData;
+std::string KeyNameWithType;
+int length;
+
 std::map<std::string, std::string> ::iterator iter;
 		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
@@ -138,7 +142,23 @@ std::map<std::string, std::string> ::iterator iter;
 	iter++;
 	for (iter; iter != keyMap.end(); iter++) {
 		str7.append(",");
-		str7.append(std::to_string(receivedData->get(iter->second,&data)));//get all of the key values***** will also need map to have dataTypes
+		//get all of the key values***** will also need map to have dataTypes
+		KeyNameWithType = iter->second;
+		length = KeyNameWithType.length;
+		switch (KeyNameWithType.at(length)) {
+			case 'S': {//Long
+				str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
+			}
+			case 'U': {//Unsigned Long
+				str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
+			}
+			case 'D': {//Double
+				str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
+			}
+			default: {
+				wxLogDebug("addDataToTable problem in switch statement");
+			}
+		}
 	}
 	std::string str8 = ");";
 	std::string NewCarTable = str1 + str2 + str3  + str7 + str8;
