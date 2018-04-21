@@ -122,7 +122,7 @@ int AnalysisChild::loop()
 			CarData * tempCarDataPtr = nullptr;
 			carPool->getCar(&tempCarDataPtr);
 			if (tempCarDataPtr == nullptr) {
-				returnCode = ERR_ANALYSIS_CHILD_LOOP_NULL_CARDATA_PTR;
+				returnCode = ERR_ANALYSIS_CHILD | ERR_LOOP | ERR_NULLPTR;
 			}
 			// update analysis count
 			tempCarDataPtr->set(std::string(ANALYSIS_COUNT), (unsigned long)1);
