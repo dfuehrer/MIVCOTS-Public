@@ -52,7 +52,6 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 	mysql_init(&mysql);
 	CarSource = _CarSource;
 	int success = 0;
-	char input = 'A';
 	if (!mysql_real_connect(&mysql, host, user, passwd, NULL, 0, NULL, 0)){ // if failed
 		return mysql_errno(&mysql);//Failed
 	}
@@ -61,12 +60,13 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 	}
 }
 
-int DatabaseConnector::createTable(long carnum) {
+int DatabaseConnector::createTable(CarData *receivedData) {
 	int pass = 0;
 	int errorNum = NULL;
+	long carnum;
 	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
-	str2 = std::to_string(carnum);
+	str2 = std::to_string(receivedData->get(ID,&carnum));
 	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,Date LONG,Time LONG,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
 	const char* cstr = new char[NewCarTable.length() + 1];
@@ -80,39 +80,36 @@ int DatabaseConnector::createTable(long carnum) {
 	}
 }
 
-int DatabaseConnector::addNewColumn(long carnum, std::string columnName, std::string columnType) {
+int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	int columnFound = 0;
-	std::string str1 = columnName;
-	const char wild = NULL;
-	result = mysql_list_tables(&mysql, wild);
-	while (row = mysql_fetch_row(result)) {
-		int endOfRow = 1;
-		for (int i = 0; i < endOfRow; i++) {
-			if (row[i] == str1) {
-				columnFound = 1;
-			}
-		}
-	}
-	if (columnFound == 0) {
+	long carIDNum;
+	int i;
+	//std::string str1 = columnName;
+	//const char wild = NULL;
+	//result = mysql_list_tables(&mysql, wild);
+	//while (row = mysql_fetch_row(result)) {
+	//	int endOfRow = 1;
+	//	for (int i = 0; i < endOfRow; i++) {
+	//		if (row[i] == str1) {
+	//			columnFound = 1;
+	//		}
+	//	}
+	//}
+	for (i = 0;i <= numKeys; i++) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
-		str2 = std::to_string(carnum);
+		str2 = std::to_string(receivedData->get(ID,&carIDNum));
 		std::string str3 = " ADD ";
-		std::string str4 = columnName;
+		std::string str4 = keyList[i];
 		std::string str5 = " ";
-		std::string str6 = columnType;
+		std::string str6 = ID;//needs to be incremented through showing the type
 		std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6;
 		const char* cstr = new char[NewCarTable.length() + 1];
 		cstr = NewCarTable.c_str();
 		mysql_query(&mysql, cstr);
 		mysql_free_result(result);
-		return 0;
 	}
-	else {
-		mysql_free_result(result);
-		return mysql_errno(&mysql);//Failed
-	}
-	
+	return 0;	
 }
 
 //Add Data to Table. EIther use Insert into or possibly update.
@@ -124,27 +121,25 @@ long carIDNum, date, time;
 long data;//change to std::string when overload implemented
 									//create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
-	//inputqadd.receive();
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
 	str2 = std::to_string(receivedData->get(ID,&carIDNum));
-	std::string str3 = " (Date,Time";
-	std::string str4;
-	for (i = 0; i < numKeys; i++) {
-		str4.append(",");
-		str4.append("addKeyMap");//Paul is making map to get column names*****
+	std::string str3 = " (";
+	for (i = 1; i < numKeys; i++) {
+		if (i != 1) {
+			str3.append(",");
+		}
+		str3.append(keyList[i]);//Paul is making map to get column names*****
 	}
-	std::string str5 = ") VALUES (";
-	std::string str6 = std::to_string(receivedData->get(DATE,&date));//get the values for the date 
-	str6.append(",");
-	str6.append(std::to_string(receivedData->get(TIME, &time)));//get the value for the time
-	std::string str7;
-	for (i = 0; i < numKeys; i++) {
-		str7.append(",");
-		str7.append(std::to_string(receivedData->get("addKeyMap",&data)));//get all of the key values***** will also need map to have dataTypes
+	std::string str7 = ") VALUES (";
+	for (i = 1; i < numKeys; i++) {
+		if (i != 1) {
+			str7.append(",");
+		}
+		str7.append(std::to_string(receivedData->get(keyList[i],&data)));//get all of the key values***** will also need map to have dataTypes
 	}
 	std::string str8 = ");";
-	std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8;
+	std::string NewCarTable = str1 + str2 + str3  + str7 + str8;
 	const char* cstr = new char[NewCarTable.length() + 1];
 	cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
@@ -203,10 +198,10 @@ int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long lo
 		return mysql_errno(&mysql);//Failed
 }
 //Create database Create a database on the sql server.		create database [databasename];
-int DatabaseConnector::createDatabase(std::string databaseName) {
+int DatabaseConnector::createDatabase() {
 	int pass = 0;
 	std::string str1 = "CREATE DATABASE ";
-	std::string str2 = databaseName;
+	std::string str2 = database;
 	std::string finalString = str1 + str2;
 	const char* cstr = new char[finalString.length() + 1];
 	cstr = finalString.c_str();
@@ -223,7 +218,7 @@ int DatabaseConnector::createDatabase(std::string databaseName) {
 //column names will be unique key 
 int DatabaseConnector::getColumnTypes(long carnum) {
 	int pass = 0;
-	unsigned int numColumns = 0;
+	int rowCnt = 0;
 	std::string str1 = "SHOW COLUMNS FROM car";
 	std::string str2 = std::to_string(carnum);
 	std::string finalString = str1 + str2;
@@ -233,11 +228,13 @@ int DatabaseConnector::getColumnTypes(long carnum) {
 	if (pass == 0) {
 		result = mysql_store_result(&mysql);
 		while ((row = mysql_fetch_row(result))) {
-			for (int i = 0; i <= 2; i++) {
-				columnDataTypes[endpointOfColumnTypeList][i] = row[i];
-				wxLogDebug(_(row[i]));
+			for (int i = 0; i < 2; i++) {
+				if(columnDataTypes[rowCnt] != row[i]){
+					columnDataTypes[endpointOfColumnTypeList] = row[i];
+					endpointOfColumnTypeList++;
+				}
+				rowCnt++;
 			}
-			endpointOfColumnTypeList++;
 		}
 		mysql_free_result(result);
 		return 0;
@@ -284,11 +281,9 @@ int DatabaseConnector::freeResult() {
 	return 0;
 }
 
-int DatabaseConnector::selectDatabase(std::string databaseName) {
+int DatabaseConnector::selectDatabase() {
 	int pass = 0;
-	const char* cstr = new char[databaseName.length() + 1];
-	cstr = databaseName.c_str();
-	pass = mysql_select_db(&mysql, cstr);
+	pass = mysql_select_db(&mysql, database);
 	if (pass == 0) {
 		return 0;
 	}
@@ -302,17 +297,17 @@ int DatabaseConnector::selectDatabase(std::string databaseName) {
 
 ////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
 
-int DatabaseConnector::InitializeDatabase(std::string database) {
+int DatabaseConnector::InitializeDatabase() {
 	initDB(nullptr);
 	endpointOfColumnTypeList = 0;
-	int ErrorNum = createDatabase(database);
+	int ErrorNum = createDatabase();
 
 	if (ErrorNum != 1007 && ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
 	}
 
-	int ErrorNum2 = selectDatabase(database);
+	int ErrorNum2 = selectDatabase();
 
 	if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
@@ -337,7 +332,7 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 	long carnum;
 	if (knownCarTables[receivedData->get(ID,&carnum)] == 0) {
 		knownCarTables[receivedData->get(ID, &carnum)] = 1;
-		ErrorNum = createTable(receivedData->get(ID, &carnum));
+		ErrorNum = createTable(receivedData);
 	}
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
@@ -465,6 +460,7 @@ void DatabaseConnector::runDatabaseThread()
 {
 	CarData* receivedData;
 	CarData* receivedBoxData;
+	InitializeDatabase();
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
