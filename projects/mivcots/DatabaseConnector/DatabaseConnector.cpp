@@ -15,6 +15,7 @@ int DatabaseConnector::initialize(endpoint<CarData*>* _dataQ, endpoint<CarData*>
 	boxDataQ = _boxDataQ;
 	carSource = _carSource;
 	outputCache = _outputCache;
+	InitializeDatabase();
 	return SUCCESS;
 }
 
@@ -56,7 +57,7 @@ int DatabaseConnector::initDB(CarPool* _CarSource) {
 		return mysql_errno(&mysql);//Failed
 	}
 	else {//Success
-		return 0;//Pass
+		return SUCCESS;//Pass
 	}
 }
 
@@ -73,7 +74,7 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 	cstr = NewCarTable.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {//Success
-		return 0;
+		return SUCCESS;
 	}
 	else {//Failed
 		return mysql_errno(&mysql);//Failed
@@ -110,14 +111,14 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 		mysql_query(&mysql, cstr);
 		mysql_free_result(result);
 	}
-	return 0;	
+	return SUCCESS;
 }
 
 //Add Data to Table. EIther use Insert into or possibly update.
 //int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
-long carIDNum, date, time;
+long carIDNum;
 long data;//change to std::string when overload implemented
 std::map<std::string, std::string> ::iterator iter;
 		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
@@ -146,7 +147,7 @@ std::map<std::string, std::string> ::iterator iter;
 	cstr = NewCarTable.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else
 		return mysql_errno(&mysql);//Failed
@@ -193,7 +194,7 @@ int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long lo
 		}
 		mysql_free_result(tbl_cols);
 		mysql_free_result(result);
-		return 0;
+		return SUCCESS;
 	}
 	else
 		return mysql_errno(&mysql);//Failed
@@ -208,7 +209,7 @@ int DatabaseConnector::createDatabase() {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {;
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		return mysql_errno(&mysql);//Failed
@@ -238,7 +239,7 @@ int DatabaseConnector::getColumnTypes(long carnum) {
 			}
 		}
 		mysql_free_result(result);
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		return mysql_errno(&mysql);//Failed
@@ -262,7 +263,7 @@ int pass = 0;
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		return mysql_errno(&mysql);//Failed
@@ -272,21 +273,21 @@ int pass = 0;
 //Close connection		 mysql_close(&mysql)
 int DatabaseConnector::closeConnection() {
 	mysql_close(&mysql);
-	return 0;
+	return SUCCESS;
 }
 
 //free result
 
 int DatabaseConnector::freeResult() {
 	mysql_free_result(result);
-	return 0;
+	return SUCCESS;
 }
 
 int DatabaseConnector::selectDatabase() {
 	int pass = 0;
 	pass = mysql_select_db(&mysql, database);
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		return mysql_errno(&mysql);//Failed
@@ -305,27 +306,27 @@ int DatabaseConnector::InitializeDatabase() {
 
 	if (ErrorNum != 1007 && ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
 
 	int ErrorNum2 = selectDatabase();
 
 	if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
 
 	int ErrorNum3 = getColumnTypes(1);
 
 	if (ErrorNum3 != 0 || ErrorNum3 != 1146) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
 
 	for (int i = 0; i < 128; i++) {
 		knownCarTables[i] = 0;
 	}
-	return 0;
+	return SUCCESS;
 }
 
 int DatabaseConnector::AddData(CarData *receivedData) {
@@ -337,22 +338,22 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 	}
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
 	
 	int ErrorNum2 = addDataToTable(receivedData);
 	 if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
-	return 0;
+	return SUCCESS;
 }
 
 int DatabaseConnector::GetData(long carnum, long long minValue, long long maxValue) {
 	int ErrorNum = getDataTimestamp(carnum, minValue, maxValue);
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;
+		return ERR_DATABASE;
 	}
 	CarData* receivedBoxData;
 	while (isRunning) {
@@ -363,7 +364,7 @@ int DatabaseConnector::GetData(long carnum, long long minValue, long long maxVal
 		}
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 int DatabaseConnector::UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue) {
@@ -374,7 +375,7 @@ int DatabaseConnector::UpdateData(long carnum, int uniqueID, std::string columnN
 		return 1;
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 //shutdown mysql_shutdown(&mysql)
@@ -384,12 +385,12 @@ int DatabaseConnector::shutdown() {
 	closeConnection();//calls the close connection function
 	if (pass == 0) {
 		std::cout << "Shutdown Successful" << std::endl;
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;//Failed
+		return ERR_DATABASE;//Failed
 	}
 }
 
@@ -404,12 +405,12 @@ int DatabaseConnector::dropTable(long carnum) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;//Failed
+		return ERR_DATABASE;//Failed
 	}
 }
 
@@ -426,12 +427,12 @@ int DatabaseConnector::dropRowFromTable(long carnum, long long timestamp) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;//Failed
+		return ERR_DATABASE;//Failed
 	}
 }
 
@@ -448,12 +449,12 @@ int DatabaseConnector::dropColumn(long carnum, std::string columnName) {
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
 	if (pass == 0) {
-		return 0;
+		return SUCCESS;
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return 1;//Failed
+		return ERR_DATABASE;//Failed
 	}
 }
 
@@ -461,7 +462,6 @@ void DatabaseConnector::runDatabaseThread()
 {
 	CarData* receivedData;
 	CarData* receivedBoxData;
-	InitializeDatabase();
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
