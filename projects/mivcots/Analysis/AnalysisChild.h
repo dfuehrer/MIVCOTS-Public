@@ -6,6 +6,7 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
+#include "error_codes.h"
 
 class AnalysisChild
 {
