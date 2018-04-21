@@ -140,9 +140,7 @@ bool Map::update()
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
 			for (startIter; startIter != endIter; startIter++) {
-				if ((*startIter)->get(std::string(LON)+"D", &lon) |
-					(*startIter)->get(std::string(LON)+"D", &lat) |
-					(*startIter)->get(std::string(LON)+"D", &course) != SUCCESS) {
+				if ((*startIter)->get(std::string(LON_D), &lon) | (*startIter)->get(std::string(LON_D), &lat) | (*startIter)->get(std::string(LON_D), &course) != SUCCESS) {
 				}
 				else {
 					drawCar(lat, lon, course * 0.01745329252, i);

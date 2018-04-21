@@ -67,8 +67,8 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 	long carnum;
 	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
-	str2 = std::to_string(receivedData->get(ID,&carnum));
-	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,Date LONG,Time LONG,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
+	str2 = std::to_string(receivedData->get(ID_S,&carnum));
+	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
 	const char* cstr = new char[NewCarTable.length() + 1];
 	cstr = NewCarTable.c_str();
@@ -100,7 +100,7 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	for (iter = keyMap.begin();iter !=keyMap.end(); iter++) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
-		str2 = std::to_string(receivedData->get(ID,&carIDNum));
+		str2 = std::to_string(receivedData->get(ID_S,&carIDNum));
 		std::string str3 = " ADD ";
 		std::string str4 = iter->second;//columnName
 		std::string str5 = " ";
@@ -129,7 +129,7 @@ std::map<std::string, std::string> ::iterator iter;
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
-	str2 = std::to_string(receivedData->get(ID,&carIDNum));
+	str2 = std::to_string(receivedData->get(ID_S,&carIDNum));
 	std::string str3 = " (";
 	iter = keyMap.begin();
 	iter++;
@@ -352,8 +352,8 @@ int DatabaseConnector::InitializeDatabase() {
 int DatabaseConnector::AddData(CarData *receivedData) {
 	int ErrorNum = 0;
 	long carnum;
-	if (knownCarTables[receivedData->get(ID,&carnum)] == 0) {
-		knownCarTables[receivedData->get(ID, &carnum)] = 1;
+	if (knownCarTables[receivedData->get(ID_S,&carnum)] == 0) {
+		knownCarTables[receivedData->get(ID_S, &carnum)] = 1;
 		ErrorNum = createTable(receivedData);
 	}
 	if (ErrorNum != 0) {
