@@ -1,5 +1,4 @@
 #pragma once
-#define SUCCESS								0x0000
 #define ERR_CAR_CACHE_PTR_IS_NULL			0x0001
 #define ERR_BOX_CACHE_PTR_IS_NULL			0x0002
 #define ERR_UPDATE_QUEUE_PTR_IS_NULL		0x0004
