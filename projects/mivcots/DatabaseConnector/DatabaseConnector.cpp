@@ -144,7 +144,7 @@ std::map<std::string, std::string> ::iterator iter;
 		str7.append(",");
 		//get all of the key values***** will also need map to have dataTypes
 		KeyNameWithType = iter->second;
-		length = KeyNameWithType.length;
+		length = KeyNameWithType.length();
 		switch (KeyNameWithType.at(length)) {
 			case 'S': {//Long
 				str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
