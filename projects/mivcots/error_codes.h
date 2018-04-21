@@ -1,12 +1,23 @@
 #pragma once
 
 #define SUCCESS 0
-#define NULLPTRERR 1 << 1
-#define OUTOFRANGE 1 << 2
-#define ELEMENTEXISTS 1 << 3
-#define EMPTYQUEUE 1 << 4
-#define MUTEXERR 1 << 5
-#define NOTFOUND 1 << 6
-#define INITERR 1 << 7
-#define INVALIDMSGFORMAT 1 << 8
-#define VALUEERR 1 << 9
+
+
+// Class
+#define ERR_ANALYSIS_CHILD 0x01000000
+
+
+
+// Function
+
+
+// Error
+#define ERR_NULLPTR			0x00000002
+#define ERR_OUTOFRANGE		0x00000004
+#define ERR_ELEMENTEXISTS		0x00000008
+#define ERR_EMPTYQUEUE			0x00000010
+#define ERR_MUTEXERR			0x00000020
+#define ERR_NOTFOUND			0x00000040
+#define ERR_INITERR				0x00000080
+#define ERR_INVALIDMSGFORMAT	0x00000100
+#define ERR_VALUEERR			0x00000200

@@ -17,7 +17,7 @@ int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>*
 
 	if ((feedQ == nullptr) ||
 		(updateQ == nullptr)) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	feedQ = _feedQ;
@@ -26,7 +26,7 @@ int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>*
 	slock = new std::shared_lock<std::shared_mutex>(smtx, std::defer_lock);
 
 	if (slock == nullptr) {
-		return MUTEXERR;
+		return ERR_MUTEXERR;
 	}
 
 	return SUCCESS;
@@ -113,12 +113,12 @@ int sharedCache<CarData*>::acquireReadLock()
 
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
 	if ((startIter == nullptr) || (endIter == nullptr)) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	if (buffer.size() == 0) {
 		
-		return EMPTYQUEUE;
+		return ERR_EMPTYQUEUE;
 	}
 
 	*startIter = buffer.begin();
@@ -129,16 +129,16 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter){
 
 int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length){
 	if ((startIter == nullptr) || (endIter == nullptr)) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	if ((length > maxSize) || (length > buffer.size())) {
-		return OUTOFRANGE;
+		return ERR_OUTOFRANGE;
 	}
 
 	if (buffer.size() == 0) {
 		
-		return EMPTYQUEUE;
+		return ERR_EMPTYQUEUE;
 	}
 
 	*startIter = buffer.begin();
@@ -167,7 +167,7 @@ template <>
 int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 {
 	if ((toFind == nullptr) || (ind == nullptr)) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 	
 	int left = 0;
@@ -194,7 +194,7 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 		}
 	}
 
-	return NOTFOUND;
+	return ERR_NOTFOUND;
 }
 
 

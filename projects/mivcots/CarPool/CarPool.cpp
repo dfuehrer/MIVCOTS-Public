@@ -11,7 +11,7 @@ CarPool::~CarPool()
 int CarPool::getCar(CarData** dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	*dest = new CarData();

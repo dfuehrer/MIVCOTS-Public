@@ -27,7 +27,7 @@ int DatabaseConnector::start()
 		return SUCCESS;
 	}
 	else {
-		return INITERR;
+		return ERR_INITERR;
 	}
 }
 

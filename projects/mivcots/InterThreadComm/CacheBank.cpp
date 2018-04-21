@@ -20,7 +20,7 @@ CacheBank::~CacheBank()
 int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsigned int _maxCacheSize)
 {
 	if (_carSource == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 	
 	carSource = _carSource;
@@ -54,7 +54,7 @@ int CacheBank::feed(CarData* toFeed)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
 	if (toFeed == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 	int rc = SUCCESS;
 	long carNum;
@@ -64,7 +64,7 @@ int CacheBank::feed(CarData* toFeed)
 
 	CMMiter loc;
 	int rc2 = addCarNum(carNum, &loc);
-	if (rc2 != ELEMENTEXISTS) {
+	if (rc2 != ERR_ELEMENTEXISTS) {
 		rc |= rc2;
 	}
 	rc |= loc->second->inputQ.getEndpoint1()->send(toFeed);
@@ -76,7 +76,7 @@ int CacheBank::feed(CarData* toFeed)
 int CacheBank::acquireReadLock(long carNum)
 {
 	if (isNewCarNum(carNum)) {
-		return NOTFOUND;
+		return ERR_NOTFOUND;
 	}
 	return carModuleMap.at(carNum)->cache.acquireReadLock();
 }
@@ -85,7 +85,7 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
 	if (isNewCarNum(carNum)) {
-		return NOTFOUND;
+		return ERR_NOTFOUND;
 	}
 	return carModuleMap.at(carNum)->cache.readCache(startIter, endIter);
 }
@@ -94,7 +94,7 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
 	if (isNewCarNum(carNum)) {
-		return NOTFOUND;
+		return ERR_NOTFOUND;
 	}
 	return carModuleMap.at(carNum)->cache.readCache(startIter, endIter, length);
 }
@@ -141,7 +141,7 @@ int CacheBank::stopAnalyses()
 int CacheBank::getCarNums(std::vector<long>* toWrite)
 {
 	if (toWrite == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	toWrite->clear();
@@ -168,7 +168,7 @@ bool CacheBank::isNewCarNum(long carNum, CMMiter* loc)
 int CacheBank::addCarNum(long carNum, CMMiter* loc)
 {
 	if (loc == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	if (isNewCarNum(carNum, loc)) {
@@ -192,6 +192,6 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 		return rc;
 	}
 	else {
-		return ELEMENTEXISTS;
+		return ERR_ELEMENTEXISTS;
 	}
 }
