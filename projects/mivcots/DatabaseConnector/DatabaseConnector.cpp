@@ -337,14 +337,14 @@ int DatabaseConnector::InitializeDatabase() {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
-
+	/*
 	int ErrorNum3 = getColumnTypes(1);
 
 	if (ErrorNum3 != 0 || ErrorNum3 != 1146) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
-
+	*/
 	for (int i = 0; i < 128; i++) {
 		knownCarTables[i] = 0;
 		columnDataTypes[i] = "";
@@ -363,9 +363,13 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
-	
-	int ErrorNum2 = addDataToTable(receivedData);
-	 if (ErrorNum2 != 0) {
+	int ErrorNum2 = addNewColumn(receivedData);
+	if (ErrorNum2 != 0) {
+		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		return ERR_DATABASE;
+	}
+	int ErrorNum3 = addDataToTable(receivedData);
+	if (ErrorNum3 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
