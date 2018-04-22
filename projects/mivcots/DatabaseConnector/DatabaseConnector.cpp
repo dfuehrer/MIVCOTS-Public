@@ -117,12 +117,14 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 //int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
+int problem = 0;
 long carIDNum;
 long LongData;//change to std::string when overload implemented
 unsigned long ULongData;
 double DoubleData;
 std::string KeyNameWithType;
 int length;
+char typeCompChar;
 
 std::map<std::string, std::string> ::iterator iter;
 		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
@@ -132,13 +134,34 @@ std::map<std::string, std::string> ::iterator iter;
 	str2 = std::to_string(receivedData->get(ID_S,&carIDNum));
 	std::string str3 = " (";
 	iter = keyMap.begin();
+	str3.append(iter->second);
 	iter++;
 	for (iter; iter != keyMap.end(); iter++) {
 		str3.append(",");
 		str3.append(iter->second);//Paul is making map to get column names*****
 	}
 	std::string str7 = ") VALUES (";
+
 	iter = keyMap.begin();
+	KeyNameWithType = iter->second;
+	length = KeyNameWithType.length();
+	typeCompChar = KeyNameWithType[length - 1];
+	switch (typeCompChar) {
+	case 'S': {//Long
+		str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
+	}
+	case 'U': {//Unsigned Long
+		str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
+	}
+	case 'D': {//Double
+		str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
+	}
+	default: {
+		problem = 1;
+		wxLogDebug("addDataToTable problem in first switch statement ");
+	}
+			 //}
+	}
 	iter++;
 	for (iter; iter != keyMap.end(); iter++) {
 		str7.append(",");
@@ -146,7 +169,8 @@ std::map<std::string, std::string> ::iterator iter;
 		//if (iter->second ) {
 		KeyNameWithType = iter->second;
 		length = KeyNameWithType.length();
-		switch (KeyNameWithType.at(length)) {
+		typeCompChar = KeyNameWithType[length - 1];
+		switch (typeCompChar){
 		case 'S': {//Long
 			str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
 		}
@@ -157,7 +181,8 @@ std::map<std::string, std::string> ::iterator iter;
 			str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
 		}
 		default: {
-			wxLogDebug("addDataToTable problem in switch statement");
+			problem = 2;
+			wxLogDebug("addDataToTable problem in second switch statement");
 		}
 			//}
 		}

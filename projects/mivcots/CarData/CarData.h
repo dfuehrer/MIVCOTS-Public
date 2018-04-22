@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <wx/wx.h>
+#include "error_codes.h"
 
 typedef struct dataValue_st {
 	union data_u {
