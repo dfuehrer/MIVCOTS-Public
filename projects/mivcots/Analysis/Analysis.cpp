@@ -6,6 +6,7 @@
 
 AnalysisParent::AnalysisParent()
 {
+	analysisFinishedCounterInt.store(0, std::memory_order_relaxed);
 }
 
 
@@ -89,6 +90,7 @@ int AnalysisParent::runAnalysisThread()
 {
 	isRunning.store(true, std::memory_order_relaxed);
 	setup();
+	//Sleep(1000);
 	while (isRunning.load(std::memory_order_relaxed)) {
 		loop();
 	}
@@ -102,7 +104,7 @@ int AnalysisParent::setup()
 	returnCode = analysisChildVector.begin().operator*()->init(
 		boxCache,
 		carCache,
-		updateQueue,
+		&analysisChildrenUpdateQueue,
 		carPool,
 		&analysisFinishedCounterMutex,
 		&analysisFinishedCounterInt,
@@ -118,10 +120,18 @@ int AnalysisParent::setup()
 
 int AnalysisParent::loop()
 {
+	analysisFinishedCounterInt.store(0, std::memory_order_relaxed);
+
 	// acquire read lock on cache
+	//wxLogDebug("Analysis is trying to get read lock");
+	std::shared_lock<std::shared_mutex> toLock;
+	carCache->acquireReadLock(&toLock);
+	//wxLogDebug("Analysis got read lock");
+
+
 	// notify all
 	std::unique_lock<std::mutex> analysisStepLock(analysisStepMutex);
-	analysisStepInt = true;
+	analysisStepInt.store(true, std::memory_order_relaxed);
 	analysisStepLock.unlock();
 	analysisStepConditionVariable.notify_all();
 	// while counter is less than length of children vector
@@ -133,6 +143,15 @@ int AnalysisParent::loop()
 		this->aggregate();// finish aggregating
 	}
 
+	if (analysisAggregationSet.empty()) {
+		carCache->releaseReadLock(&toLock);
+		analysisStepLock.lock();
+		analysisStepInt.store(false, std::memory_order_relaxed);
+		analysisStepLock.unlock();
+		Sleep(ANALYSIS_PARENT_DELAY_MS);
+		return 0;
+	}
+
 	for (CarData* currentCarDataPtr : analysisAggregationSet) {
 		CarData* tempCarDataMergedPtr;
 		carPool->getCar(&tempCarDataMergedPtr);						// Allocate a CarData 
@@ -142,19 +161,26 @@ int AnalysisParent::loop()
 		(*tempCarDataMergedPtr) += (*currentCarDataPtr);			// apply updates to copies
 		//analysisUpdateQueue.push_back(tempCarDataMergedPtr);
 		updateQueue->send(tempCarDataMergedPtr);					// Send stuff back to cache
+		tempCarDataMergedPtr->printCar();	// For debugging :)
+		
 		// TODO: add second queue for sending stuff back to database
 		// push updated copies into databases and cache update queues
 		
 	}
 	analysisAggregationSet.clear();
 
+	// TODO: Does this need to happen earlier?
 	analysisStepLock.lock();
-	analysisStepInt = true;
+	analysisStepInt.store(false, std::memory_order_relaxed);
 	analysisStepLock.unlock();
 	// release read lock on cache
-	carCache->releaseReadLock();
+	carCache->releaseReadLock(&toLock);
 	// try acquire write lock on cache
+	wxLogDebug("Analysis attempting Cache write");
 	carCache->updateCache();
+	wxLogDebug("Analysis wrote cache");
+
+	Sleep(100);
 
 	return 0;
 }

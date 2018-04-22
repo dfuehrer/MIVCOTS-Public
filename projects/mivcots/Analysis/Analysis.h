@@ -18,6 +18,7 @@
 #include <mutex>
 #include <condition_variable>
 
+#define ANALYSIS_PARENT_DELAY_MS 1
 
 class AnalysisParent
 {

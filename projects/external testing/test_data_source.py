@@ -31,7 +31,7 @@ while 1:
         #print("#," + line.replace("\n","") + ",!\n")
         #line = "#," + line.replace("\n","") + ",!\n"
         #line += "AC
-        line = line.replace("!\n","") + "AC," + str(timeStart) + "!\n"
+        line = line.replace("!\n","") + "AC," + str(timeStart) + ",!\n"
         ser.write(line.encode("utf-8"))
         timeStart +=1;
         #print()

@@ -6,9 +6,7 @@ sharedCache<CarData*>::sharedCache()
 
 sharedCache<CarData*>::~sharedCache()
 {
-	if (slock != nullptr) {
-		delete slock;
-	}
+
 }
 
 int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>* _feedQ, endpoint<CarData*>* _updateQ)
@@ -22,12 +20,6 @@ int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>*
 
 	feedQ = _feedQ;
 	updateQ = _updateQ;
-
-	slock = new std::shared_lock<std::shared_mutex>(smtx, std::defer_lock);
-
-	if (slock == nullptr) {
-		return ERR_MUTEXERR;
-	}
 
 	return SUCCESS;
 }
@@ -90,11 +82,13 @@ int sharedCache<CarData*>::updateCache()
 	CarData* tempData;
 
 	while (updateQ->receiveQsize() > 0) {
-		updateQ->receiveQfront(&tempData);
+		updateQ->receive(&tempData);
 
 		findRC = findItem(tempData, &ind);
 		if (findRC == SUCCESS) {
+			delete buffer.at(ind);
 			buffer.at(ind) = tempData;
+
 		}
 		else {
 			rc |= findRC;
@@ -105,9 +99,10 @@ int sharedCache<CarData*>::updateCache()
 	return rc;
 }
 
-int sharedCache<CarData*>::acquireReadLock()
+int sharedCache<CarData*>::acquireReadLock(std::shared_lock<std::shared_mutex> *toLock)
 {
-	slock->lock();
+	*toLock = std::shared_lock<std::shared_mutex>(smtx);
+	
 	return SUCCESS;
 }
 
@@ -147,8 +142,8 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 	return SUCCESS;
 }
 
-int sharedCache<CarData*>::releaseReadLock(){
-	slock->unlock();
+int sharedCache<CarData*>::releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock){
+	toUnlock->unlock();
 	return SUCCESS;
 }
 
@@ -170,8 +165,12 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 		return ERR_NULLPTR;
 	}
 	
+	if (buffer.size() == 0) {
+		return ERR_EMPTYCACHE;
+	}
+	
 	int left = 0;
-	int right = buffer.size();
+	int right = buffer.size() - 1;
 	int middle;
 
 	unsigned long toFindTimeStamp, searchTimeStamp;
