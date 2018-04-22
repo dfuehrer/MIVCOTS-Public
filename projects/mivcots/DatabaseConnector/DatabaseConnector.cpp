@@ -143,21 +143,23 @@ std::map<std::string, std::string> ::iterator iter;
 	for (iter; iter != keyMap.end(); iter++) {
 		str7.append(",");
 		//get all of the key values***** will also need map to have dataTypes
+		//if (iter->second ) {
 		KeyNameWithType = iter->second;
 		length = KeyNameWithType.length();
 		switch (KeyNameWithType.at(length)) {
-			case 'S': {//Long
-				str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
-			}
-			case 'U': {//Unsigned Long
-				str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
-			}
-			case 'D': {//Double
-				str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
-			}
-			default: {
-				wxLogDebug("addDataToTable problem in switch statement");
-			}
+		case 'S': {//Long
+			str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
+		}
+		case 'U': {//Unsigned Long
+			str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
+		}
+		case 'D': {//Double
+			str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
+		}
+		default: {
+			wxLogDebug("addDataToTable problem in switch statement");
+		}
+			//}
 		}
 	}
 	std::string str8 = ");";
@@ -345,6 +347,7 @@ int DatabaseConnector::InitializeDatabase() {
 
 	for (int i = 0; i < 128; i++) {
 		knownCarTables[i] = 0;
+		columnDataTypes[i] = "";
 	}
 	return SUCCESS;
 }
@@ -485,7 +488,7 @@ void DatabaseConnector::runDatabaseThread()
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
-			//AddData(receivedData);
+			AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
 			wxLogDebug("Database connector sent a cardata object");
