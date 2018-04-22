@@ -8,6 +8,7 @@
 #include "CarData.h"
 #include "CarPool.h"
 #include "endpoint.h"
+#include "key_defines.h"
 #include "serial/serial.h"
 
 #define DELIMITER ","

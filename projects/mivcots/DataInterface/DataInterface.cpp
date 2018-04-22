@@ -199,6 +199,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 		//wxLogDebug("Reading Key: %s", tmpKey);
 	}
 
+	(*parsed)->addKey(ANALYSIS_COUNT_U);
 	(*parsed)->printCar();
 	return SUCCESS;
 }
