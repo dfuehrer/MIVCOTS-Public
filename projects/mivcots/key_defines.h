@@ -1,5 +1,5 @@
 #pragma once
-#include<vector>
+#include<map>
 #include<string>
 #define numKeys 16
 #define ID "AA"
@@ -18,4 +18,4 @@
 #define MAG_X "AN"
 #define MAG_Y "AO"
 #define MAG_Z "AP"
-static std::vector<std::string> keyList{ ID,DATE,TIME,LON,LAT,ALTITUDE,HEADING,ACC_X,ACC_Y,ACC_Z,GYR_X,GYR_Y,GYR_X,MAG_X,MAG_Y,MAG_Z };
+static std::map<std::string, std::string> keyMap {{ID, "ID"},{DATE, "DATE"},{TIME, "TIME"},{LON, "LON"},{LAT, "LAT"},{ALTITUDE, "ALTITUDE"},{HEADING, "HEADING"},{ACC_X, "ACC_X"},{ACC_Y, "ACC_Y"},{ACC_Z, "ACC_Z"},{GYR_X, "GYR_X"},{GYR_Y, "GYR_Y"},{GYR_Z, "GYR_Z"},{MAG_X, "MAG_X"},{MAG_Y, "MAG_Y"},{MAG_Z, "MAG_Z"}};

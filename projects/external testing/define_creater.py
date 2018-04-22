@@ -10,20 +10,20 @@ for line in data:
     if(len(line) == 2):
         print("#define " + line[1] + " \"" + line[0] + "\"")
         defines.append("#define " + line[1] + " \"" + line[0] + "\"\n")
-        vectorList.append(line[1] + ",")
+        vectorList.append(line[1])
         #f.write("#define " + line[1] + " \"" + line[0] + "\"\n")
 
-vectorList[-1] = vectorList[-1].replace(",", "")
-print (vectorList)
+#vectorList[-1] = vectorList[-1].replace(",", "")
+print (vectorList[:-1])
 
-f.write("#include<vector>\n#include<string>\n")
+f.write("#pragma once\n")
+f.write("#include<map>\n#include<string>\n")
 
 f.write("#define numKeys " + str(len(defines)) + "\n")
 for line in defines:
     f.write(line)
 
-f.write("std::vector<std::string> keyList {")
-for keyID in vectorList:
-	f.write(keyID)
-
-f.write("}")
+f.write("static std::map<std::string, std::string> keyMap {")
+for keyID in vectorList[:-1]:
+	f.write("{" + keyID + ", \""  + keyID + "\"},")
+f.write("{" + vectorList[-1] + ", \""  + vectorList[-1] + "\"}};")
