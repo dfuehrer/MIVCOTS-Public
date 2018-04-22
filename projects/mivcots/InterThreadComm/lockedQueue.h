@@ -26,10 +26,10 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(Qmutex);
 		if (Q.empty()) {
-			return EMPTYQUEUE;
+			return ERR_EMPTYQUEUE;
 		}
 		else if (destination == nullptr) {
-			return NULLPTRERR;
+			return ERR_NULLPTR;
 		}
 		else {
 			*destination = Q.front();
@@ -43,10 +43,10 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(Qmutex);
 		if (Q.empty()) {
-			return EMPTYQUEUE;
+			return ERR_EMPTYQUEUE;
 		}
 		else if (destination == nullptr) {
-			return NULLPTRERR;
+			return ERR_NULLPTR;
 		}
 		else {
 			*destination = Q.front();

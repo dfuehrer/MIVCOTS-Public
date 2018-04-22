@@ -26,7 +26,7 @@ public:
 
 	//int AddData(long carnum, std::string sensortype, std::string sensorvar, long long datetime, double data, endpoint <CarData*, CarData* > inputqadd);
 	int AddData(CarData *receivedData); 
-	int InitializeDatabase(std::string database);
+	int InitializeDatabase();
 	//int GetData(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq );
 	int GetData(long carnum, long long minValue, long long maxValue);
 	//int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputq);
@@ -57,22 +57,22 @@ private:
 	char passwd[32] = "somethingsecure";
 	char database[64] = "mivcots";
 	int knownCarTables[128];
-	std::string columnDataTypes[128][128];//[carNum][columnNum]
+	std::string columnDataTypes[128];//[carNum][columnNum]
 	int endpointOfColumnTypeList;
 
 	int initDB(CarPool* _CarSource);
-	int addNewColumn(long carnum, std::string columnName, std::string columnType);
+	int addNewColumn(CarData *receivedData);
 	//int addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd);
 	int addDataToTable(CarData *receivedData);
 	//int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue, endpoint <CarData*, CarData* > inputqupdate);
 	int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue);
 	//int getDataTimestamp(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq);
 	int getDataTimestamp(long carnum, long long minValue, long long maxValue);
-	int createDatabase(std::string databaseName);
-	int createTable(long carnum);
+	int createDatabase();
+	int createTable(CarData *receivedData);
 	int closeConnection();
 	int freeResult();
-	int selectDatabase(std::string databaseName);
+	int selectDatabase();
 	int getColumnTypes(long carnum);
 
 };

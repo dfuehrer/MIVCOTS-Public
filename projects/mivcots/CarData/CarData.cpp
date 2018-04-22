@@ -16,7 +16,7 @@ int CarData::addKey(std::string key)
 		return SUCCESS;
 	}
 	else {
-		return ELEMENTEXISTS;
+		return ERR_ELEMENTEXISTS;
 	}
 }
 
@@ -61,7 +61,7 @@ int CarData::set(std::string key, double newValue)
 int CarData::get(std::string key, long * dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -77,7 +77,7 @@ int CarData::get(std::string key, long * dest)
 int CarData::get(std::string key, unsigned long * dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -93,7 +93,7 @@ int CarData::get(std::string key, unsigned long * dest)
 int CarData::get(std::string key, double * dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -127,13 +127,13 @@ void CarData::printCar()
 inline int CarData::find_key(std::string key, dataMap_t::iterator* iter)
 {
 	if (iter == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	*iter = dataMap.find(key);
 
 	if (*iter == dataMap.end()) {
-		return OUTOFRANGE;
+		return ERR_OUTOFRANGE;
 	}
 	else {
 		return SUCCESS;
@@ -146,7 +146,7 @@ inline int CarData::find_key(std::string key, dataMap_t::iterator* iter)
 int CarData::addKey(char* key) 
 {
 	if (key == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	if (dataMap.find(key) == dataMap.end()) {
@@ -154,7 +154,7 @@ int CarData::addKey(char* key)
 		return SUCCESS;
 	}
 	else {
-		return ELEMENTEXISTS;
+		return ERR_ELEMENTEXISTS;
 	}
 }
 
@@ -170,7 +170,7 @@ int CarData::initialize(std::vector<char*>* keys, bool clearMap)
 	}
 	
 	if (keys == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	int rc = SUCCESS;
@@ -221,7 +221,7 @@ int CarData::set(char* key, double newValue)
 int CarData::get(char* key, long* dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -237,7 +237,7 @@ int CarData::get(char* key, long* dest)
 int CarData::get(char* key, unsigned long* dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -253,7 +253,7 @@ int CarData::get(char* key, unsigned long* dest)
 int CarData::get(char* key, double* dest)
 {
 	if (dest == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	dataMap_t::iterator iter;
@@ -276,13 +276,13 @@ void CarData::printCar()
 inline int CarData::find_key(char* key, dataMap_t::iterator* iter) 
 {
 	if ((iter == nullptr) || (key == nullptr)) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 
 	*iter = dataMap.find(key);
 
 	if (*iter == dataMap.end()) {
-		return OUTOFRANGE;
+		return ERR_OUTOFRANGE;
 	}
 	else {
 		return SUCCESS;

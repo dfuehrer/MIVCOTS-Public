@@ -146,6 +146,7 @@ int AnalysisParent::loop()
 		// push updated copies into databases and cache update queues
 		
 	}
+	analysisAggregationSet.clear();
 	// release read lock on cache
 	carCache->releaseReadLock();
 	// try acquire write lock on cache
@@ -159,7 +160,7 @@ int AnalysisParent::aggregate()
 	CarData * tmpCarDataPtr; // Create temporary Car Data Pointer
 	analysisChildrenUpdateQueue.pop(&tmpCarDataPtr); // Pop item from analysisChildrenUpdateQueue
 	if (tmpCarDataPtr == nullptr) {
-		return NULLPTRERR;
+		return ERR_NULLPTR;
 	}
 	std::pair<std::set<CarData*, carTimeStampCompareLess>::iterator, bool> tmpPair = analysisAggregationSet.insert(tmpCarDataPtr);// TODO: add typedef for the iterator... seriously
 	if (!(tmpPair.second)) {

@@ -53,7 +53,7 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 	
 	if (serialPort == nullptr) {
 		wxLogWarning("Failed to open serial port %s", portName);
-		return INITERR;
+		return ERR_INITERR;
 	}
 
 	serialPort->setTimeout(0, 500, 0, 500, 0);
@@ -70,7 +70,7 @@ int DataInterface::start()
 		return SUCCESS;
 	}
 	else {
-		return INITERR;
+		return ERR_INITERR;
 	}
 }
 
@@ -150,7 +150,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	long tmpLong;
 
 	if (toParse.substr(delimPosLeft, delimPosRight) != "#") {
-		return INVALIDMSGFORMAT;
+		return ERR_INVALIDMSGFORMAT;
 	}
 
 	// Do the first field manually
@@ -176,7 +176,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 			tmpLong = std::stol(tmpValue);
 		}
 		catch (...) {
-			return VALUEERR;
+			return ERR_VALUEERR;
 		}
 
 		// Set the value in the carData

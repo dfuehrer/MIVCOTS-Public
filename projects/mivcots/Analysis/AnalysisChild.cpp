@@ -110,7 +110,7 @@ int AnalysisChild::setup()
 #define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
 int AnalysisChild::loop()
 {
-	
+	int returnCode = SUCCESS;
 	
 	sharedCache<CarData *>::cacheIter startIter, endIter, tempIter;
 	carCache->readCache(&startIter, &endIter);
@@ -119,8 +119,11 @@ int AnalysisChild::loop()
 		(*tempIter)->get(ANALYSIS_COUNT, &analysisCount);
 		if (analysisCount == 0) {
 			// get new CarData
-			CarData * tempCarDataPtr;
+			CarData * tempCarDataPtr = nullptr;
 			carPool->getCar(&tempCarDataPtr);
+			if (tempCarDataPtr == nullptr) {
+				returnCode = ERR_ANALYSIS_CHILD_LOOP_NULL_CARDATA_PTR;
+			}
 			// update analysis count
 			tempCarDataPtr->set(std::string(ANALYSIS_COUNT), (unsigned long)1);
 			tempCarDataPtr->addKey(std::string(ANALYSIS_COUNT));
