@@ -24,7 +24,7 @@ for line in data:
     new = "#," + str(j)
     new +=  ',AA,' + (id)
     new += ',AB,' + (day)
-    new += ',AC,' + str(time+j)
+    #new += ',AC,' + str(time+j)
     new += ',AD,' + (la)
     new += ',AE,' + (lt)
     new += ',AF,' + (al)
