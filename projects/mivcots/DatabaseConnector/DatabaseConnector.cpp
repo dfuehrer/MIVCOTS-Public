@@ -67,7 +67,8 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 	long carnum;
 	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
-	str2 = std::to_string(receivedData->get(ID_S,&carnum));
+	receivedData->get(ID_S, &carnum);
+	str2 = std::to_string(carnum);
 	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
 	const char* cstr = new char[NewCarTable.length() + 1];
@@ -83,7 +84,11 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 
 int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	int columnFound = 0;
-	long carIDNum;
+	long carIDNum = 0;
+	std::string KeyNameWithType = "";
+	char typeCompChar = 'S';
+	int length = 0;
+
 	std::map<std::string, std::string> ::iterator iter;
 
 	//std::string str1 = columnName;
@@ -100,12 +105,33 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	for (iter = keyMap.begin();iter !=keyMap.end(); iter++) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
-		str2 = std::to_string(receivedData->get(ID_S,&carIDNum));
+		receivedData->get(ID_S, &carIDNum);
+		str2 = std::to_string(carIDNum);
 		std::string str3 = " ADD ";
 		std::string str4 = iter->second;//columnName
 		std::string str5 = " ";
-		std::string str6 = "LONG";//columnType
-		std::string NewCarTable = str1 + str2 + str3 + str4 + str5 + str6;
+		KeyNameWithType = iter->second;
+		length = KeyNameWithType.length();
+		typeCompChar = KeyNameWithType[length - 1];
+		switch (typeCompChar) {
+			case 'S': {//Long
+				str5.append("INT;");
+				break;
+			}
+			case 'U': {//Unsigned Long
+				str5.append("INT UNSIGNED;");
+				break;
+			}
+			case 'D': {//Double
+				str5.append("DOUBLE;");
+				break;
+			}
+			default: {
+				wxLogDebug("addNewColumn problem in switch statement");
+				break;
+			}
+		}
+		std::string NewCarTable = str1 + str2 + str3 + str4 + str5;
 		const char* cstr = new char[NewCarTable.length() + 1];
 		cstr = NewCarTable.c_str();
 		mysql_query(&mysql, cstr);
@@ -117,21 +143,22 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 //int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
-int problem = 0;
-long carIDNum;
-long LongData;//change to std::string when overload implemented
-unsigned long ULongData;
-double DoubleData;
-std::string KeyNameWithType;
-int length;
-char typeCompChar;
+int getDataErrorCode = 0;
+long carIDNum = 0;
+long LongData = 0;//change to std::string when overload implemented
+unsigned long ULongData = 0;
+double DoubleData = 0;
+std::string KeyNameWithType = "";
+int length = 0;
+char typeCompChar = 'S';
 
 std::map<std::string, std::string> ::iterator iter;
 		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
-	str2 = std::to_string(receivedData->get(ID_S,&carIDNum));
+	receivedData->get(ID_S, &carIDNum);
+	str2 = std::to_string(carIDNum);
 	std::string str3 = " (";
 	iter = keyMap.begin();
 	str3.append(iter->second);
@@ -147,20 +174,40 @@ std::map<std::string, std::string> ::iterator iter;
 	length = KeyNameWithType.length();
 	typeCompChar = KeyNameWithType[length - 1];
 	switch (typeCompChar) {
-	case 'S': {//Long
-		str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
-	}
-	case 'U': {//Unsigned Long
-		str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
-	}
-	case 'D': {//Double
-		str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
-	}
-	default: {
-		problem = 1;
-		wxLogDebug("addDataToTable problem in first switch statement ");
-	}
-			 //}
+		case 'S': {//Long
+			getDataErrorCode = receivedData->get(iter->first, &LongData);//check return code for SUCCESS which means data is good. Otherwise write NULL
+			if (getDataErrorCode == SUCCESS) {
+				str7.append(std::to_string(LongData));
+			}
+			else {
+				str7.append("NULL");
+			}
+			break;
+		}
+		case 'U': {//Unsigned Long
+			getDataErrorCode = receivedData->get(iter->first, &ULongData);
+			if (getDataErrorCode == SUCCESS) {
+				str7.append(std::to_string(ULongData));
+			}
+			else {
+				str7.append("NULL");
+			}
+			break;
+		}
+		case 'D': {//Double
+			getDataErrorCode = receivedData->get(iter->first, &DoubleData);
+			if (getDataErrorCode == SUCCESS) {
+				str7.append(std::to_string(DoubleData));
+			}
+			else {
+				str7.append("NULL");
+			}
+			break;
+		}
+		default: {
+			wxLogDebug("addDataToTable problem in first switch statement ");
+			break;
+		}
 	}
 	iter++;
 	for (iter; iter != keyMap.end(); iter++) {
@@ -171,20 +218,40 @@ std::map<std::string, std::string> ::iterator iter;
 		length = KeyNameWithType.length();
 		typeCompChar = KeyNameWithType[length - 1];
 		switch (typeCompChar){
-		case 'S': {//Long
-			str7.append(std::to_string(receivedData->get(iter->second, &LongData)));
-		}
-		case 'U': {//Unsigned Long
-			str7.append(std::to_string(receivedData->get(iter->second, &ULongData)));
-		}
-		case 'D': {//Double
-			str7.append(std::to_string(receivedData->get(iter->second, &DoubleData)));
-		}
-		default: {
-			problem = 2;
-			wxLogDebug("addDataToTable problem in second switch statement");
-		}
-			//}
+			case 'S': {//Long
+				getDataErrorCode = receivedData->get(iter->first, &LongData);//check return code for SUCCESS which means data is good. Otherwise write NULL
+				if (getDataErrorCode == SUCCESS) {
+					str7.append(std::to_string(LongData));
+				}
+				else {
+					str7.append("NULL");
+				}
+				break;
+			}
+			case 'U': {//Unsigned Long
+				getDataErrorCode = receivedData->get(iter->first, &ULongData);
+				if (getDataErrorCode == SUCCESS) {
+					str7.append(std::to_string(ULongData));
+				}
+				else {
+					str7.append("NULL");
+				}
+				break;
+			}
+			case 'D': {//Double
+				getDataErrorCode = receivedData->get(iter->first, &DoubleData);
+				if (getDataErrorCode == SUCCESS) {
+					str7.append(std::to_string(DoubleData));
+				}
+				else {
+					str7.append("NULL");
+				}
+				break;
+			}
+			default: {
+				wxLogDebug("addDataToTable problem in second switch statement");
+				break;
+			}
 		}
 	}
 	std::string str8 = ");";
@@ -380,8 +447,9 @@ int DatabaseConnector::InitializeDatabase() {
 int DatabaseConnector::AddData(CarData *receivedData) {
 	int ErrorNum = 0;
 	long carnum;
-	if (knownCarTables[receivedData->get(ID_S,&carnum)] == 0) {
-		knownCarTables[receivedData->get(ID_S, &carnum)] = 1;
+	receivedData->get(ID_S, &carnum);
+	if (knownCarTables[carnum] == 0) {
+		knownCarTables[carnum] = 1;
 		ErrorNum = createTable(receivedData);
 	}
 	if (ErrorNum != 0) {
@@ -517,7 +585,7 @@ void DatabaseConnector::runDatabaseThread()
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
-			//AddData(receivedData);
+			AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
 			wxLogDebug("Database connector sent a cardata object");
