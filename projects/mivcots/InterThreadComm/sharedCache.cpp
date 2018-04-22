@@ -175,12 +175,12 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 	int middle;
 
 	unsigned long toFindTimeStamp, searchTimeStamp;
-	toFind->get(TIME, &toFindTimeStamp);
+	toFind->get(TIME_S, &toFindTimeStamp);
 
 	while (left <= right) {
 		middle = (left + right) / 2;
 
-		buffer.at(middle)->get(TIME, &searchTimeStamp);
+		buffer.at(middle)->get(TIME_S, &searchTimeStamp);
 
 		if (searchTimeStamp == toFindTimeStamp) {
 			*ind = middle;

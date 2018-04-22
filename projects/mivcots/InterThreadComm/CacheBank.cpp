@@ -35,6 +35,9 @@ int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsign
 		toInsert->inputQ.getEndpoint2(),
 		toInsert->updateQ.getEndpoint2());
 
+	toInsert->analysis.init(&(toInsert->cache), &(toInsert->cache), 
+		toInsert->updateQ.getEndpoint1(), carSource, cfgFileName);
+
 	return SUCCESS;
 }
 

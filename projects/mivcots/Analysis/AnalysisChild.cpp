@@ -4,6 +4,7 @@
 #include "key_defines.h"
 
 
+
 AnalysisChild::AnalysisChild()
 {
 }
@@ -67,11 +68,13 @@ int AnalysisChild::init(
 
 int AnalysisChild::start()
 {
+	this->analysisThread = std::thread(&AnalysisChild::runThread, this);
 	return 0;
 }
 
 int AnalysisChild::stop()
 {
+	
 	isRunning.store(false, std::memory_order_relaxed);
 	// some other stuff needs to happen here
 	analysisThread.join();
@@ -110,13 +113,14 @@ int AnalysisChild::setup()
 #define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
 int AnalysisChild::loop()
 {
-	int returnCode = SUCCESS;
 	
+	int returnCode = SUCCESS;
+	wxLogDebug("Analysis Child Loop");
 	sharedCache<CarData *>::cacheIter startIter, endIter, tempIter;
 	carCache->readCache(&startIter, &endIter);
 	for (tempIter = startIter; tempIter != endIter; tempIter++) {
 		unsigned long analysisCount;
-		(*tempIter)->get(ANALYSIS_COUNT, &analysisCount);
+		(*tempIter)->get(ANALYSIS_COUNT_U, &analysisCount);
 		if (analysisCount == 0) {
 			// get new CarData
 			CarData * tempCarDataPtr = nullptr;
@@ -125,19 +129,21 @@ int AnalysisChild::loop()
 				returnCode = ERR_ANALYSIS_CHILD | ERR_LOOP | ERR_NULLPTR;
 			}
 			// update analysis count
-			tempCarDataPtr->set(std::string(ANALYSIS_COUNT), (unsigned long)1);
-			tempCarDataPtr->addKey(std::string(ANALYSIS_COUNT));
+			tempCarDataPtr->addKey(ANALYSIS_COUNT_U);
+			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)1);
+			
 			// do analysis
 			long latRaw = 0, lonRaw = 0, angleRaw = 0;
-			(*tempIter)->get(std::string(LAT), &latRaw);
-			(*tempIter)->get(std::string(LON), &lonRaw);
-			(*tempIter)->get(std::string(HEADING), &angleRaw);
-			tempCarDataPtr->addKey(std::string(LAT) + std::string("D"));
-			tempCarDataPtr->addKey(std::string(LON) + std::string("D"));
-			tempCarDataPtr->addKey(std::string(HEADING) + std::string("D"));
-			tempCarDataPtr->set(std::string(LAT) + std::string("D"), (double)latRaw / 1000000.0);
-			tempCarDataPtr->set(std::string(LON) + std::string("D"), (double)lonRaw / 1000000.0);
-			tempCarDataPtr->set(std::string(HEADING) + std::string("D"), (double)angleRaw / 100.0);
+			(*tempIter)->get(LAT_U, &latRaw);
+			(*tempIter)->get(LON_U, &lonRaw);
+			(*tempIter)->get(HEADING_U, &angleRaw);
+			tempCarDataPtr->addKey(LAT_D);
+			tempCarDataPtr->addKey(LON_D);
+			tempCarDataPtr->addKey(HEADING_D);
+			tempCarDataPtr->set(LAT_D, (double)latRaw / 1000000.0);
+			tempCarDataPtr->set(LON_D, (double)lonRaw / 1000000.0);
+			tempCarDataPtr->set(HEADING_D, (double)angleRaw / 100.0);
+			
 
 			// push to update Queue
 			updateQueue->send(tempCarDataPtr);
