@@ -200,6 +200,7 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	}
 
 	(*parsed)->addKey(ANALYSIS_COUNT_U);
-	(*parsed)->printCar();
+	(*parsed)->set(ANALYSIS_COUNT_U,(unsigned long)0);
+	//(*parsed)->printCar();
 	return SUCCESS;
 }

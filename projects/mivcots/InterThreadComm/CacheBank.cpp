@@ -76,12 +76,12 @@ int CacheBank::feed(CarData* toFeed)
 	//return 0;
 }
 
-int CacheBank::acquireReadLock(long carNum)
+int CacheBank::acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	if (isNewCarNum(carNum)) {
 		return ERR_NOTFOUND;
 	}
-	return carModuleMap.at(carNum)->cache.acquireReadLock();
+	return carModuleMap.at(carNum)->cache.acquireReadLock(toLock);
 }
 
 int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter)
@@ -102,10 +102,10 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 	return carModuleMap.at(carNum)->cache.readCache(startIter, endIter, length);
 }
 
-int CacheBank::releaseReadLock(long carNum)
+int CacheBank::releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
-	return carModuleMap.at(carNum)->cache.releaseReadLock();
+	return carModuleMap.at(carNum)->cache.releaseReadLock(toLock);
 }
 
 bool CacheBank::newRawData(long carNum)

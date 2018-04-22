@@ -16,7 +16,7 @@ public:
 	virtual int init(
 		sharedCache<CarData *> * boxCache,
 		sharedCache<CarData *> * carCache,
-		endpoint<CarData *> * updateQueue,
+		lockedQueue<CarData*> * updateQueue,
 		CarPool * carPool,
 		std::mutex * analysisFinishedCounterMutex,
 		std::atomic<int> * analysisFinishedCounterInt,
@@ -32,7 +32,7 @@ public:
 protected:
 	sharedCache<CarData*> * boxCache;
 	sharedCache<CarData*> * carCache;
-	endpoint<CarData*> * updateQueue;
+	lockedQueue<CarData*> * updateQueue;
 	CarPool * carPool;
 	std::thread analysisThread;
 	std::atomic<bool> isRunning;

@@ -492,7 +492,7 @@ void DatabaseConnector::runDatabaseThread()
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
-			AddData(receivedData);
+			//AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
 			wxLogDebug("Database connector sent a cardata object");
@@ -502,6 +502,8 @@ void DatabaseConnector::runDatabaseThread()
 			boxDataQ->receive(&receivedBoxData);
 			outputCache->feed(receivedBoxData);
 		}
+
+		Sleep(100);
 	}
 }
 

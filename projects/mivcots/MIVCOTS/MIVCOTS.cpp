@@ -48,9 +48,9 @@ int MIVCOTS::stop()
 	return 0;
 }
 
-int MIVCOTS::acquireReadLock(long carNum)
+int MIVCOTS::acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
-	return cacheBank.acquireReadLock(carNum);
+	return cacheBank.acquireReadLock(carNum, toLock);
 }
 
 int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum)
@@ -63,9 +63,9 @@ int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter,
 	return cacheBank.readCache(carNum, startIter, endIter, length);
 }
 
-int MIVCOTS::endCacheRead(long carNum)
+int MIVCOTS::endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
-	return cacheBank.releaseReadLock(carNum);
+	return cacheBank.releaseReadLock(carNum, toLock);
 }
 
 bool MIVCOTS::newData(long carNum)

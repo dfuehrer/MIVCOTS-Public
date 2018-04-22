@@ -128,25 +128,26 @@ bool Map::update()
 		double lon = -1;
 		double course = -1;
 		int rc = SUCCESS;
-
-		rc = aMIVCOTS->acquireReadLock(i);
+		std::shared_lock<std::shared_mutex> toLock;
+		//wxLogDebug("Map is trying to read cache");
+		rc = aMIVCOTS->acquireReadLock(i, &toLock);
 
 		if (rc != SUCCESS) {
 			wxLogDebug("Couldn't read cache for car %d", i);
-			aMIVCOTS->endCacheRead(i);
+			aMIVCOTS->endCacheRead(i, &toLock);
 			continue;
 		}
 
 		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
 		if (rc == SUCCESS) {
-			for (startIter; startIter != endIter; startIter++) {
-				if ((*startIter)->get(std::string(LON_D), &lon) | (*startIter)->get(std::string(LON_D), &lat) | (*startIter)->get(std::string(LON_D), &course) != SUCCESS) {
+			//for (startIter; startIter != endIter; startIter++) {
+				if (((*startIter)->get(std::string(LON_D), &lon) | (*startIter)->get(std::string(LAT_D), &lat) | (*startIter)->get(std::string(HEADING_D), &course)) != SUCCESS) {
 				}
 				else {
 					drawCar(lat, lon, course * 0.01745329252, i);
 					refresh();
 				}
-			}
+			//}
 			
 			/*if (lat != -1 && lon != -1 && course != -1) {
 				latTmp = lat / 1000000.0;
@@ -159,7 +160,8 @@ bool Map::update()
 			wxLogDebug("Couldn't read cache for car %d", i);
 		}
 
-		aMIVCOTS->endCacheRead(i);
+		aMIVCOTS->endCacheRead(i, &toLock);
+		//wxLogDebug("Map released cache read");
 	}
 	return true;
 }

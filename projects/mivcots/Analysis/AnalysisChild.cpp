@@ -17,7 +17,7 @@ AnalysisChild::~AnalysisChild()
 int AnalysisChild::init(
 	sharedCache<CarData*> * boxCache, 
 	sharedCache<CarData*> * carCache, 
-	endpoint<CarData*> * updateQueue, 
+	lockedQueue<CarData*> * updateQueue,
 	CarPool * carPool,
 	std::mutex * analysisFinishedCounterMutex,
 	std::atomic<int> * analysisFinishedCounterInt,
@@ -99,7 +99,8 @@ int AnalysisChild::runThread()
 
 		// increment semaphore
 		std::unique_lock<std::mutex> analysisFinishedCounterLock(*analysisFinishedCounterMutex);	// Create lock and block until mutex is locked
-		analysisFinishedCounterInt++;	// Increment Semaphore
+		analysisFinishedCounterInt->store(analysisFinishedCounterInt->load(std::memory_order_relaxed) + 1,
+											std::memory_order_relaxed);	// Increment Semaphore
 		analysisFinishedCounterLock.unlock();	// Unlock mutex 
 
 	}
@@ -110,12 +111,12 @@ int AnalysisChild::setup()
 {
 	return 0;
 }
-#define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
+//#define ANALYSIS_COUNT "ZZ"	// TODO: Move this to defines file
 int AnalysisChild::loop()
 {
 	
 	int returnCode = SUCCESS;
-	wxLogDebug("Analysis Child Loop");
+	//wxLogDebug("Analysis Child Loop");
 	sharedCache<CarData *>::cacheIter startIter, endIter, tempIter;
 	carCache->readCache(&startIter, &endIter);
 	for (tempIter = startIter; tempIter != endIter; tempIter++) {
@@ -133,20 +134,25 @@ int AnalysisChild::loop()
 			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)1);
 			
 			// do analysis
-			long latRaw = 0, lonRaw = 0, angleRaw = 0;
-			(*tempIter)->get(LAT_U, &latRaw);
-			(*tempIter)->get(LON_U, &lonRaw);
-			(*tempIter)->get(HEADING_U, &angleRaw);
+			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0;
+			(*tempIter)->get(TIME_S, &timeStamp);
+			(*tempIter)->get(LAT_S, &latRaw);
+			(*tempIter)->get(LON_S, &lonRaw);
+			(*tempIter)->get(HEADING_S, &angleRaw);
+
+			tempCarDataPtr->addKey(TIME_S);
 			tempCarDataPtr->addKey(LAT_D);
 			tempCarDataPtr->addKey(LON_D);
 			tempCarDataPtr->addKey(HEADING_D);
+
+			tempCarDataPtr->set(TIME_S, (long)timeStamp);
 			tempCarDataPtr->set(LAT_D, (double)latRaw / 1000000.0);
 			tempCarDataPtr->set(LON_D, (double)lonRaw / 1000000.0);
 			tempCarDataPtr->set(HEADING_D, (double)angleRaw / 100.0);
 			
 
 			// push to update Queue
-			updateQueue->send(tempCarDataPtr);
+			updateQueue->push(tempCarDataPtr);
 			
 			
 		}

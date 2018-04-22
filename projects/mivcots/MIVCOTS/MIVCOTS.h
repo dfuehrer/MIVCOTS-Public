@@ -28,10 +28,10 @@ public:
 	int stop();
 
 	// Read functions for the GUI
-	int acquireReadLock(long carNum);
+	int acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum);
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum, unsigned int length);
-	int endCacheRead(long carNum);
+	int endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 
 	bool newData(long carNum);
 	int getCarNums(std::vector<long>* toWrite);

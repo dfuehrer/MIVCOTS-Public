@@ -35,14 +35,14 @@ public:
 	int updateCache();
 
 	// Start cache read
-	int acquireReadLock();
+	int acquireReadLock(std::shared_lock<std::shared_mutex> *toLock);
 
 	// startIter points to the oldest element
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
 
 	//int readData()
-	int releaseReadLock();
+	int releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock);
 
 	bool newRawData();
 	bool newAnalyzedData();
@@ -57,8 +57,7 @@ private:
 
 	std::deque<T> buffer;
 	std::deque<T> analyzedData;		// For the GUI
-	std::shared_mutex smtx;
-	mutable std::shared_lock<std::shared_mutex>* slock;
+	mutable std::shared_mutex smtx;
 	int findItem(T toFind, int* ind);
 	
 };

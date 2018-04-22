@@ -33,10 +33,10 @@ public:
 
 	// Read cache functions
 	typedef sharedCache<CarData*> mCache;
-	int acquireReadLock(long carNum);
+	int acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
-	int releaseReadLock(long carNum);
+	int releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 	bool newRawData(long carNum);
 	bool newAnalyzedData(long carNum);
 
