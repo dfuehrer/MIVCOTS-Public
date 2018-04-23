@@ -39,3 +39,21 @@ Open a command prompt and use pip to install serial and pyserial
 ```pip install pyserial```
 
 Double click the test_data_source.py file to run the com testing
+
+##Installing MariaDB
+
+1. Go to https://downloads.mariadb.org/
+2. Click Download on the latest STABLE version of MariaDB. As of 4/22/2018 it is version 10.2.14
+3. Download the files for your operating system. I suggest downloading the 64 bit MSI Package.
+4. When the MSI package is done downloading run the installer.
+5. Click NEXT and then blindly accept the license except if your name is Kyle then read it.
+6. Then will see the Custom Setup screen. Everything should be good as is but you can change where your database is by clicking the Browse button and navegating to the desired drive and folder of your choice. Then cick Next.
+7. set the root password as "Telemetry" no quotes and then click next.
+8. Default Instance Properties are good as is so click Next.
+9. You can provide feedback if you want then click Next.
+10. On the next screen click Install
+11. When the installation is complete run the HeidiSQL program on your desktop and make sure there is a session and you can sign into it with the User:root and Password:Telemetry.
+12. If that worked you are good to go and can run the MIVCOTS program.
+
+
+
