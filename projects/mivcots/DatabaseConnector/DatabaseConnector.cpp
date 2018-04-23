@@ -322,9 +322,17 @@ int DatabaseConnector::getDataTimestamp(long carnum, long minDateValue, long max
 					typeCompChar = KeyNameWithType[length - 1];
 					switch (typeCompChar) {
 						case 'S': {//Long
-							carDP->addKey(iter->first);
-							LData = std::stol(carRowData[numRow][i], NULL,10);
-							carDP->set(iter->first, LData);
+							if (iter->second == "ID_S") {
+								carDP->addKey(iter->first);
+								LData = std::stol(carRowData[numRow][i], NULL, 10);
+								LData = -LData;
+								carDP->set(iter->first, LData);
+							}
+							else {
+								carDP->addKey(iter->first);
+								LData = std::stol(carRowData[numRow][i], NULL, 10);
+								carDP->set(iter->first, LData);
+							}
 							break;
 						}
 						case 'U': {//Unsigned Long
@@ -625,7 +633,7 @@ void DatabaseConnector::runDatabaseThread()
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
-			AddData(receivedData);
+			AddData(receivedData);//
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
 			wxLogDebug("Database connector sent a cardata object");
@@ -636,8 +644,9 @@ void DatabaseConnector::runDatabaseThread()
 			outputCache->feed(receivedBoxData);
 		}
 
-		Sleep(100);
-		//getDataTimestamp(0, 20180415, 20180417, 1271, 1275);
+		Sleep(1);
+		getDataTimestamp(0, 20180415, 20180417, 1271, 1275);
+		// For Playback they will need a funciton for what cars exist and what days and times are available.
 	}
 }
 
