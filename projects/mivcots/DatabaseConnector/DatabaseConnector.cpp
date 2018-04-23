@@ -272,8 +272,20 @@ std::map<std::string, std::string> ::iterator iter;
 int DatabaseConnector::getDataTimestamp(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue) {
 //SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
+	CarData* carDP;
+	std::map<std::string, std::string> ::iterator iter;
+	unsigned int num_fields;
+	unsigned int i;
+	int j;
 	int pass = 0;
 	int numRow = 0;
+	std::string KeyNameWithType = "";
+	char typeCompChar;
+	int length;
+	long LData;
+	unsigned long ULData;
+	double DData;
+
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " WHERE DATE_S > ";
@@ -289,28 +301,58 @@ int DatabaseConnector::getDataTimestamp(long carnum, long minDateValue, long max
 	const char* cstr = new char[finalString.length() + 1];
 	cstr = finalString.c_str();
 	pass = mysql_query(&mysql, cstr);
+
 	if (pass == 0) {
 		result = mysql_store_result(&mysql);
-		str1 = "car";
-		str2 = std::to_string(carnum);
-		std::string TableName = str1 + str2;
-		const char* cstr1 = new char[TableName.length() + 1];
-		cstr1 = TableName.c_str();
-		MYSQL_RES *tbl_cols = mysql_list_fields(&mysql, cstr1, "f%");
-
-		unsigned int field_cnt = mysql_num_fields(tbl_cols);
-		//printf("Number of columns: %d\n", field_cnt);
-		while (row = mysql_fetch_row(result)) {//put into cardata object
-			for (unsigned int i = 0; i < field_cnt; i++) {
-				//outputq.send(row[i]);
-				carRowData[numRow][i] = *row[i];
-				//printf("%s\t", row[i]);
+		num_fields = mysql_num_fields(result);//returns the number of valeus in a row
+		while (row = mysql_fetch_row(result)) {//Retrieves the row of a result set. Returns NULL when no more rows
+			unsigned long *lengths;
+			lengths = mysql_fetch_lengths(result);
+			for (i = 0; i < num_fields; i++) {
+				carRowData[numRow][i] = row[i] ? row[i] : "NULL";
+			//get data into multiple cardata objects and then use cashebank->feed to return car data objects
+			}
+			CarSource->getCar(&carDP);
+			//indert data that is not NULL and no need for uniqueID
+			iter = keyMap.begin();
+			for (i = 1; i < num_fields; i++) {
+				if (carRowData[numRow][i] != "NULL" && carRowData[numRow][i] != "") {
+					KeyNameWithType = iter->second;
+					length = KeyNameWithType.length();
+					typeCompChar = KeyNameWithType[length - 1];
+					switch (typeCompChar) {
+						case 'S': {//Long
+							carDP->addKey(iter->first);
+							LData = std::stol(carRowData[numRow][i], NULL,10);
+							carDP->set(iter->first, LData);
+							break;
+						}
+						case 'U': {//Unsigned Long
+							carDP->addKey(iter->first);
+							ULData = std::stoul(carRowData[numRow][i],NULL, 10);
+							carDP->set(iter->first, ULData);
+							break;
+						}
+						case 'D': {//Double
+							carDP->addKey(iter->first);
+							DData = std::stod(carRowData[numRow][i], NULL);
+							carDP->set(iter->first, DData);
+							break;
+						}
+						default: {
+							wxLogDebug("GetData problem in the switch statement");
+							break;
+						}
+					}
+				}
+				iter++;
 			}
 			numRow++;
-			//printf("\n");
-
-		}
-		mysql_free_result(tbl_cols);
+			//Use add to add the key
+			//use set to set the key value
+			outputCache->feed(carDP);
+			}
+		//mysql_free_result(tbl_cols);
 		mysql_free_result(result);
 		return SUCCESS;
 	}
@@ -586,7 +628,6 @@ void DatabaseConnector::runDatabaseThread()
 			AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
-			//getDataTimestamp();
 			wxLogDebug("Database connector sent a cardata object");
 		}
 
@@ -596,6 +637,7 @@ void DatabaseConnector::runDatabaseThread()
 		}
 
 		Sleep(100);
+		//getDataTimestamp(0, 20180415, 20180417, 1271, 1275);
 	}
 }
 

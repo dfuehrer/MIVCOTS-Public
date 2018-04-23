@@ -23,7 +23,8 @@ public:
 	int start();
 	int stop();
 
-	std::string carRowData[100];
+	std::string carRowData[200][numKeys + 1];
+	//std::string carRowData[numKeys];
 
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
@@ -46,8 +47,8 @@ private:
 	CacheBank* outputCache;
 
 	MYSQL mysql;
-	MYSQL_RES *result;
 	MYSQL_ROW row;
+	MYSQL_RES *result;
 	CarPool* CarSource;
 
 	char host[32] = "localhost";
