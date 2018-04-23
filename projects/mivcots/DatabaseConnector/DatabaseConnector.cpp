@@ -269,17 +269,21 @@ std::map<std::string, std::string> ::iterator iter;
 
 
 //int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long long maxValue, endpoint <CarData*, CarData* > outputq) {//get data for all columns. if timerange not specified then give everything. Want to be able to refine by timestamp
-int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long long maxValue) {
+int DatabaseConnector::getDataTimestamp(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue) {
 //SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
 	int pass = 0;
 	int numRow = 0;
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
-	std::string str3 = " WHERE timestamp > ";
-	std::string str4 = std::to_string(minValue);
-	std::string str5 = " AND timestamp < ";
-	std::string str6 = std::to_string(maxValue);
+	std::string str3 = " WHERE DATE_S > ";
+	std::string str4 = std::to_string(minDateValue);
+	std::string str5 = " AND DATE_S < ";
+	std::string str6 = std::to_string(maxDateValue);
+	str6.append(" AND TIME_S > ");
+	str6.append(std::to_string(minTimeValue));
+	str6.append(" AND TIME_S < ");
+	str6.append(std::to_string(maxTimeValue));
 	std::string str7 = ";";
 	std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
 	const char* cstr = new char[finalString.length() + 1];
@@ -295,15 +299,15 @@ int DatabaseConnector::getDataTimestamp(long carnum, long long minValue, long lo
 		MYSQL_RES *tbl_cols = mysql_list_fields(&mysql, cstr1, "f%");
 
 		unsigned int field_cnt = mysql_num_fields(tbl_cols);
-		printf("Number of columns: %d\n", field_cnt);
+		//printf("Number of columns: %d\n", field_cnt);
 		while (row = mysql_fetch_row(result)) {//put into cardata object
 			for (unsigned int i = 0; i < field_cnt; i++) {
 				//outputq.send(row[i]);
 				carRowData[numRow][i] = *row[i];
-				printf("%s\t", row[i]);
+				//printf("%s\t", row[i]);
 			}
 			numRow++;
-			printf("\n");
+			//printf("\n");
 
 		}
 		mysql_free_result(tbl_cols);
@@ -446,21 +450,23 @@ int DatabaseConnector::InitializeDatabase() {
 
 int DatabaseConnector::AddData(CarData *receivedData) {
 	int ErrorNum = 0;
+	int ErrorNum2 = 0;
 	long carnum;
 	receivedData->get(ID_S, &carnum);
 	if (knownCarTables[carnum] == 0) {
 		knownCarTables[carnum] = 1;
 		ErrorNum = createTable(receivedData);
+		ErrorNum2 = addNewColumn(receivedData);
 	}
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
-	int ErrorNum2 = addNewColumn(receivedData);
-	if (ErrorNum2 != 0) {
+	else if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
+
 	int ErrorNum3 = addDataToTable(receivedData);
 	if (ErrorNum3 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
@@ -469,21 +475,12 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 	return SUCCESS;
 }
 
-int DatabaseConnector::GetData(long carnum, long long minValue, long long maxValue) {
-	int ErrorNum = getDataTimestamp(carnum, minValue, maxValue);
+int DatabaseConnector::GetData(long carnum,long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue) {
+	int ErrorNum = getDataTimestamp(carnum, minDateValue, maxDateValue, minTimeValue, maxTimeValue);
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;
 	}
-	CarData* receivedBoxData;
-	while (isRunning) {
-		while (boxDataQ->receiveQsize() > 0) {
-			boxDataQ->receive(&receivedBoxData);
-			outputCache->feed(receivedBoxData);
-			/////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-		}
-	}
-
 	return SUCCESS;
 }
 
@@ -582,12 +579,14 @@ void DatabaseConnector::runDatabaseThread()
 {
 	CarData* receivedData;
 	CarData* receivedBoxData;
+
 	while (isRunning) {
 		while (dataQ->receiveQsize() > 0) {
 			dataQ->receive(&receivedData);
 			AddData(receivedData);
 			wxLogDebug("Database connector received a cardata object");
 			outputCache->feed(receivedData);
+			//getDataTimestamp();
 			wxLogDebug("Database connector sent a cardata object");
 		}
 
