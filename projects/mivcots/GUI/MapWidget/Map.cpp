@@ -121,9 +121,8 @@ bool Map::update()
 {
 	*imgBitmap = wxBitmap(*imgImg);
 
-	sharedCache<CarData*>::cacheIter startIter; 
-	sharedCache<CarData*>::cacheIter endIter;
-	for(int i : *activeCars) {
+	sharedCache<CarData*>::cacheIter iter; 
+	for (int i : *activeCars) {
 		double lat = -1;
 		double lon = -1;
 		double course = -1;
@@ -138,26 +137,17 @@ bool Map::update()
 			continue;
 		}
 
-		rc = aMIVCOTS->readCache(&startIter, &endIter, i);
+		rc = aMIVCOTS->readLatestUpdate(i, &iter, 1); // TODO: don't hardcode the update count
 		if (rc == SUCCESS) {
-			//for (startIter; startIter != endIter; startIter++) {
-				if (((*startIter)->get(std::string(LON_D), &lon) | (*startIter)->get(std::string(LAT_D), &lat) | (*startIter)->get(std::string(HEADING_D), &course)) != SUCCESS) {
-				}
-				else {
-					drawCar(lat, lon, course * 0.01745329252, i);
-					refresh();
-				}
-			//}
-			
-			/*if (lat != -1 && lon != -1 && course != -1) {
-				latTmp = lat / 1000000.0;
-				lonTmp = lon / 1000000.0;
-				angleTmp = course / 100.0;
-			}*/
-			
+			if (((*iter)->get(LON_D, &lon) | (*iter)->get(LAT_D, &lat) | (*iter)->get(HEADING_D, &course)) != SUCCESS) {
+			}
+			else {
+				drawCar(lat, lon, course * 0.01745329252, i);
+				refresh();
+			}
 		}
 		else {
-			wxLogDebug("Couldn't read cache for car %d", i);
+			wxLogDebug("Couldn't read updates from cache for car %d", i);
 		}
 
 		aMIVCOTS->endCacheRead(i, &toLock);

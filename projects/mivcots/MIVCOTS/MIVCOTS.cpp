@@ -63,6 +63,16 @@ int MIVCOTS::readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter,
 	return cacheBank.readCache(carNum, startIter, endIter, length);
 }
 
+int MIVCOTS::readCacheUpdates(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter, unsigned int updateCount)
+{
+	return cacheBank.readCacheUpdates(carNum, startIter, endIter, updateCount);
+}
+
+int MIVCOTS::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned long updateCount)
+{
+	return cacheBank.readLatestUpdate(carNum, iter, updateCount);
+}
+
 int MIVCOTS::endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	return cacheBank.releaseReadLock(carNum, toLock);

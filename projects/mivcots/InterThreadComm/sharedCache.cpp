@@ -2,6 +2,7 @@
 
 sharedCache<CarData*>::sharedCache()
 {
+
 }
 
 sharedCache<CarData*>::~sharedCache()
@@ -88,7 +89,7 @@ int sharedCache<CarData*>::updateCache()
 		if (findRC == SUCCESS) {
 			delete buffer.at(ind);
 			buffer.at(ind) = tempData;
-
+			trackUpdates(tempData);
 		}
 		else {
 			rc |= findRC;
@@ -142,6 +143,53 @@ int sharedCache<CarData*>::readCache(cacheIter* startIter, cacheIter* endIter, u
 	return SUCCESS;
 }
 
+int sharedCache<CarData*>::readCacheUpdates(cacheIter* startIter, cacheIter* endIter, unsigned int updateCount)
+{
+	if ((startIter == nullptr) || (endIter == nullptr)) {
+		return ERR_NULLPTR;
+	}
+
+	if ((int)updateCount > (int)latestUpdated.size() - 1) {
+		return ERR_INVALID_UPDATECOUNT;
+	}
+	
+	if (latestUpdated.at(updateCount) == nullptr) {
+		return ERR_NOTFOUND;
+	}
+
+	// End Iter is one past the newest item with the right update count
+	int endRC = find(latestUpdated.at(updateCount), endIter);
+	++(*endIter);
+
+	// Start Iter is either the beginning of the cache or the first item with the right update count
+	unsigned long searchUpdateCount = updateCount + 1;
+	// User asked for the highest possible update count, which start at the beginning of the cache
+	// If the update hasn't happened at all yet, the function will return above
+	if (searchUpdateCount == latestUpdated.size()) {
+		*startIter = buffer.begin();
+	}
+	else {
+		find(latestUpdated.at(searchUpdateCount), startIter);
+		++(*startIter);
+	}
+
+	return SUCCESS;
+}
+
+template<>
+int sharedCache<CarData*>::readLatestUpdate(cacheIter * iter, unsigned int updateCount)
+{
+	if (iter == nullptr) {
+		return ERR_NULLPTR;
+	}
+
+	if ((int)updateCount > (int)latestUpdated.size() - 1) {
+		return ERR_INVALID_UPDATECOUNT;
+	}
+
+	return find(latestUpdated.at(updateCount) , iter);
+}
+
 int sharedCache<CarData*>::releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock){
 	toUnlock->unlock();
 	return SUCCESS;
@@ -158,7 +206,7 @@ bool sharedCache<CarData*>::newAnalyzedData()
 	return true;
 }
 
-template <>
+template<>
 int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 {
 	if ((toFind == nullptr) || (ind == nullptr)) {
@@ -169,6 +217,7 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 		return ERR_EMPTYCACHE;
 	}
 	
+	// Binary search
 	int left = 0;
 	int right = buffer.size() - 1;
 	int middle;
@@ -196,7 +245,7 @@ int sharedCache<CarData*>::findItem(CarData* toFind, int* ind)
 	return ERR_NOTFOUND;
 }
 
-
+template<>
 int sharedCache<CarData*>::find(CarData*toFind, cacheIter* iter) {
 	int index = 0;
 	int returnCode = SUCCESS;
@@ -205,9 +254,39 @@ int sharedCache<CarData*>::find(CarData*toFind, cacheIter* iter) {
 	return returnCode;
 }
 
-
+template<>
 int sharedCache<CarData*>::find(CarData * toFind, int * ind)
 {
 	return this->findItem(toFind, ind);
+}
+
+template<>
+int sharedCache<CarData*>::trackUpdates(CarData* update)
+{
+	unsigned long analysisCount;
+	long newUpdateTime, oldUpdateTime;
+	update->get(ANALYSIS_COUNT_U, &analysisCount);
+	update->get(TIME_S, &newUpdateTime);
+
+	// We encountered an analysis count that we haven't seen before
+	// Match the size of latestUpdated to the new analysis count
+	while (latestUpdated.size() < analysisCount + 1) {
+		latestUpdated.push_back(nullptr);
+	}
+	 
+	// Haven't seen this analysis Count before
+	if (latestUpdated.at(analysisCount) == nullptr) {
+		latestUpdated.at(analysisCount) = update;
+		return SUCCESS;
+	}
+
+	latestUpdated.at(analysisCount)->get(TIME_S, &oldUpdateTime);
 	
+	// Update has a newer timestamp
+	if (oldUpdateTime < newUpdateTime) {
+		latestUpdated.at(analysisCount) = update;
+	}
+
+	return SUCCESS;
+
 }

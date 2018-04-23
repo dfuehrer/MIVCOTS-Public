@@ -52,7 +52,7 @@ private:
 
 	char host[32] = "localhost";
 	char user[32] = "root";
-	char passwd[32] = "somethingsecure";
+	char passwd[32] = "Telemetry";
 	char database[64] = "mivcots";
 	int knownCarTables[128];
 	std::string columnDataTypes[128];//[carNum][columnNum]

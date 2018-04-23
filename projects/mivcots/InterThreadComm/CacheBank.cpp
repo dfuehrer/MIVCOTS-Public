@@ -102,6 +102,16 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 	return carModuleMap.at(carNum)->cache.readCache(startIter, endIter, length);
 }
 
+int CacheBank::readCacheUpdates(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter, unsigned int updateCount)
+{
+	return carModuleMap.at(carNum)->cache.readCacheUpdates(startIter, endIter, updateCount);
+}
+
+int CacheBank::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned long updateCount)
+{
+	return carModuleMap.at(carNum)->cache.readLatestUpdate(iter, updateCount);
+}
+
 int CacheBank::releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);

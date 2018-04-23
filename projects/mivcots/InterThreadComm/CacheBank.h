@@ -36,6 +36,8 @@ public:
 	int acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter);
 	int readCache(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int length);
+	int readCacheUpdates(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int updateCount);
+	int readLatestUpdate(long carNum, mCache::cacheIter* iter, unsigned long updateCount);
 	int releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 	bool newRawData(long carNum);
 	bool newAnalyzedData(long carNum);

@@ -40,7 +40,8 @@ public:
 	// startIter points to the oldest element
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
-
+	int readCacheUpdates(cacheIter* startIter, cacheIter* endIter, unsigned int updateCount);
+	int readLatestUpdate(cacheIter* iter, unsigned int updateCount);
 	//int readData()
 	int releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock);
 
@@ -56,8 +57,9 @@ private:
 	endpoint<T>* updateQ;
 
 	std::deque<T> buffer;
-	std::deque<T> analyzedData;		// For the GUI
 	mutable std::shared_mutex smtx;
 	int findItem(T toFind, int* ind);
 	
+	int trackUpdates(T update);
+	std::vector<T> latestUpdated;
 };
