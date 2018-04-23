@@ -40,7 +40,7 @@ Open a command prompt and use pip to install serial and pyserial
 
 Double click the test_data_source.py file to run the com testing
 
-##Installing MariaDB
+## Installing MariaDB
 
 1. Go to https://downloads.mariadb.org/
 2. Click Download on the latest STABLE version of MariaDB. As of 4/22/2018 it is version 10.2.14
