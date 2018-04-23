@@ -164,10 +164,19 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 	// add the panes to the manager
 	m_mgr.SetFlags(m_mgr.GetFlags() ^ wxAUI_MGR_LIVE_RESIZE);
 
-	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Center().MinSize(1280, 1280).BestSize(1280, 1280).MaxSize(1280, 1280));
-	m_mgr.AddPane(uiPanel, wxBOTTOM, wxT("UI"));
-	m_mgr.AddPane(log, wxBOTTOM, wxT("Log"));
-
+	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Caption(wxT("Map")).
+														Center().
+														MinSize(200, 200).
+														BestSize(200, 200));
+	m_mgr.AddPane(uiPanel, wxAuiPaneInfo().Caption(wxT("UI")).
+											Bottom().
+											MinSize(200, 200).
+											BestSize(200, 200));
+	m_mgr.AddPane(log, wxAuiPaneInfo().Caption(wxT("LOG")).
+										Bottom().
+										MinSize(200, 200).
+										BestSize(200, 200).
+										MaxSize(200, 200));
 	createStatusWidgets();
 
 	// tell the manager to "commit" all the changes just made
@@ -266,7 +275,11 @@ StatusWidget* Frame::createStatusWidget(long carID)
 	statusWidgets.push_back(*statusWidget);
 
 	wxString cap = wxString(wxT("Car" + std::to_string(carID)));
-	m_mgr.AddPane(statusWidget->getPanel(), wxAuiPaneInfo().Name(wxT("Car" + std::to_string(carID))).DestroyOnClose(true).Caption(cap));
+	m_mgr.AddPane(statusWidget->getPanel(), wxAuiPaneInfo().Name(wxT("Car" + std::to_string(carID))).
+															DestroyOnClose(true).
+															Caption(cap).
+															MinSize(200, 200).
+															BestSize(200, 200));
 
 	m_mgr.Update();
 	return statusWidget;
