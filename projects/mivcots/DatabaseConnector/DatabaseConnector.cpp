@@ -368,27 +368,45 @@ int DatabaseConnector::selectDatabase() {
 ////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
 
 int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*availableInfo) {
-	int pass = 0;
+	//int pass = 0;
 	long tempResultL = 0;
+	long numberOfTables = 0;
 	std::string tempResultS = "";
+	int carnums[200];
 	availableInfo->clear();
+	int i = 0;
+	
+	//Gets the Number of tables in the DB
 	std::string str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
 	const char* cstr = new char[str.length() + 1];
 	cstr = str.c_str();
-	pass = mysql_query(&mysql, cstr);
+	mysql_query(&mysql, cstr);
 	result = mysql_store_result(&mysql);
 	row = mysql_fetch_row(result);
 	tempResultS = row[0];
-	tempResultL = std::stol(tempResultS, NULL, 10);
-	for (long i = 0; i < tempResultL; i++) {
+	numberOfTables = std::stol(tempResultS, NULL, 10);
+
+	//Gets the actual carnums in the DB
+	str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
+	cstr = new char[str.length() + 1];
+	cstr = str.c_str();
+	mysql_query(&mysql, cstr);
+	result = mysql_store_result(&mysql);
+	while (row = mysql_fetch_row(result)) {
+		tempResultS = row[0];
+		carnums[i] = tempResultS[3] - 48;
+		i++;
+	}
+
+	for (long i = 0; i < numberOfTables; i++) {
 		//Gets the endDate which is the Max DATE_S from the DB
 		databaseInfo temp;
-		temp.carID = i;
+		temp.carID = carnums[i];
 		str = "SELECT MAX(DATE_S) AS DATE_S FROM car;";
-		str.append(std::to_string(i));
-		const char* cstr = new char[str.length() + 1];
+		str.append(std::to_string(carnums[i]));
+		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
-		pass = mysql_query(&mysql, cstr);
+		mysql_query(&mysql, cstr);
 		result = mysql_store_result(&mysql);
 		row = mysql_fetch_row(result);
 		tempResultS = row[0];
@@ -397,10 +415,10 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 
 		//Gets the startDate which is the Min DATE_S from the DB
 		str = "SELECT MIN(DATE_S) AS DATE_S FROM car;";
-		str.append(std::to_string(i));
-		const char* cstr = new char[str.length() + 1];
+		str.append(std::to_string(carnums[i]));
+		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
-		pass = mysql_query(&mysql, cstr);
+		mysql_query(&mysql, cstr);
 		result = mysql_store_result(&mysql);
 		row = mysql_fetch_row(result);
 		tempResultS = row[0];
@@ -409,10 +427,10 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 
 		//Gets the endTime which is the Max TIME_S from the DB
 		str = "SELECT MAX(TIME_S) AS TIME_S FROM car;";
-		str.append(std::to_string(i));
-		const char* cstr = new char[str.length() + 1];
+		str.append(std::to_string(carnums[i]));
+		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
-		pass = mysql_query(&mysql, cstr);
+		mysql_query(&mysql, cstr);
 		result = mysql_store_result(&mysql);
 		row = mysql_fetch_row(result);
 		tempResultS = row[0];
@@ -421,18 +439,18 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 
 		//Gets the startTime which is the Min TIME_S from the DB
 		str = "SELECT MIN(TIME_S) AS TIME_S FROM car;";
-		str.append(std::to_string(i));
-		const char* cstr = new char[str.length() + 1];
+		str.append(std::to_string(carnums[i]));
+		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
-		pass = mysql_query(&mysql, cstr);
+		mysql_query(&mysql, cstr);
 		result = mysql_store_result(&mysql);
 		row = mysql_fetch_row(result);
 		tempResultS = row[0];
 		tempResultL = std::stol(tempResultS, NULL, 10);
 		temp.startTime = tempResultL;
-
 		availableInfo->push_back(temp);
 	}
+	return SUCCESS;
 }
 
 int DatabaseConnector::InitializeDatabase() {
