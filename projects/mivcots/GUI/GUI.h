@@ -12,9 +12,9 @@
 #include <iostream>
 #include <fstream>
 #include "serial/serial.h"
+#include "Utilities.h"
 #include <vector>
 
-#include <vector>
 #define FRAMERATE 30
 #define LOG_FREQUENCY 60000 //once a minute
 #define DEFAULT_SERIAL "COM43"

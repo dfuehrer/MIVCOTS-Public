@@ -13,7 +13,7 @@ int MIVCOTS::initialize()
 	int rc = SUCCESS;
 	rc |= dataStorage.initialize(dataSource_dataStorage.getEndpoint2(), 
 		boxDataSource_dataStorage.getEndpoint2(), &carSource, &cacheBank);
-	rc |= cacheBank.initialize(&carSource, "", 40);
+	rc |= cacheBank.initialize(&carSource, "", 4000);
 	return rc;
 }
 
@@ -86,5 +86,10 @@ bool MIVCOTS::newData(long carNum)
 int MIVCOTS::getCarNums(std::vector<long>* toWrite)
 {
 	return cacheBank.getCarNums(toWrite);
+}
+
+int MIVCOTS::startPlayback(databaseInfo playbackRequest, double timeFactor)
+{
+	return dataStorage.startPlayback(playbackRequest, timeFactor);
 }
 

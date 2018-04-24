@@ -33,6 +33,17 @@ bool GUI::OnInit()
 	timer = new wxTimer(this, gui_timer);	
 	timer->Start(1000 / FRAMERATE);		//main update thread
 
+	wxLogDebug("Thread safety: %d", mysql_thread_safe());
+
+	//databaseInfo test;
+	//test.carID = 1;
+	//test.startTime = 1;
+	//test.endTime = 5000;
+	//test.startDate = 20180415;
+	//test.endDate = 20180417;
+
+	//aMIVCOTS.startPlayback(test, .001);
+
 	return true;
 }
 

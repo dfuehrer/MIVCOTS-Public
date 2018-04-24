@@ -38,6 +38,8 @@ public:
 	bool newData(long carNum);
 	int getCarNums(std::vector<long>* toWrite);
 
+	int startPlayback(databaseInfo playbackRequest, double timeFactor);
+
 private:
 	DataInterface dataSource;
 	DatabaseConnector dataStorage;

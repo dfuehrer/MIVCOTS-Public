@@ -44,6 +44,7 @@ int sharedCache<CarData*>::feedCache()
 	}
 	else if (buffer.size() == 0) {
 		buffer.push_front(received);
+		//trackUpdates(received);
 		ulock.unlock();
 		return SUCCESS;
 	}
@@ -69,6 +70,7 @@ int sharedCache<CarData*>::feedCache()
 	*/
 	
 	buffer.push_back(received);
+	//trackUpdates(received);
 	ulock.unlock();
 	return SUCCESS;
 }

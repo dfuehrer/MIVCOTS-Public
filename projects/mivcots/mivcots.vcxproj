@@ -33,6 +33,7 @@
     <ClCompile Include="InterThreadComm\CacheBank.cpp" />
     <ClCompile Include="InterThreadComm\sharedCache.cpp" />
     <ClCompile Include="MIVCOTS\MIVCOTS.cpp" />
+    <ClCompile Include="Utilities\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analysis\Analysis.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="InterThreadComm\lockedQueue.h" />
     <ClInclude Include="key_defines.h" />
     <ClInclude Include="MIVCOTS\MIVCOTS.h" />
+    <ClInclude Include="Utilities\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -120,7 +122,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis;$(ProjectDir)CarPool;$(SolutionDir)Libraries\wxMathPlot_lib\;$(ProjectDir)MIVCOTS</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)CarData;$(SolutionDir)Libraries\serial\include;$(ProjectDir);$(WXWIN)include\msvc;$(WXWIN)include;$(WXWIN)lib\vc_lib\mswud;$(SolutionDir)Libraries\mariadb_conn\include;$(ProjectDir)DatabaseConnector;$(ProjectDir)DataInterface;$(ProjectDir)InterThreadComm;$(ProjectDir)Analysis;$(ProjectDir)CarPool;$(SolutionDir)Libraries\wxMathPlot_lib\;$(ProjectDir)MIVCOTS;$(ProjectDir)Utilities</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;_CRT_SECURE_NO_WARNINGS;WXDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

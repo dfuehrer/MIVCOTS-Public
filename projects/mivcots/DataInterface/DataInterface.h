@@ -10,6 +10,7 @@
 #include "endpoint.h"
 #include "key_defines.h"
 #include "serial/serial.h"
+#include "Utilities.h"
 
 #define DELIMITER ","
 #define ENDOFMSG "!"

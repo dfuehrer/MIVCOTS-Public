@@ -3,14 +3,25 @@
 #include <wx/wx.h>
 #include <atomic>
 #include <iostream>
+#include <future>
 #include <thread>
 #include <sstream>
 #include <string.h>
+#include <chrono>
 #include "CacheBank.h"
 #include "CarPool.h"
 #include "InterThreadComm.h"
 #include "key_defines.h"
 #include "error_codes.h"
+#include "Utilities.h"
+
+typedef struct databaseInfo_t {
+	long carID;
+	long startTime;
+	long startDate;
+	long endTime;
+	long endDate;
+} databaseInfo;
 
 class DatabaseConnector
 {
@@ -23,18 +34,17 @@ public:
 	int start();
 	int stop();
 
-	std::string carRowData[200][numKeys + 1];
-	//std::string carRowData[numKeys];
-
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
-	int GetData(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);
+	//int GetData(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);
 	int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue);
 	int shutdown();
 	int dropTable(long carnum);
 	int dropRowFromTable(long carnum, long long timestamp);
 	int dropColumn(long carnum, std::string columnName);
 
+	int startPlayback(databaseInfo playbackRequest, double timeFactor);
+	
 private:
 
 	std::atomic<bool> isRunning;
@@ -63,7 +73,7 @@ private:
 	int addNewColumn(CarData *receivedData);
 	int addDataToTable(CarData *receivedData);
 	int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue);
-	int getDataTimestamp(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);
+	
 	int createDatabase();
 	int createTable(CarData *receivedData);
 	int closeConnection();
@@ -71,4 +81,8 @@ private:
 	int selectDatabase();
 	int getColumnTypes(long carnum);
 
+	// TODO: cleanup all of this
+	std::vector<std::atomic<bool>*> playbackThreadStatus;
+	std::vector<std::thread> playbackThreads;
+	int getDataTimestamp(std::atomic<bool>* status, long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue, double timeFactor);
 };
