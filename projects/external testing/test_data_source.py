@@ -19,6 +19,7 @@
 import serial
 import time
 timeStart = 0;
+mph = 100
 # Open the Serial Port
 ser = serial.Serial(port = "COM42", baudrate=115200)
 
@@ -31,9 +32,11 @@ while 1:
         #print("#," + line.replace("\n","") + ",!\n")
         #line = "#," + line.replace("\n","") + ",!\n"
         #line += "AC
-        line = line.replace("!\n","") + "AC," + str(timeStart) + ",!\n"
+        line = line.replace("!\n","") + "AC," + str(timeStart) + ",AR," + str(mph) + ",!\n"
         ser.write(line.encode("utf-8"))
-        timeStart +=1;
+        timeStart +=10
+        mph += 5
+        mph = mph%200
         #print()
         print(line)
         #ser.write(line.replace("\n","") + ",!\n")

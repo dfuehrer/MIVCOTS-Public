@@ -134,21 +134,24 @@ int AnalysisChild::loop()
 			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)1);
 			
 			// do analysis
-			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0;
+			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0, mphRaw = 0;
 			(*tempIter)->get(TIME_S, &timeStamp);
 			(*tempIter)->get(LAT_S, &latRaw);
 			(*tempIter)->get(LON_S, &lonRaw);
 			(*tempIter)->get(HEADING_S, &angleRaw);
+			(*tempIter)->get(MPH_S, &mphRaw);
 
 			tempCarDataPtr->addKey(TIME_S);
 			tempCarDataPtr->addKey(LAT_D);
 			tempCarDataPtr->addKey(LON_D);
 			tempCarDataPtr->addKey(HEADING_D);
+			tempCarDataPtr->addKey(MPH_D);
 
 			tempCarDataPtr->set(TIME_S, (long)timeStamp);
 			tempCarDataPtr->set(LAT_D, (double)latRaw / 1000000.0);
 			tempCarDataPtr->set(LON_D, (double)lonRaw / 1000000.0);
 			tempCarDataPtr->set(HEADING_D, (double)angleRaw / 100.0);
+			tempCarDataPtr->set(MPH_D, (double)mphRaw / 10.0);
 			
 
 			// push to update Queue
