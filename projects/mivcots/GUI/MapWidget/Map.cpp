@@ -96,7 +96,7 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 	wxBitmap tmp = wxBitmap(tmpimg);
 
 		
-	picWindow->setBitmap(*imgBitmap);
+	//picWindow->setBitmap(*imgBitmap);
 		
 	//translating to the center of the image
 	x -= tmp.GetHeight() / 2;

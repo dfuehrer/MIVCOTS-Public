@@ -3,9 +3,10 @@
 
 #include "PictureWindow.h"
 
-BEGIN_EVENT_TABLE(PictureWindow, wxWindow)
+wxBEGIN_EVENT_TABLE(PictureWindow, wxWindow)
+EVT_ERASE_BACKGROUND(PictureWindow::onEraseBackground)
 EVT_PAINT(PictureWindow::OnPaint)
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE()
 
 PictureWindow::PictureWindow(wxWindow* parent, const wxImage& image) : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER)
 {
@@ -33,11 +34,16 @@ PictureWindow::PictureWindow(wxWindow* parent, const wxBitmap& image) : wxWindow
 
 void PictureWindow::OnPaint(wxPaintEvent& event)
 {
-	wxPaintDC dc(this);
+	wxBufferedPaintDC dc(this);
 	if (Bitmap.Ok())
 	{
 		dc.DrawBitmap(Bitmap, 0, 0);
 	}
+}
+
+void PictureWindow::onEraseBackground(wxEraseEvent & event)
+{
+	//doing nothing on purpose
 }
 
 bool PictureWindow::setBitmap(wxBitmap img)

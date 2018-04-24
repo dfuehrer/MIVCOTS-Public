@@ -26,13 +26,13 @@ public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	Frame(wxWindow* parent);
 	~Frame();
-	
+
 	Map mapPanel;
 	//StatusWidget statusWidget;
 	std::vector<StatusWidget> statusWidgets;
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
-	
+
 
 	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
 	void checkForNewCars();
@@ -51,9 +51,10 @@ private:
 	wxButton* openComButton;
 	wxComboBox* carComboBox;
 	wxButton* changeCarButton;
+	wxCheckListBox* carCheckListBox;
 	bool carComboOpen = false;
-	
-	
+
+
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);
 	void update(wxTimerEvent &event);
@@ -64,8 +65,8 @@ private:
 	bool createUIPanel();
 	StatusWidget* createStatusWidget(long carID);
 	bool createStatusWidgets();
-	
-	
+
+
 	void paneClosed(wxAuiManagerEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
@@ -73,7 +74,7 @@ private:
 class GUI : public wxApp
 {
 public:
-	wxTimer* timer;
+	wxTimer * timer;
 
 	virtual bool OnInit();
 	void OnQuit(wxCloseEvent& evt);
@@ -82,10 +83,11 @@ private:
 	Frame * frame;
 	MIVCOTS aMIVCOTS;
 	std::vector<long> activeCars;
+	//std::vector<CarData> playBackCars;
 
 	void update(wxTimerEvent &event);
 	void onExit(wxCommandEvent &event);
-	
+
 	wxDECLARE_EVENT_TABLE();
 };
 enum
@@ -97,6 +99,7 @@ enum
 	comStartButton,
 	carSelectButton,
 	carCombo,
+	carCheckList,
 	auiManager
 };
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
