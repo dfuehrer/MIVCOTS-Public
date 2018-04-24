@@ -38,6 +38,7 @@ public:
 	bool newData(long carNum);
 	int getCarNums(std::vector<long>* toWrite, bool* isChanged);
 
+	int AvailablePlaybackData(std::vector<databaseInfo>* availableInfo);
 	int startPlayback(databaseInfo playbackRequest, double timeFactor);
 
 private:

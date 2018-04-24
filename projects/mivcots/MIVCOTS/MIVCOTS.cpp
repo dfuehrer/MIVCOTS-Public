@@ -88,6 +88,11 @@ int MIVCOTS::getCarNums(std::vector<long>* toWrite, bool* isChanged)
 	return cacheBank.getCarNums(toWrite, isChanged);
 }
 
+int MIVCOTS::AvailablePlaybackData(std::vector<databaseInfo>* availableInfo)
+{
+	return dataStorage.AvailablePlaybackData(availableInfo);
+}
+
 int MIVCOTS::startPlayback(databaseInfo playbackRequest, double timeFactor)
 {
 	return dataStorage.startPlayback(playbackRequest, timeFactor);

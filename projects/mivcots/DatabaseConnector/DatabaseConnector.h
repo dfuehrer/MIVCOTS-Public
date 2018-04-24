@@ -34,7 +34,7 @@ public:
 	int start();
 	int stop();
 
-	int AvailablePlaybackData(std::vector<databaseInfo>*availableInfo);
+	int AvailablePlaybackData(std::vector<databaseInfo>* availableInfo);
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
 	//int GetData(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);

@@ -36,14 +36,14 @@ bool GUI::OnInit()
 
 	wxLogDebug("Thread safety: %d", mysql_thread_safe());
 
-	//databaseInfo test;
-	//test.carID = 1;
-	//test.startTime = 1;
-	//test.endTime = 5000;
-	//test.startDate = 20180415;
-	//test.endDate = 20180417;
+	databaseInfo test;
+	test.carID = 1;
+	test.startTime = 1;
+	test.endTime = 5000;
+	test.startDate = 20180415;
+	test.endDate = 20180417;
 
-	//aMIVCOTS.startPlayback(test, .001);
+	aMIVCOTS.startPlayback(test, .001);
 
 	return true;
 }
