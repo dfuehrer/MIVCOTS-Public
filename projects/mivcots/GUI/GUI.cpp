@@ -34,7 +34,10 @@ bool GUI::OnInit()
 	timer = new wxTimer(this, gui_timer);
 	timer->Start(1000 / FRAMERATE);		//main update thread
 
+
 	wxLogDebug("Thread safety: %d", mysql_thread_safe());
+	std::vector<databaseInfo> thing;
+	aMIVCOTS.AvailablePlaybackData(&thing);
 
 	databaseInfo test;
 	test.carID = 1;
@@ -362,18 +365,6 @@ void Frame::checkForNewCars()
 		}
 		carComboBox->SetSelection(sel);
 	}
-
-	//int sel = carComboBox->GetSelection();
-	//carComboBox->Clear();
-	//int i = 0;
-	//carCheckListBox->Clear();
-	//for (long id : *activeCars) {
-	//	carComboBox->Append(std::to_string(id));
-	//	carCheckListBox->Append(std::to_string(id));
-	//	carCheckListBox->Check(i);
-	//	i++;
-	//}
-	
 }
 
 void Frame::checkForNewCarsTimer(wxTimerEvent & event)

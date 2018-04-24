@@ -52,6 +52,7 @@ private:
 	//wxImage* carImg;
 	const wxImage *carimg;
 	const wxImage *baseStationimg;
+	const wxImage *alphaImg;
 
 	double latFactor;
 	double lonFactor;

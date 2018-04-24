@@ -385,9 +385,9 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 	row = mysql_fetch_row(result);
 	tempResultS = row[0];
 	numberOfTables = std::stol(tempResultS, NULL, 10);
-
+	mysql_free_result(result);
 	//Gets the actual carnums in the DB
-	str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
+	str = "SHOW TABLES;";
 	cstr = new char[str.length() + 1];
 	cstr = str.c_str();
 	mysql_query(&mysql, cstr);
@@ -402,8 +402,9 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		//Gets the endDate which is the Max DATE_S from the DB
 		databaseInfo temp;
 		temp.carID = carnums[i];
-		str = "SELECT MAX(DATE_S) AS DATE_S FROM car;";
+		str = "SELECT MAX(DATE_S) AS DATE_S FROM car";
 		str.append(std::to_string(carnums[i]));
+		str.append(";");
 		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
 		mysql_query(&mysql, cstr);
@@ -414,8 +415,9 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		temp.endDate = tempResultL;
 
 		//Gets the startDate which is the Min DATE_S from the DB
-		str = "SELECT MIN(DATE_S) AS DATE_S FROM car;";
+		str = "SELECT MIN(DATE_S) AS DATE_S FROM car";
 		str.append(std::to_string(carnums[i]));
+		str.append(";");
 		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
 		mysql_query(&mysql, cstr);
@@ -426,8 +428,9 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		temp.startDate = tempResultL;
 
 		//Gets the endTime which is the Max TIME_S from the DB
-		str = "SELECT MAX(TIME_S) AS TIME_S FROM car;";
+		str = "SELECT MAX(TIME_S) AS TIME_S FROM car";
 		str.append(std::to_string(carnums[i]));
+		str.append(";");
 		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
 		mysql_query(&mysql, cstr);
@@ -438,8 +441,9 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		temp.endTime = tempResultL;
 
 		//Gets the startTime which is the Min TIME_S from the DB
-		str = "SELECT MIN(TIME_S) AS TIME_S FROM car;";
+		str = "SELECT MIN(TIME_S) AS TIME_S FROM car";
 		str.append(std::to_string(carnums[i]));
+		str.append(";");
 		cstr = new char[str.length() + 1];
 		cstr = str.c_str();
 		mysql_query(&mysql, cstr);

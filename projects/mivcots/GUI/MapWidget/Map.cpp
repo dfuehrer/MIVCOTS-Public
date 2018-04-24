@@ -28,6 +28,8 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 		carimg = new wxImage(carPath, wxBITMAP_TYPE_ANY);
 		std::string filePath = std::string(env_p) + std::string("maps\\base.png");
 		baseStationimg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
+		filePath = std::string(env_p) + std::string("maps\\alphaicon.png");
+		alphaImg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
 
 		std::string mapPath = std::string(env_p) + std::string("maps/") + mapName + std::string(".png");
 		//probably change to tmp
@@ -82,6 +84,9 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 	wxImage tmpimg;
 	if (carID == 0) {
 		tmpimg = baseStationimg->Copy();
+	}
+	if (carID < 0) {
+		tmpimg = alphaImg->Copy();
 	}
 	else {
 		tmpimg = carimg->Copy();

@@ -109,7 +109,8 @@ int AnalysisParent::setup()
 		&analysisFinishedCounterMutex,
 		&analysisFinishedCounterInt,
 		&analysisStepMutex,
-		&analysisStepConditionVariable
+		&analysisStepConditionVariable,
+		&analysisStepInt
 	);
 	if (returnCode) {
 		return returnCode;
@@ -137,7 +138,8 @@ int AnalysisParent::loop()
 	// while counter is less than length of children vector
 	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < (int)analysisChildVector.size()) {
 		// aggregate stuff in output queues from children
-		this->aggregate();
+		//this->aggregate();
+		Sleep(100);
 	}
 	while (analysisChildrenUpdateQueue.size()) {
 		this->aggregate();// finish aggregating
@@ -145,9 +147,9 @@ int AnalysisParent::loop()
 
 	if (analysisAggregationSet.empty()) {
 		carCache->releaseReadLock(&toLock);
-		analysisStepLock.lock();
+		//analysisStepLock.lock();
 		analysisStepInt.store(false, std::memory_order_relaxed);
-		analysisStepLock.unlock();
+		//analysisStepLock.unlock();
 		Sleep(ANALYSIS_PARENT_DELAY_MS);
 		return 0;
 	}
@@ -170,9 +172,9 @@ int AnalysisParent::loop()
 	analysisAggregationSet.clear();
 
 	// TODO: Does this need to happen earlier?
-	analysisStepLock.lock();
+	//analysisStepLock.lock();
 	analysisStepInt.store(false, std::memory_order_relaxed);
-	analysisStepLock.unlock();
+	//analysisStepLock.unlock();
 	// release read lock on cache
 	carCache->releaseReadLock(&toLock);
 	// try acquire write lock on cache

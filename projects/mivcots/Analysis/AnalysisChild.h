@@ -21,7 +21,8 @@ public:
 		std::mutex * analysisFinishedCounterMutex,
 		std::atomic<int> * analysisFinishedCounterInt,
 		std::mutex * analysisStepMutex,
-		std::condition_variable * analysisStepConditionVariable
+		std::condition_variable * analysisStepConditionVariable,
+		std::atomic<bool>* analysisStepInt
 	);
 	int start();
 	int stop();
@@ -42,6 +43,7 @@ protected:
 
 	std::mutex * analysisFinishedCounterMutex;
 	std::atomic<int> * analysisFinishedCounterInt;
+	std::atomic<bool>* analysisStepInt;
 
 	virtual int setup();
 	virtual int loop();
