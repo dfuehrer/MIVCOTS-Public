@@ -367,6 +367,74 @@ int DatabaseConnector::selectDatabase() {
 
 ////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
 
+int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*availableInfo) {
+	int pass = 0;
+	long tempResultL = 0;
+	std::string tempResultS = "";
+	availableInfo->clear();
+	std::string str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
+	const char* cstr = new char[str.length() + 1];
+	cstr = str.c_str();
+	pass = mysql_query(&mysql, cstr);
+	result = mysql_store_result(&mysql);
+	row = mysql_fetch_row(result);
+	tempResultS = row[0];
+	tempResultL = std::stol(tempResultS, NULL, 10);
+	for (long i = 0; i < tempResultL; i++) {
+		//Gets the endDate which is the Max DATE_S from the DB
+		databaseInfo temp;
+		temp.carID = i;
+		str = "SELECT MAX(DATE_S) AS DATE_S FROM car;";
+		str.append(std::to_string(i));
+		const char* cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		pass = mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result);
+		tempResultS = row[0];
+		tempResultL = std::stol(tempResultS, NULL, 10);
+		temp.endDate = tempResultL;
+
+		//Gets the startDate which is the Min DATE_S from the DB
+		str = "SELECT MIN(DATE_S) AS DATE_S FROM car;";
+		str.append(std::to_string(i));
+		const char* cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		pass = mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result);
+		tempResultS = row[0];
+		tempResultL = std::stol(tempResultS, NULL, 10);
+		temp.startDate = tempResultL;
+
+		//Gets the endTime which is the Max TIME_S from the DB
+		str = "SELECT MAX(TIME_S) AS TIME_S FROM car;";
+		str.append(std::to_string(i));
+		const char* cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		pass = mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result);
+		tempResultS = row[0];
+		tempResultL = std::stol(tempResultS, NULL, 10);
+		temp.endTime = tempResultL;
+
+		//Gets the startTime which is the Min TIME_S from the DB
+		str = "SELECT MIN(TIME_S) AS TIME_S FROM car;";
+		str.append(std::to_string(i));
+		const char* cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		pass = mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result);
+		tempResultS = row[0];
+		tempResultL = std::stol(tempResultS, NULL, 10);
+		temp.startTime = tempResultL;
+
+		availableInfo->push_back(temp);
+	}
+}
+
 int DatabaseConnector::InitializeDatabase() {
 	initDB(nullptr);
 	endpointOfColumnTypeList = 0;
