@@ -20,9 +20,10 @@ bool GUI::OnInit()
 	frame->comObjects.push_back("COM43");
 	/*activeCars.push_back(0);
 	activeCars.push_back(1);*/
-	aMIVCOTS.getCarNums(&activeCars);
+	bool tmp;
+	aMIVCOTS.getCarNums(&activeCars, &tmp);
 
-	frame->initFrame(&aMIVCOTS, &activeCars);
+	frame->initFrame(&aMIVCOTS, &activeCars, &displayedCars);
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
@@ -50,6 +51,17 @@ void GUI::onExit(wxCommandEvent & event)
 	timer->Stop();
 	frame->Close(true);
 	free(timer);
+}
+
+void Frame::onCheck(wxCommandEvent & event)
+{
+	this->displayedCars->clear();
+	wxArrayInt tmp;
+	carCheckListBox->GetCheckedItems(tmp);
+	for (int i : tmp) {
+		displayedCars->push_back(activeCars->at(i));
+		wxLogMessage("Display: %d", i);
+	}
 }
 
 void Frame::comStart(wxCommandEvent & event)
@@ -123,10 +135,11 @@ Frame::~Frame()
 	logTimer->Stop();
 }
 
-bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
+bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->activeCars = activeCars;
+	this->displayedCars = displayedCars;
 
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_EXIT);
@@ -157,7 +170,8 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 	wxLogMessage("test in gui");
 
 	mapPanel = Map(this);
-	mapPanel.initMap(aMIVCOTS, activeCars);
+	mapPanel.initMap(aMIVCOTS, this->displayedCars);
+	
 
 	createUIPanel();
 
@@ -317,15 +331,38 @@ bool Frame::createStatusWidgets()
 
 void Frame::checkForNewCars()
 {
-	aMIVCOTS->getCarNums(activeCars);
+	bool tmp;
+	std::vector<long> newCars;
+	aMIVCOTS->getCarNums(&newCars, &tmp);
 	int sel = carComboBox->GetSelection();
-	carComboBox->Clear();
-	carCheckListBox->Clear();
-	for (long id : *activeCars) {
-		carComboBox->Append(std::to_string(id));
-		carCheckListBox->Append(std::to_string(id));
+	for (long i : newCars) {
+		bool found = false;
+		for (long j : *activeCars) {
+			if (i == j) {
+				found = true;
+			}
+		}
+		if (!found) {
+			activeCars->push_back(i);
+			carComboBox->Append(std::to_string(i));
+			carCheckListBox->Append(std::to_string(i));
+			carCheckListBox->Check(activeCars->size()-1);
+			displayedCars->push_back(i);
+		}
+		carComboBox->SetSelection(sel);
 	}
-	carComboBox->SetSelection(sel);
+
+	//int sel = carComboBox->GetSelection();
+	//carComboBox->Clear();
+	//int i = 0;
+	//carCheckListBox->Clear();
+	//for (long id : *activeCars) {
+	//	carComboBox->Append(std::to_string(id));
+	//	carCheckListBox->Append(std::to_string(id));
+	//	carCheckListBox->Check(i);
+	//	i++;
+	//}
+	
 }
 
 void Frame::checkForNewCarsTimer(wxTimerEvent & event)

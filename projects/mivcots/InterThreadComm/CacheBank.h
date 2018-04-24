@@ -46,7 +46,7 @@ public:
 	int startAnalyses();
 	int stopAnalyses();
 	
-	int getCarNums(std::vector<long>* toWrite);
+	int getCarNums(std::vector<long>* toWrite, bool* isChanged);
 
 private:
 	std::map<int, carModule*> carModuleMap;
