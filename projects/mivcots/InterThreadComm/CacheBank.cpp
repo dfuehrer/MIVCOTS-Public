@@ -155,8 +155,9 @@ int CacheBank::stopAnalyses()
 	return rc;
 }
 
-int CacheBank::getCarNums(std::vector<long>* toWrite)
+int CacheBank::getCarNums(std::vector<long>* toWrite, bool* isChanged)
 {
+	*isChanged = false;
 	if (toWrite == nullptr) {
 		return ERR_NULLPTR;
 	}

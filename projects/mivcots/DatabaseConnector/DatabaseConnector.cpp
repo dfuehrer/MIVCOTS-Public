@@ -546,8 +546,7 @@ void DatabaseConnector::runDatabaseThread()
 		}
 
 		Sleep(1);
-		// getDataTimestamp(0, 20180415, 20180417, 1271, 1275);
-		// For Playback they will need a funciton for what cars exist and what days and times are available.
+
 	}
 
 	mysql_thread_end();

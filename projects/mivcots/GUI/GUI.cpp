@@ -20,17 +20,18 @@ bool GUI::OnInit()
 	frame->comObjects.push_back("COM43");
 	/*activeCars.push_back(0);
 	activeCars.push_back(1);*/
-	aMIVCOTS.getCarNums(&activeCars);
+	bool tmp;
+	aMIVCOTS.getCarNums(&activeCars, &tmp);
 
-	frame->initFrame(&aMIVCOTS, &activeCars);
+	frame->initFrame(&aMIVCOTS, &activeCars, &displayedCars);
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
 
 	aMIVCOTS.initialize();
 	aMIVCOTS.start();
-	
-	timer = new wxTimer(this, gui_timer);	
+
+	timer = new wxTimer(this, gui_timer);
 	timer->Start(1000 / FRAMERATE);		//main update thread
 
 	wxLogDebug("Thread safety: %d", mysql_thread_safe());
@@ -53,7 +54,7 @@ void GUI::update(wxTimerEvent & event)
 	frame->mapPanel.update();
 	frame->Show();
 	//frame->checkForNewCars(); //this seems like a bad thing to do every frame
-	
+
 }
 
 void GUI::onExit(wxCommandEvent & event)
@@ -61,6 +62,17 @@ void GUI::onExit(wxCommandEvent & event)
 	timer->Stop();
 	frame->Close(true);
 	free(timer);
+}
+
+void Frame::onCheck(wxCommandEvent & event)
+{
+	this->displayedCars->clear();
+	wxArrayInt tmp;
+	carCheckListBox->GetCheckedItems(tmp);
+	for (int i : tmp) {
+		displayedCars->push_back(activeCars->at(i));
+		wxLogMessage("Display: %d", i);
+	}
 }
 
 void Frame::comStart(wxCommandEvent & event)
@@ -125,7 +137,7 @@ Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
 	wxDefaultPosition, wxDefaultSize,
 	wxDEFAULT_FRAME_STYLE)
 {
-	
+
 }
 
 Frame::~Frame()
@@ -134,10 +146,11 @@ Frame::~Frame()
 	logTimer->Stop();
 }
 
-bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
+bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->activeCars = activeCars;
+	this->displayedCars = displayedCars;
 
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_EXIT);
@@ -168,7 +181,8 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 	wxLogMessage("test in gui");
 
 	mapPanel = Map(this);
-	mapPanel.initMap(aMIVCOTS, activeCars);
+	mapPanel.initMap(aMIVCOTS, this->displayedCars);
+	
 
 	createUIPanel();
 
@@ -176,18 +190,18 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars)
 	m_mgr.SetFlags(m_mgr.GetFlags() ^ wxAUI_MGR_LIVE_RESIZE);
 
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Caption(wxT("Map")).
-														Center().
-														MinSize(200, 200).
-														BestSize(200, 200));
+		Center().
+		MinSize(200, 200).
+		BestSize(200, 200));
 	m_mgr.AddPane(uiPanel, wxAuiPaneInfo().Caption(wxT("UI")).
-											Bottom().
-											MinSize(200, 200).
-											BestSize(200, 200));
+		Bottom().
+		MinSize(200, 200).
+		BestSize(200, 200));
 	m_mgr.AddPane(log, wxAuiPaneInfo().Caption(wxT("LOG")).
-										Bottom().
-										MinSize(200, 200).
-										BestSize(200, 200).
-										MaxSize(200, 200));
+		Bottom().
+		MinSize(200, 200).
+		BestSize(200, 200).
+		MaxSize(200, 200));
 	createStatusWidgets();
 
 	// tell the manager to "commit" all the changes just made
@@ -242,8 +256,11 @@ bool Frame::createUIPanel()
 	wxArrayString com_arr;
 	wxArrayString car_arr;
 
-	wxBoxSizer* hbox = new wxBoxSizer(wxHORIZONTAL);
-	wxFlexGridSizer* fgs = new wxFlexGridSizer(2, 3, 10, 10);
+	wxBoxSizer* hbox1 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* hbox2 = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
+	wxFlexGridSizer* fgs1 = new wxFlexGridSizer(2, 3, 10, 10);
+	wxFlexGridSizer* fgs2 = new wxFlexGridSizer(2, 1, 10, 10);
 
 	int comSelection = 0;
 	for (unsigned int i = 0; i < comObjects.size(); i++) {
@@ -257,24 +274,35 @@ bool Frame::createUIPanel()
 	comComboBox->SetSelection(comSelection);
 	openComButton = new wxButton(uiPanel, comStartButton, "Start");
 
-	fgs->Add(comText, wxSizerFlags(1).Center());
-	fgs->Add(comComboBox, wxSizerFlags(1).Center());
-	fgs->Add(openComButton, wxSizerFlags(1).Center());
+	fgs1->Add(comText, wxSizerFlags(1).Center());
+	fgs1->Add(comComboBox, wxSizerFlags(1).Center());
+	fgs1->Add(openComButton, wxSizerFlags(1).Center());
 
-	for(int i : *activeCars){
+	for (int i : *activeCars) {
 		car_arr.Add(std::to_string(i));
 	}
 	wxStaticText* carText = new wxStaticText(uiPanel, wxID_ANY, "Car list");
 	carComboBox = new wxComboBox(uiPanel, carCombo, wxEmptyString, wxDefaultPosition, wxDefaultSize, car_arr);
 	carComboBox->SetSelection(0);
 	changeCarButton = new wxButton(uiPanel, carSelectButton, "Open");
-	
-	fgs->Add(carText, wxSizerFlags(1).Center());
-	fgs->Add(carComboBox, wxSizerFlags(1).Center());
-	fgs->Add(changeCarButton, wxSizerFlags(1).Center());
 
-	hbox->Add(fgs, 1, wxALL | wxEXPAND, 15);
-	uiPanel->SetSizer(hbox);
+	fgs1->Add(carText, wxSizerFlags(1).Center());
+	fgs1->Add(carComboBox, wxSizerFlags(1).Center());
+	fgs1->Add(changeCarButton, wxSizerFlags(1).Center());
+
+	hbox1->Add(fgs1, 1, wxALL | wxEXPAND, 15);
+
+	wxStaticText* mapText = new wxStaticText(uiPanel, wxID_ANY, "Cars on Map");
+	carCheckListBox = new wxCheckListBox(uiPanel, carCheckList, wxDefaultPosition, wxDefaultSize, car_arr);
+
+	fgs2->Add(mapText, wxSizerFlags(1).Center());
+	fgs2->Add(carCheckListBox, wxSizerFlags(1).Center());
+
+	hbox1->Add(fgs2, 1, wxALL | wxEXPAND, 15);
+
+	vbox->Add(hbox1, 1, wxALL | wxEXPAND, 15);
+	vbox->Add(hbox2, 1, wxALL | wxEXPAND, 15);
+	uiPanel->SetSizer(vbox);
 	return false;
 }
 
@@ -287,10 +315,10 @@ StatusWidget* Frame::createStatusWidget(long carID)
 
 	wxString cap = wxString(wxT("Car" + std::to_string(carID)));
 	m_mgr.AddPane(statusWidget->getPanel(), wxAuiPaneInfo().Name(wxT("Car" + std::to_string(carID))).
-															DestroyOnClose(true).
-															Caption(cap).
-															MinSize(200, 200).
-															BestSize(200, 200));
+		DestroyOnClose(true).
+		Caption(cap).
+		MinSize(200, 200).
+		BestSize(200, 200));
 
 	m_mgr.Update();
 	return statusWidget;
@@ -307,35 +335,60 @@ bool Frame::createStatusWidgets()
 		}
 		if (!found) {
 			createStatusWidget(i);
-			}
+		}
 	}
 	return true;
 }
 
 void Frame::checkForNewCars()
 {
-	aMIVCOTS->getCarNums(activeCars);
+	bool tmp;
+	std::vector<long> newCars;
+	aMIVCOTS->getCarNums(&newCars, &tmp);
 	int sel = carComboBox->GetSelection();
-	carComboBox->Clear();
-	for (long id : *activeCars) {
-		carComboBox->Append(std::to_string(id));
+	for (long i : newCars) {
+		bool found = false;
+		for (long j : *activeCars) {
+			if (i == j) {
+				found = true;
+			}
+		}
+		if (!found) {
+			activeCars->push_back(i);
+			carComboBox->Append(std::to_string(i));
+			carCheckListBox->Append(std::to_string(i));
+			carCheckListBox->Check(activeCars->size()-1);
+			displayedCars->push_back(i);
+		}
+		carComboBox->SetSelection(sel);
 	}
-	carComboBox->SetSelection(sel);
+
+	//int sel = carComboBox->GetSelection();
+	//carComboBox->Clear();
+	//int i = 0;
+	//carCheckListBox->Clear();
+	//for (long id : *activeCars) {
+	//	carComboBox->Append(std::to_string(id));
+	//	carCheckListBox->Append(std::to_string(id));
+	//	carCheckListBox->Check(i);
+	//	i++;
+	//}
+	
 }
 
 void Frame::checkForNewCarsTimer(wxTimerEvent & event)
 {
 	if (!carComboOpen) {	//if combo is not open check for new car
 		checkForNewCars();
-	}	
-	
+	}
+
 }
 
 void Frame::paneClosed(wxAuiManagerEvent & event)
 {
 	wxLogMessage("Closed " + event.GetPane()->caption);
 	for (unsigned int i = 0; i < statusWidgets.size(); i++) {
-		std::string tmp = "Car"+std::to_string(statusWidgets.at(i).getCarID());
+		std::string tmp = "Car" + std::to_string(statusWidgets.at(i).getCarID());
 		if (event.GetPane()->caption == tmp) {
 			statusWidgets.erase(statusWidgets.begin() + i);
 		}

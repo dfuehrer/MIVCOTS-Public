@@ -36,7 +36,7 @@ public:
 	int endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 
 	bool newData(long carNum);
-	int getCarNums(std::vector<long>* toWrite);
+	int getCarNums(std::vector<long>* toWrite, bool* isChanged);
 
 	int startPlayback(databaseInfo playbackRequest, double timeFactor);
 

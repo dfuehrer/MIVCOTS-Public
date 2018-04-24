@@ -83,9 +83,9 @@ bool MIVCOTS::newData(long carNum)
 	return cacheBank.newRawData(carNum) || cacheBank.newAnalyzedData(carNum);
 }
 
-int MIVCOTS::getCarNums(std::vector<long>* toWrite)
+int MIVCOTS::getCarNums(std::vector<long>* toWrite, bool* isChanged)
 {
-	return cacheBank.getCarNums(toWrite);
+	return cacheBank.getCarNums(toWrite, isChanged);
 }
 
 int MIVCOTS::startPlayback(databaseInfo playbackRequest, double timeFactor)

@@ -26,15 +26,14 @@ public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	Frame(wxWindow* parent);
 	~Frame();
-	
+
 	Map mapPanel;
 	//StatusWidget statusWidget;
 	std::vector<StatusWidget> statusWidgets;
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
-	
 
-	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
+	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars);
 	void checkForNewCars();
 	void checkForNewCarsTimer(wxTimerEvent &event);
 	void onEraseBackground(wxEraseEvent &event);
@@ -51,9 +50,12 @@ private:
 	wxButton* openComButton;
 	wxComboBox* carComboBox;
 	wxButton* changeCarButton;
+	wxCheckListBox* carCheckListBox;
 	bool carComboOpen = false;
+	std::vector<long>* displayedCars;
+
 	
-	
+
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);
 	void update(wxTimerEvent &event);
@@ -64,8 +66,10 @@ private:
 	bool createUIPanel();
 	StatusWidget* createStatusWidget(long carID);
 	bool createStatusWidgets();
-	
-	
+	void onCheck(wxCommandEvent &event);
+
+
+
 	void paneClosed(wxAuiManagerEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
@@ -73,7 +77,7 @@ private:
 class GUI : public wxApp
 {
 public:
-	wxTimer* timer;
+	wxTimer * timer;
 
 	virtual bool OnInit();
 	void OnQuit(wxCloseEvent& evt);
@@ -82,10 +86,13 @@ private:
 	Frame * frame;
 	MIVCOTS aMIVCOTS;
 	std::vector<long> activeCars;
+	std::vector<long> displayedCars;
+	//std::vector<CarData> playBackCars;
 
 	void update(wxTimerEvent &event);
 	void onExit(wxCommandEvent &event);
 	
+
 	wxDECLARE_EVENT_TABLE();
 };
 enum
@@ -97,6 +104,7 @@ enum
 	comStartButton,
 	carSelectButton,
 	carCombo,
+	carCheckList,
 	auiManager
 };
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
@@ -115,6 +123,7 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_COMBOBOX_DROPDOWN(carCombo, Frame::onCarCombo)
 	EVT_COMBOBOX_CLOSEUP(carCombo, Frame::onCarComboClose)
 	EVT_ERASE_BACKGROUND(Frame::onEraseBackground)
+	EVT_CHECKLISTBOX(carCheckList, Frame::onCheck)
 	//EVT_CLOSE(GUI::OnQuit)
 wxEND_EVENT_TABLE()
 
