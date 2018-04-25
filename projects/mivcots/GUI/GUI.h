@@ -19,7 +19,7 @@
 #include "serial/serial.h"
 #include "Utilities.h"
 #include <vector>
-
+#include "Plotting.h"
 #define FRAMERATE 30
 #define LOG_FREQUENCY 60000 //once a minute
 #define DEFAULT_SERIAL "COM43"
@@ -31,7 +31,7 @@ public:
 	//Frame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	Frame(wxWindow* parent);
 	~Frame();
-
+	Plotting graph;
 	Map mapPanel;
 	//StatusWidget statusWidget;
 	std::vector<StatusWidget> statusWidgets;
