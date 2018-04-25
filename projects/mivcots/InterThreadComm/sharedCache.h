@@ -7,15 +7,11 @@
 #include "endpoint.h"
 #include "error_codes.h"
 #include "CarData.h"
+#include "CarPool.h"
 #include "key_defines.h"
 
 // TODO: use a condition variable to give priority to updates
-// TODO: maintain time ordering on insert
 // TODO: actually write newdata functions
-// TODO: vector of pointers where position corresponds to number of analyses. 
-// Update to latest on updateCache() and find position on request. Add new
-// read function
-// TODO: pass cardata* back to carpool to delete
 
 template <class T> class sharedCache
 {
@@ -28,7 +24,8 @@ public:
 
 	int initialize(unsigned int _maxSize,
 				   endpoint<T>* _feedQ,
-				   endpoint<T>* _updateQ
+				   endpoint<T>* _updateQ,
+				   CarPool* _carSource
 				  );
 
 	int feedCache();
@@ -55,6 +52,7 @@ private:
 	unsigned int maxSize;
 	endpoint<T>* feedQ;
 	endpoint<T>* updateQ;
+	CarPool* carSource;
 
 	std::deque<T> buffer;
 	mutable std::shared_mutex smtx;

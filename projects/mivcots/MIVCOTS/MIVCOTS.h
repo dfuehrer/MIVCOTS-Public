@@ -38,6 +38,7 @@ public:
 	bool newData(long carNum);
 	int getCarNums(std::vector<long>* toWrite, bool* isChanged);
 
+	// Playback functions
 	int AvailablePlaybackData(std::vector<databaseInfo>* availableInfo);
 	int startPlayback(databaseInfo playbackRequest, double timeFactor);
 
@@ -45,7 +46,6 @@ private:
 	DataInterface dataSource;
 	DatabaseConnector dataStorage;
 	CacheBank cacheBank;
-	AnalysisParent analysisEngine;
 	CarPool carSource;
 
 	InterThreadComm<CarData*, CarData*> dataSource_dataStorage;

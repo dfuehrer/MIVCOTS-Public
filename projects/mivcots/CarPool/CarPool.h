@@ -8,6 +8,9 @@ public:
 	~CarPool();
 
 	int getCar(CarData** dest);
+	int copyCar(CarData** dest, CarData* toCopy);
+
+	int releaseCar(CarData* toRelease);
 private:
 
 };

@@ -18,3 +18,23 @@ int CarPool::getCar(CarData** dest)
 
 	return SUCCESS;
 }
+
+int CarPool::copyCar(CarData ** dest, CarData * toCopy)
+{
+	if ((dest == nullptr) || (toCopy == nullptr)) {
+		return ERR_NULLPTR;
+	}
+
+	*dest = new CarData(toCopy);
+	return SUCCESS;
+}
+
+int CarPool::releaseCar(CarData * toRelease)
+{
+	if (toRelease == nullptr) {
+		return ERR_NULLPTR;
+	}
+
+	delete toRelease;
+	return SUCCESS;
+}
