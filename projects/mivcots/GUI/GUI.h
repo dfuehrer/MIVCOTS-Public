@@ -99,6 +99,9 @@ private:
 	void onPlayBackEndDate2(wxDateTime d1, wxDateTime d2);
 	void onStartPlayBack(wxCommandEvent &event);
 
+	void onTimeStart(wxDateEvent &event);
+	void onTimeEnd(wxDateEvent &event);
+
 	void paneClosed(wxAuiManagerEvent& event);
 
 	int createDateTimes(long start, long end, wxDateTime* d1, wxDateTime* d2);
@@ -169,6 +172,9 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_DATE_CHANGED(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
 
 	EVT_BUTTON(startPlayBackButton, Frame::onStartPlayBack)
+	EVT_TIME_CHANGED(playTimeStartSpinBoxID, Frame::onTimeStart)
+	EVT_TIME_CHANGED(playTimeEndSpinBoxID, Frame::onTimeEnd)
+
 	//EVT_COMBOBOX_CLOSEUP(playDateStartSpinBoxID, Frame::onPlayStartDateClose)
 	//EVT_COMBOBOX(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
 

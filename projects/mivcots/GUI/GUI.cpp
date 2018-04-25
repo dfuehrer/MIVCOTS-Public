@@ -38,26 +38,6 @@ bool GUI::OnInit()
 
 	wxLogDebug("Thread safety: %d", mysql_thread_safe());
 
-	//databaseInfo test;
-	//test.carID = 1;
-	//test.startTime = 1;
-
-
-
-	//test.endTime = 50;
-	//test.startDate = 20180415;
-	//test.endDate = 20180417;
-
-	//Sleep(1000);
-	//aMIVCOTS.startPlayback(test, .001);
-
-	//test.endTime = 5000;
-	//test.startDate = 20180415;
-	//test.endDate = 20180417;
-
-	//aMIVCOTS.startPlayback(test, .5);
-
-
 	return true;
 }
 
@@ -209,7 +189,9 @@ void Frame::onPlayBackCombo(wxCommandEvent & event)
 	}
 
 	createDateTimes(min, max, &d1, &d2);
+	playDateStartSpinBox->SetValue(d1);
 	playDateStartSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
+	
 	//Sleep(500);
 	onPlayBackStartDate2(d1);
 }
@@ -255,6 +237,7 @@ void Frame::onPlayBackStartDate(wxDateEvent & event)
 	wxDateTime d1(wxDateTime::Now());
 	wxDateTime d2(wxDateTime::Now());
 	createDateTimes(min, max, &d1, &d2);
+	playDateEndSpinBox->SetValue(d1);
 	playDateEndSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
 }
 void Frame::onPlayBackStartDate2(wxDateTime d3)
@@ -299,8 +282,9 @@ void Frame::onPlayBackStartDate2(wxDateTime d3)
 		}
 	}
 	createDateTimes(min, max, &d1, &d2);
+	playDateEndSpinBox->SetValue(d1);
 	playDateEndSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
-
+	
 	onPlayBackEndDate2(d3, d2);
 }
 
@@ -312,12 +296,12 @@ void Frame::onPlayBackEndDate2(wxDateTime d1, wxDateTime d2)
 	maxTime = d2.GetHour()    * 10000000;
 	maxTime += d2.GetMinute() * 100000;
 	maxTime += d2.GetSecond() * 1000;
-	maxTime += d2.GetMillisecond();
+	//maxTime += d2.GetMillisecond();
 
 	minTime = d1.GetHour()    * 10000000;
 	minTime += d1.GetMinute() * 100000;
 	minTime += d1.GetSecond() * 1000;
-	minTime += d1.GetMillisecond();
+	//minTime += d1.GetMillisecond();
 
 	playTimeStartSpinBox->SetTime(d1.GetHour(), d1.GetMinute(), d1.GetSecond());
 	playTimeEndSpinBox->SetTime(d2.GetHour(), d2.GetMinute(), d2.GetSecond());
@@ -346,24 +330,61 @@ void Frame::onStartPlayBack(wxCommandEvent & event)
 	replay.endTime = ((hour * 10000000) + (min * 100000) + (sec * 1000));
 	
 	aMIVCOTS->startPlayback(replay, 1);
-		//databaseInfo test;
-		//test.carID = 1;
-		//test.startTime = 1;
+}
 
+void Frame::onTimeStart(wxDateEvent & event)
+{
+	int hour, min, sec;
+	playTimeStartSpinBox->GetTime(&hour,&min,&sec);
+	int testTime = (hour * 10000000) + (min * 100000) + (sec * 1000);
 
+	if (testTime < minTime) {
+		hour = minTime / 10000000;
+		min = (minTime % 10000000) / 100000;
+		sec = (minTime % 100000 / 1000);
+		playTimeStartSpinBox->SetTime(hour, min, sec);
+	}
+	if (testTime > maxTime) {
+		hour = maxTime / 10000000;
+		min = (maxTime % 10000000) / 100000;
+		sec = (maxTime % 100000 / 1000);
+		playTimeStartSpinBox->SetTime(hour, min, sec);
+	}
 
-		//test.endTime = 50;
-		//test.startDate = 20180415;
-		//test.endDate = 20180417;
+	int hour2, min2, sec2;
+	playTimeEndSpinBox->GetTime(&hour2, &min2, &sec2);
+	int testTime2 = (hour2 * 10000000) + (min2 * 100000) + (sec2 * 1000);
 
-		//Sleep(1000);
-		//aMIVCOTS.startPlayback(test, .001);
+	if (testTime > testTime2) {
+		playTimeStartSpinBox->SetTime(hour2, min2, sec2);
+	}
+}
 
-		//test.endTime = 5000;
-		//test.startDate = 20180415;
-		//test.endDate = 20180417;
+void Frame::onTimeEnd(wxDateEvent & event)
+{
+	int hour, min, sec;
+	playTimeEndSpinBox->GetTime(&hour, &min, &sec);
+	int testTime = (hour * 10000000) + (min * 100000) + (sec * 1000);
 
-		//aMIVCOTS.startPlayback(test, .5);
+	if (testTime < minTime) {
+		hour = minTime / 10000000;
+		min = (minTime % 10000000) / 100000;
+		sec = (minTime % 100000 / 1000);
+		playTimeEndSpinBox->SetTime(hour, min, sec);
+	}
+	if (testTime > maxTime) {
+		hour = maxTime / 10000000;
+		min = (maxTime % 10000000) / 100000;
+		sec = (maxTime % 100000 / 1000);
+		playTimeEndSpinBox->SetTime(hour, min, sec);
+	}
+	int hour2, min2, sec2;
+	playTimeStartSpinBox->GetTime(&hour2, &min2, &sec2);
+	int testTime2 = (hour2 * 10000000) + (min2 * 100000) + (sec2 * 1000);
+
+	if (testTime < testTime2) {
+		playTimeEndSpinBox->SetTime(hour2, min2, sec2);
+	}
 }
 
 
