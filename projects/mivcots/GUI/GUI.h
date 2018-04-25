@@ -55,6 +55,7 @@ private:
 	wxButton* openComButton;
 	wxComboBox* carComboBox;
 	wxButton* changeCarButton;
+	wxButton* startPlayBack;
 	wxCheckListBox* carCheckListBox;
 	bool carComboOpen = false;
 	bool playComboOpen = false;
@@ -96,6 +97,7 @@ private:
 	void onPlayBackStartDate(wxDateEvent &event);
 	void onPlayBackStartDate2(wxDateTime d1);
 	void onPlayBackEndDate2(wxDateTime d1, wxDateTime d2);
+	void onStartPlayBack(wxCommandEvent &event);
 
 	void paneClosed(wxAuiManagerEvent& event);
 
@@ -140,7 +142,8 @@ enum
 	playDateStartSpinBoxID,
 	playDateEndSpinBoxID,
 	playTimeStartSpinBoxID,
-	playTimeEndSpinBoxID
+	playTimeEndSpinBoxID,
+	startPlayBackButton
 };
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
 	EVT_TIMER(gui_timer, GUI::update)
@@ -164,6 +167,8 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_COMBOBOX_CLOSEUP(playBackIdCombo, Frame::onPlayComboClose)
 	EVT_COMBOBOX(playBackIdCombo, Frame::onPlayBackCombo)
 	EVT_DATE_CHANGED(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
+
+	EVT_BUTTON(startPlayBackButton, Frame::onStartPlayBack)
 	//EVT_COMBOBOX_CLOSEUP(playDateStartSpinBoxID, Frame::onPlayStartDateClose)
 	//EVT_COMBOBOX(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
 

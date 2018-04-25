@@ -42,6 +42,8 @@ bool GUI::OnInit()
 	//test.carID = 1;
 	//test.startTime = 1;
 
+
+
 	//test.endTime = 50;
 	//test.startDate = 20180415;
 	//test.endDate = 20180417;
@@ -105,6 +107,7 @@ bool Frame::createPlaybackWidget()
 	playDateEndSpinBox = new wxDatePickerCtrl(uiPanel, playDateEndSpinBoxID);
 	playTimeStartSpinBox = new wxTimePickerCtrl(uiPanel, playTimeStartSpinBoxID);
 	playTimeEndSpinBox = new wxTimePickerCtrl(uiPanel, playTimeEndSpinBoxID);
+	startPlayBack = new wxButton(uiPanel, startPlayBackButton, "Start");
 
 	playDateStartSpinBox->Enable(false);
 	playDateEndSpinBox->Enable(false);
@@ -126,7 +129,8 @@ bool Frame::createPlaybackWidget()
 	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "End Date"), 1, wxEXPAND, 15);
 	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "End Time"), 1, wxEXPAND, 15);
 
-	fgs->AddSpacer(0);
+	//fgs->AddSpacer(0);
+	fgs->Add(startPlayBack, 1, wxEXPAND, 15);
 	fgs->Add(playDateEndSpinBox, 1, wxEXPAND, 15);
 	fgs->Add(playTimeEndSpinBox, 1, wxEXPAND, 15);
 
@@ -223,8 +227,8 @@ void Frame::onPlayBackStartDate(wxDateEvent & event)
 	wxLogMessage("in start");
 	long date = monthToLong(playDateStartSpinBox->GetValue());
 	playDateEndSpinBox->Enable(true);
-	playTimeStartSpinBox->Enable(false);
-	playTimeEndSpinBox->Enable(false);
+	playTimeStartSpinBox->Enable(true);
+	playTimeEndSpinBox->Enable(true);
 
 	//playDateEndSpinBox->Clear();
 	////playTimeStartSpinBox->Clear();
@@ -319,6 +323,43 @@ void Frame::onPlayBackEndDate2(wxDateTime d1, wxDateTime d2)
 	playTimeEndSpinBox->SetTime(d2.GetHour(), d2.GetMinute(), d2.GetSecond());
 
 	
+}
+
+void Frame::onStartPlayBack(wxCommandEvent & event)
+{
+	databaseInfo replay;
+	int hour, min, sec;
+	wxDateTime date(wxDateTime::Now());
+	replay.carID = (playBackOptions->at(playIdComboBox->GetSelection())).carID;
+	date = playDateStartSpinBox->GetValue();
+	replay.startDate = monthToLong(date);
+	date = playDateEndSpinBox->GetValue();
+	replay.endDate = monthToLong(date);
+
+	playTimeStartSpinBox->GetTime(&hour,&min,&sec);
+	replay.startTime = ((hour * 10000000) + (min * 100000) + (sec * 1000));
+	playTimeEndSpinBox->GetTime(&hour, &min, &sec);
+	replay.endTime = ((hour * 10000000) + (min * 100000) + (sec * 1000));
+	
+	aMIVCOTS->startPlayback(replay, 1);
+		//databaseInfo test;
+		//test.carID = 1;
+		//test.startTime = 1;
+
+
+
+		//test.endTime = 50;
+		//test.startDate = 20180415;
+		//test.endDate = 20180417;
+
+		//Sleep(1000);
+		//aMIVCOTS.startPlayback(test, .001);
+
+		//test.endTime = 5000;
+		//test.startDate = 20180415;
+		//test.endDate = 20180417;
+
+		//aMIVCOTS.startPlayback(test, .5);
 }
 
 
