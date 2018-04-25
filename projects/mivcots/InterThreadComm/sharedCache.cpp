@@ -107,9 +107,19 @@ int sharedCache<CarData*>::updateCache()
 
 		findRC = findItem(tempData, &ind);
 		if (findRC == SUCCESS) {
-			delete buffer.at(ind);
-			buffer.at(ind) = tempData;
 			trackUpdates(tempData);
+			CarData* toDelete = buffer.at(ind);
+			buffer.at(ind) = tempData;
+
+			//for (unsigned int ii = 0; ii < latestUpdated.size(); ++ii) {
+			//	if (latestUpdated.at(ii) == toDelete) {
+			//		latestUpdated.at(ii) = nullptr;
+			//	}
+			//}
+
+			delete toDelete;
+			
+			
 		}
 		else {
 			rc |= findRC;
@@ -303,7 +313,7 @@ int sharedCache<CarData*>::trackUpdates(CarData* update)
 	latestUpdated.at(analysisCount)->get(TIME_S, &oldUpdateTime);
 	
 	// Update has a newer timestamp
-	if (oldUpdateTime < newUpdateTime) {
+	if (oldUpdateTime <= newUpdateTime) {
 		latestUpdated.at(analysisCount) = update;
 	}
 

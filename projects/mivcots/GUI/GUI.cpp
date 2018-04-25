@@ -325,8 +325,12 @@ void Frame::onPlayBackEndDate2(wxDateTime d1, wxDateTime d2)
 	
 }
 
+//#include <ctime>
 void Frame::onStartPlayBack(wxCommandEvent & event)
 {
+	//auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	//wxLogMessage("Received a playback request at %s", ctime(&time));
+
 	databaseInfo replay;
 	int hour, min, sec;
 	wxDateTime date(wxDateTime::Now());
