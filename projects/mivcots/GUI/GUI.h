@@ -34,7 +34,7 @@ public:
 	Plotting graph;
 	Map mapPanel;
 	//StatusWidget statusWidget;
-	std::vector<StatusWidget> statusWidgets;
+	std::vector<StatusWidget*> statusWidgets;
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
 

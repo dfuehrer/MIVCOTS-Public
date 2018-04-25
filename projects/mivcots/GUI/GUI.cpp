@@ -46,6 +46,9 @@ void GUI::update(wxTimerEvent & event)
 	//wxLogMessage("updating gui");
 	frame->mapPanel.update();
 	frame->graph.Reload();
+	for (StatusWidget* cur : frame->statusWidgets) {
+		cur->update();
+	}
 
 	frame->Show();
 	//frame->checkForNewCars(); //this seems like a bad thing to do every frame
@@ -425,12 +428,13 @@ void Frame::carSelect(wxCommandEvent & event)
 	}
 	bool found = false;
 	for (unsigned int i = 0; i < statusWidgets.size(); i++) {
-		if (activeCars->at(selection) == statusWidgets.at(i).getCarID()) {
+		if (activeCars->at(selection) == statusWidgets.at(i)->getCarID()) {
 			found = true;
 		}
 	}
 	if (!found) {
-		createStatusWidget(activeCars->at(selection));
+		StatusWidget* temp = createStatusWidget(activeCars->at(selection));
+		//statusWidgets.push_back(createStatusWidget(activeCars->at(selection)));
 	}
 	else {
 		wxLogMessage("Car%d is already open", activeCars->at(selection));
@@ -638,7 +642,7 @@ StatusWidget* Frame::createStatusWidget(long carID)
 	StatusWidget* statusWidget = new StatusWidget(this);
 	statusWidget->initStatusWidget(aMIVCOTS, carID);
 
-	statusWidgets.push_back(*statusWidget);
+	statusWidgets.push_back(statusWidget);
 
 	wxString cap = wxString(wxT("Car" + std::to_string(carID)));
 	m_mgr.AddPane(statusWidget->getPanel(), wxAuiPaneInfo().Name(wxT("Car" + std::to_string(carID))).
@@ -655,8 +659,8 @@ bool Frame::createStatusWidgets()
 {
 	for (long i : *activeCars) {
 		bool found = false;
-		for (StatusWidget temp : statusWidgets) {
-			if (temp.getCarID() == i) {
+		for (StatusWidget* temp : statusWidgets) {
+			if (temp->getCarID() == i) {
 				found = true;
 			}
 		}
@@ -703,7 +707,7 @@ void Frame::paneClosed(wxAuiManagerEvent & event)
 {
 	wxLogMessage("Closed " + event.GetPane()->caption);
 	for (unsigned int i = 0; i < statusWidgets.size(); i++) {
-		std::string tmp = "Car" + std::to_string(statusWidgets.at(i).getCarID());
+		std::string tmp = "Car" + std::to_string(statusWidgets.at(i)->getCarID());
 		if (event.GetPane()->caption == tmp) {
 			statusWidgets.erase(statusWidgets.begin() + i);
 		}
