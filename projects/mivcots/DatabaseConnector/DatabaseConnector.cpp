@@ -650,41 +650,44 @@ void DatabaseConnector::runDatabaseThread()
 		Sleep(1);
 
 	}
-
 	mysql_thread_end();
 }
 
 int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFactor)
 {
-	if (playbackThreads.empty()) {
-		// Start a new one
-		playbackThreads.emplace_back();
-
-		playbackThreadStatus.push_back(new std::atomic<bool>);
-		playbackThreadStatus.at(0)->store(true, std::memory_order_relaxed);
-	}
-
-	for (unsigned int ii = 0; ii < playbackThreads.size(); ++ii) {
-		if (playbackThreadStatus.at(ii)->load(std::memory_order_relaxed)){
-			playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
-				playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
-				playbackRequest.startTime, playbackRequest.endTime, timeFactor);
-			playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
-		}
-		// All threads are busy
-		else {
+	if (databaseConnected = true) {
+		if (playbackThreads.empty()) {
 			// Start a new one
 			playbackThreads.emplace_back();
+
 			playbackThreadStatus.push_back(new std::atomic<bool>);
-			playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
-				playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
-				playbackRequest.startTime, playbackRequest.endTime, timeFactor);
-			playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
-
+			playbackThreadStatus.at(0)->store(true, std::memory_order_relaxed);
 		}
-	}
 
-	return SUCCESS;
+		for (unsigned int ii = 0; ii < playbackThreads.size(); ++ii) {
+			if (playbackThreadStatus.at(ii)->load(std::memory_order_relaxed)) {
+				playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
+					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
+					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
+				playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
+			}
+			// All threads are busy
+			else {
+				// Start a new one
+				playbackThreads.emplace_back();
+				playbackThreadStatus.push_back(new std::atomic<bool>);
+				playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
+					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
+					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
+				playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
+
+			}
+		}
+
+		return SUCCESS;
+	}
+	else
+		return ERR_DATABASE;
 }
 
 int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue, double timeFactor) {
