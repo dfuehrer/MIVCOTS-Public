@@ -699,6 +699,11 @@ int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFa
 
 		for (unsigned int ii = 0; ii < playbackThreads.size(); ++ii) {
 			if (playbackThreadStatus.at(ii)->load(std::memory_order_relaxed)) {
+				
+				if (playbackThreads.at(ii).joinable()) {
+					playbackThreads.at(ii).join();
+				}
+
 				playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
 					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
 					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
@@ -709,10 +714,10 @@ int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFa
 				// Start a new one
 				playbackThreads.emplace_back();
 				playbackThreadStatus.push_back(new std::atomic<bool>);
-				playbackThreads.at(ii) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
+				playbackThreads.at(ii + 1) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
 					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
 					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
-				playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
+				playbackThreadStatus.at(ii + 1)->store(false, std::memory_order_relaxed);
 
 			}
 		}

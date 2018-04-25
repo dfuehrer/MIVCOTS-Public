@@ -81,10 +81,10 @@ bool Map::refresh()
 	panel->Refresh();
 	//if (!isPrinted) {
 	//	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	//	wxLogMessage("Displayed a data point at %s", ctime(&time));
+	//	wxLogMessage("Displayed data for a playback request at %s", ctime(&time));
 	//	isPrinted = true;
 	//}
-	//
+	
 	return true;
 }
 
