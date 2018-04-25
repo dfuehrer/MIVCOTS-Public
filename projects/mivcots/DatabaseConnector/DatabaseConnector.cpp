@@ -699,13 +699,13 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 
 	std::string str1 = "SELECT * FROM car";
 	std::string str2 = std::to_string(carnum);
-	std::string str3 = " WHERE DATE_S > ";
+	std::string str3 = " WHERE DATE_S >= ";
 	std::string str4 = std::to_string(minDateValue);
-	std::string str5 = " AND DATE_S < ";
+	std::string str5 = " AND DATE_S <= ";
 	std::string str6 = std::to_string(maxDateValue);
-	str6.append(" AND TIME_S > ");
+	str6.append(" AND TIME_S >= ");
 	str6.append(std::to_string(minTimeValue));
-	str6.append(" AND TIME_S < ");
+	str6.append(" AND TIME_S <= ");
 	str6.append(std::to_string(maxTimeValue));
 	std::string str7 = " ORDER BY TIME_S ASC;";
 	std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
