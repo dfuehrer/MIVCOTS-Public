@@ -19,7 +19,12 @@
 import serial
 import time
 import datetime
-timeStart = 0;
+mstime = 0;
+stime = 0;
+mintime = 0;
+hourtime = 0;
+timestamp = ""
+
 mph = 100
 # Open the Serial Port
 ser = serial.Serial(port = "COM42", baudrate=115200)
@@ -34,15 +39,55 @@ with open("new_test_data.csv") as f:
 # print("Sent!")
 
 #time.sleep(200)
-	
+
 while 1:
     for line in data:
         #print("#," + line.replace("\n","") + ",!\n")
         #line = "#," + line.replace("\n","") + ",!\n"
         #line += "AC
-        line = line.replace("!\n","") + "AC," + str(timeStart) + ",AR," + str(mph) + ",!\n"
+        if hourtime == 0:
+            timestamp = "00"
+        elif hourtime < 10:
+            timestmap = "0" + str(hourtime)
+        else:
+            timestamp = str(hourtime) 
+        
+        if mintime == 0:
+            timestamp = timestamp + "00"
+        elif mintime < 10:
+            timestamp = timestamp + "0" + str(mintime)
+        else:
+            timestamp = timestamp + str(mintime)
+        
+        if stime == 0:
+            timestamp = timestamp + "00"
+        elif stime < 10:
+            timestamp = timestamp + "0" + str(stime)
+        else:
+            timestamp = timestamp + str(stime)
+        
+        if mstime == 0:
+            timestamp = timestamp + "000"
+        else:
+            timestamp = timestamp + str(mstime)
+            
+        line = line.replace("!\n","") + "AC," + timestamp + ",AR," + str(mph) + ",!\n"  
         ser.write(line.encode("utf-8"))
-        timeStart +=10
+        mstime+=100
+        timestamp = ""
+        
+        if mstime == 1000:
+            mstime = 0
+            stime+=1
+        if stime == 60:
+            stime = 0
+            mintime+=1
+        if mintime == 60:
+            mintime = 0
+            htime+=1
+        if hourtime == 24:
+            hourtime = 0
+        
         mph += 5
         mph = mph%200
         #print()
