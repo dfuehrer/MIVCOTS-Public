@@ -786,6 +786,7 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 			}
 			wxLogDebug("Time diff: %s", std::to_string(curTime - prevTime));
 			outputCache->feed(carDP);
+
 			wxLogDebug("Logging at time %s", std::to_string(curTime));
 		}
 		//mysql_free_result(tbl_cols);

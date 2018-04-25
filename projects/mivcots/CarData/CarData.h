@@ -5,6 +5,7 @@
 #include <vector>
 #include <wx/wx.h>
 #include "error_codes.h"
+#include "key_defines.h"
 
 typedef struct dataValue_st {
 	union data_u {
@@ -49,8 +50,8 @@ protected:
 struct carTimeStampCompareLess {
 	bool operator()(CarData * lhs, CarData * rhs) {
 		long lhsTimeStamp, rhsTimeStamp;
-		lhs->get(std::string("TMS"), &lhsTimeStamp);
-		rhs->get(std::string("TMS"), &rhsTimeStamp);
+		lhs->get(TIME_S, &lhsTimeStamp);
+		rhs->get(TIME_S, &rhsTimeStamp);
 		return lhsTimeStamp < rhsTimeStamp;
 	}
 };

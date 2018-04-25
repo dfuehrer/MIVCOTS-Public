@@ -46,7 +46,7 @@ bool GUI::OnInit()
 	test.startDate = 20180415;
 	test.endDate = 20180417;
 
-	aMIVCOTS.startPlayback(test, .001);
+	aMIVCOTS.startPlayback(test, .5);
 
 	return true;
 }

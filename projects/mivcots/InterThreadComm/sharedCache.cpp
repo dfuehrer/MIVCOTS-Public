@@ -31,7 +31,7 @@ int sharedCache<CarData*>::feedCache()
 	std::unique_lock<std::shared_mutex> ulock(smtx);
 
 	CarData* received;
-	int rc = feedQ->receive(&received);
+	int rc = feedQ->receiveQfront(&received);
 
 	if (rc != SUCCESS) {
 		ulock.unlock();
@@ -39,11 +39,29 @@ int sharedCache<CarData*>::feedCache()
 	}
 
 	if (buffer.size() == maxSize) {
-		delete buffer.front();
-		buffer.pop_front();
+		CarData* temp = buffer.front();
+		unsigned long analysisCount;
+
+		temp->get(ANALYSIS_COUNT_U, &analysisCount);
+
+		if (analysisCount < 1) { // TODO: set to max analysis level
+			wxLogDebug("Analysis is falling behind");
+			//wxLogDebug("%d items in queue", feedQ->receiveQsize());
+			return ERR_ANALYSIS_DELAY;
+		}
+		else {
+			for (unsigned int ii = 0; ii < latestUpdated.size(); ++ii) {
+				if (latestUpdated.at(ii) == temp) {
+					latestUpdated.at(ii) = nullptr;
+				}
+			}
+			delete buffer.front();
+			buffer.pop_front();
+		}
 	}
 	else if (buffer.size() == 0) {
 		buffer.push_front(received);
+		feedQ->receive(&received);
 		//trackUpdates(received);
 		ulock.unlock();
 		return SUCCESS;
@@ -70,6 +88,7 @@ int sharedCache<CarData*>::feedCache()
 	*/
 	
 	buffer.push_back(received);
+	feedQ->receive(&received);
 	//trackUpdates(received);
 	ulock.unlock();
 	return SUCCESS;
