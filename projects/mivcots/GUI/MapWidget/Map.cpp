@@ -23,6 +23,7 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 	
 	this->aMIVCOTS = aMIVCOTS;
 	if (const char* env_p = std::getenv("MivcotsResources")) {
+		wxLogMessage("Resources found at");
 		wxLogMessage(_(env_p));
 		std::string carPath = std::string(env_p) + std::string("maps\\favicon.png");
 		carimg = new wxImage(carPath, wxBITMAP_TYPE_ANY);
@@ -37,7 +38,7 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
 		wxImage *tmpImg = new wxImage(mapPath, wxBITMAP_TYPE_PNG);
 		int xSize = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
 		int ySize = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
-		wxLogMessage("x size: %d\ty size: %d", xSize,ySize);
+		wxLogMessage("Map Dimensions: x size = %d\ty size = %d", xSize,ySize);
 		double MaxWidth = xSize * 0.66;
 		double MaxHeight = ySize * 0.66;
 		
@@ -73,9 +74,17 @@ wxPanel * Map::getPanel()
 	return panel;
 }
 
+//static bool isPrinted = false;
+//#include <ctime>
 bool Map::refresh()
 {
 	panel->Refresh();
+	//if (!isPrinted) {
+	//	auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	//	wxLogMessage("Displayed a data point at %s", ctime(&time));
+	//	isPrinted = true;
+	//}
+	//
 	return true;
 }
 
@@ -148,6 +157,7 @@ bool Map::update()
 			}
 			else {
 				drawCar(lat, lon, course * 0.01745329252, i);
+
 				refresh();
 			}
 		}

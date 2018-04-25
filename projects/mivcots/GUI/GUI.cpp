@@ -39,14 +39,14 @@ bool GUI::OnInit()
 	std::vector<databaseInfo> thing;
 	aMIVCOTS.AvailablePlaybackData(&thing);
 
-	databaseInfo test;
-	test.carID = 1;
-	test.startTime = 1;
-	test.endTime = 5000;
-	test.startDate = 20180415;
-	test.endDate = 20180417;
+	//databaseInfo test;
+	//test.carID = 1;
+	//test.startTime = 1;
+	//test.endTime = 5000;
+	//test.startDate = 20180415;
+	//test.endDate = 20180417;
 
-	aMIVCOTS.startPlayback(test, .5);
+	//aMIVCOTS.startPlayback(test, .5);
 
 	return true;
 }
@@ -181,7 +181,6 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 
 	//adding log to gui
 	wxLog::SetActiveTarget(new wxLogTextCtrl(log));
-	wxLogMessage("test in gui");
 
 	mapPanel = Map(this);
 	mapPanel.initMap(aMIVCOTS, this->displayedCars);
