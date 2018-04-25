@@ -58,8 +58,7 @@ private:
 	CacheBank* outputCache;
 
 	MYSQL mysql;
-	MYSQL_ROW row;
-	MYSQL_RES *result;
+
 	CarPool* CarSource;
 
 	char host[32] = "localhost";
@@ -78,7 +77,6 @@ private:
 	int createDatabase();
 	int createTable(CarData *receivedData);
 	int closeConnection();
-	int freeResult();
 	int selectDatabase();
 	int getColumnTypes(long carnum);
 
