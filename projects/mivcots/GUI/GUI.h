@@ -4,6 +4,11 @@
 #include <wx/wx.h>
 #include <wx/app.h>
 #include <wx/aui/aui.h>
+#include <wx/spinctrl.h>
+#include <wx/datetimectrl.h>
+#include <wx/timectrl.h>
+#include <wx/datectrl.h>
+#include <wx/dateevt.h>
 
 #include "MapWidget/Map.h"
 #include "StatusWidget/StatusWidget.h"
@@ -33,7 +38,7 @@ public:
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
 
-	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars);
+	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars, std::vector<databaseInfo>* playBackOptions);
 	void checkForNewCars();
 	void checkForNewCarsTimer(wxTimerEvent &event);
 	void onEraseBackground(wxEraseEvent &event);
@@ -52,9 +57,22 @@ private:
 	wxButton* changeCarButton;
 	wxCheckListBox* carCheckListBox;
 	bool carComboOpen = false;
+	bool playComboOpen = false;
 	std::vector<long>* displayedCars;
 
-	
+	std::vector<databaseInfo>* playBackOptions;
+	wxComboBox* playIdComboBox;
+	wxBoxSizer* playBackBox = new wxBoxSizer(wxHORIZONTAL);
+	wxDatePickerCtrl* playDateStartSpinBox;
+	wxDatePickerCtrl* playDateEndSpinBox;
+	wxTimePickerCtrl* playTimeStartSpinBox;
+	wxTimePickerCtrl* playTimeEndSpinBox;
+	std::vector<int> playBackCars;
+	std::vector<long> playBackStartDates;
+	std::vector<long> playBackEndDates;
+	int maxTime;
+	int minTime;
+
 
 	void onAbout(wxCommandEvent &event);
 	void onToggleFullscreen(wxCommandEvent &event);
@@ -67,11 +85,22 @@ private:
 	StatusWidget* createStatusWidget(long carID);
 	bool createStatusWidgets();
 	void onCheck(wxCommandEvent &event);
+	bool createPlaybackWidget();
+	bool updatePlayBackWidget();
+	void onPlayComboOpen(wxCommandEvent &event);
+	void onPlayComboClose(wxCommandEvent &event);
+	void onPlayBackCombo(wxCommandEvent &event);
 
-
+	void onPlayStartDateOpen(wxCommandEvent &event);
+	void onPlayStartDateClose(wxCommandEvent &event);
+	void onPlayBackStartDate(wxDateEvent &event);
+	void onPlayBackStartDate2(wxDateTime d1);
+	void onPlayBackEndDate2(wxDateTime d1, wxDateTime d2);
 
 	void paneClosed(wxAuiManagerEvent& event);
 
+	int createDateTimes(long start, long end, wxDateTime* d1, wxDateTime* d2);
+	long monthToLong(wxDateTime in);
 	wxDECLARE_EVENT_TABLE();
 };
 class GUI : public wxApp
@@ -87,6 +116,7 @@ private:
 	MIVCOTS aMIVCOTS;
 	std::vector<long> activeCars;
 	std::vector<long> displayedCars;
+	std::vector<databaseInfo> playBackOptions;
 	//std::vector<CarData> playBackCars;
 
 	void update(wxTimerEvent &event);
@@ -105,7 +135,12 @@ enum
 	carSelectButton,
 	carCombo,
 	carCheckList,
-	auiManager
+	auiManager,
+	playBackIdCombo,
+	playDateStartSpinBoxID,
+	playDateEndSpinBoxID,
+	playTimeStartSpinBoxID,
+	playTimeEndSpinBoxID
 };
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
 	EVT_TIMER(gui_timer, GUI::update)
@@ -124,6 +159,15 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	EVT_COMBOBOX_CLOSEUP(carCombo, Frame::onCarComboClose)
 	EVT_ERASE_BACKGROUND(Frame::onEraseBackground)
 	EVT_CHECKLISTBOX(carCheckList, Frame::onCheck)
+
+	EVT_COMBOBOX_DROPDOWN(playBackIdCombo, Frame::onPlayComboOpen)
+	EVT_COMBOBOX_CLOSEUP(playBackIdCombo, Frame::onPlayComboClose)
+	EVT_COMBOBOX(playBackIdCombo, Frame::onPlayBackCombo)
+	EVT_DATE_CHANGED(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
+	//EVT_COMBOBOX_CLOSEUP(playDateStartSpinBoxID, Frame::onPlayStartDateClose)
+	//EVT_COMBOBOX(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
+
+
 	//EVT_CLOSE(GUI::OnQuit)
 wxEND_EVENT_TABLE()
 

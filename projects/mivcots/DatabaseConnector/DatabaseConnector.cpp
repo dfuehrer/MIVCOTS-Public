@@ -454,6 +454,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		temp.startTime = tempResultL;
 		availableInfo->push_back(temp);
 	}
+	mysql_free_result(result);
 	return SUCCESS;
 }
 

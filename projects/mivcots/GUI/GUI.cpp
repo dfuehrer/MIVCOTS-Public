@@ -20,10 +20,11 @@ bool GUI::OnInit()
 	frame->comObjects.push_back("COM43");
 	/*activeCars.push_back(0);
 	activeCars.push_back(1);*/
+
 	bool tmp;
 	aMIVCOTS.getCarNums(&activeCars, &tmp);
 
-	frame->initFrame(&aMIVCOTS, &activeCars, &displayedCars);
+	frame->initFrame(&aMIVCOTS, &activeCars, &displayedCars, &playBackOptions);
 	SetTopWindow(frame);
 	frame->Show();
 	frame->ShowFullScreen(true, wxFULLSCREEN_NOBORDER);
@@ -36,17 +37,16 @@ bool GUI::OnInit()
 
 
 	wxLogDebug("Thread safety: %d", mysql_thread_safe());
-	std::vector<databaseInfo> thing;
-	aMIVCOTS.AvailablePlaybackData(&thing);
 
-	databaseInfo test;
-	test.carID = 1;
-	test.startTime = 1;
-	test.endTime = 5000;
-	test.startDate = 20180415;
-	test.endDate = 20180417;
+	//databaseInfo test;
+	//test.carID = 1;
+	//test.startTime = 1;
+	//test.endTime = 50;
+	//test.startDate = 20180415;
+	//test.endDate = 20180417;
 
-	aMIVCOTS.startPlayback(test, .001);
+	//Sleep(1000);
+	//aMIVCOTS.startPlayback(test, .001);
 
 	return true;
 }
@@ -78,6 +78,244 @@ void Frame::onCheck(wxCommandEvent & event)
 	}
 }
 
+bool Frame::createPlaybackWidget()
+{
+	wxBoxSizer* vbox1 = new wxBoxSizer(wxVERTICAL);
+	wxFlexGridSizer* fgs = new wxFlexGridSizer(5, 3, 10, 10);
+
+	wxStaticText* carIdText = new wxStaticText(uiPanel, wxID_ANY, "Cars in Database");
+	playIdComboBox = new wxComboBox(uiPanel, playBackIdCombo, wxEmptyString, wxDefaultPosition, wxDefaultSize);
+
+
+
+	//playDateStartSpinBox = new wxSpinCtrl(uiPanel, playDateStartSpinBoxID, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_WRAP, 0, 0, 0);
+	//playDateEndSpinBox = new wxSpinCtrl(uiPanel, playDateEndSpinBoxID, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_WRAP, 0, 0, 0);
+
+	playDateStartSpinBox = new wxDatePickerCtrl(uiPanel, playDateStartSpinBoxID);
+	playDateEndSpinBox = new wxDatePickerCtrl(uiPanel, playDateEndSpinBoxID);
+	playTimeStartSpinBox = new wxTimePickerCtrl(uiPanel, playTimeStartSpinBoxID);
+	playTimeEndSpinBox = new wxTimePickerCtrl(uiPanel, playTimeEndSpinBoxID);
+
+	playDateStartSpinBox->Enable(false);
+	playDateEndSpinBox->Enable(false);
+	playTimeStartSpinBox->Enable(false);
+	playTimeEndSpinBox->Enable(false);
+	fgs->Add(carIdText, 1, wxEXPAND, 15);
+	//fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "Date"), 1, wxEXPAND, 15);
+	//fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "TIme"), 1, wxEXPAND, 15);
+
+	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "Start Date"), 1, wxEXPAND, 15);
+	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "Start Time"), 1, wxEXPAND, 15);
+
+	fgs->Add(playIdComboBox, 1, wxEXPAND, 15);
+	//fgs->AddSpacer(0);
+	fgs->Add(playDateStartSpinBox, 1, wxEXPAND, 15);
+	fgs->Add(playTimeStartSpinBox, 1, wxEXPAND, 15);
+
+	fgs->AddSpacer(0);
+	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "End Date"), 1, wxEXPAND, 15);
+	fgs->Add(new wxStaticText(uiPanel, wxID_ANY, "End Time"), 1, wxEXPAND, 15);
+
+	fgs->AddSpacer(0);
+	fgs->Add(playDateEndSpinBox, 1, wxEXPAND, 15);
+	fgs->Add(playTimeEndSpinBox, 1, wxEXPAND, 15);
+
+	playBackBox->Add(fgs, 1, wxEXPAND, 15);
+
+
+	return true;
+}
+
+bool Frame::updatePlayBackWidget()
+{
+	std::vector<databaseInfo> newInfo;
+	aMIVCOTS->AvailablePlaybackData(&newInfo);
+	int sel = playIdComboBox->GetSelection();
+	for (databaseInfo newData : newInfo) {
+		bool found = false;
+		for (databaseInfo cur : *playBackOptions) {
+			if (newData.carID == cur.carID) {
+				found = true;
+			}
+		}
+		if (!found) {
+			playIdComboBox->Append(std::to_string(newData.carID));
+			playBackCars.push_back(newData.carID);
+			playBackOptions->push_back(newData);
+		}
+	}
+	playIdComboBox->SetSelection(sel);
+	return true;
+}
+
+void Frame::onPlayComboOpen(wxCommandEvent & event)
+{
+	//playComboOpen = true;
+	updatePlayBackWidget();
+}
+
+void Frame::onPlayBackCombo(wxCommandEvent & event)
+{
+	int sel = playIdComboBox->GetCurrentSelection();
+	wxLogMessage("selected car %d", sel);
+	playDateStartSpinBox->Enable(true);
+	playDateEndSpinBox->Enable(false);
+	playTimeStartSpinBox->Enable(false);
+	playTimeEndSpinBox->Enable(false);
+
+	//playDateStartSpinBox->Clear();
+	//playDateEndSpinBox->Clear();
+	//playTimeStartSpinBox->Clear();
+	//playTimeEndSpinBox->Clear();
+	long min = 99999999;
+	long max = 0;
+	playBackStartDates.clear();
+	wxDateTime d1(wxDateTime::Now());
+	wxDateTime d2(wxDateTime::Now());
+	for (databaseInfo cur : *playBackOptions) {
+		if (cur.carID == playBackCars.at(sel)) {
+			playBackStartDates.push_back(cur.startDate);
+			if (min > cur.startDate) {
+				min = cur.startDate;
+				d1.SetHour(cur.startTime / 10000000);
+				d1.SetMinute((cur.startTime % 10000000) / 100000);
+				d1.SetSecond(cur.startTime % 100000 / 1000);
+				d2.SetMillisecond(cur.endTime % 1000);
+			}
+			if (max < cur.startDate) {
+				max = cur.endDate;
+				int tmp = cur.endTime / 10000;
+				d2.SetHour(cur.endTime / 10000000);
+				d2.SetMinute((cur.endTime % 10000000) / 100000);
+				d2.SetSecond(cur.endTime % 100000 / 1000);
+				d2.SetMillisecond(cur.endTime % 1000);
+			}
+
+		}
+	}
+
+	createDateTimes(min, max, &d1, &d2);
+	playDateStartSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
+	//Sleep(500);
+	onPlayBackStartDate2(d1);
+}
+
+void Frame::onPlayStartDateOpen(wxCommandEvent & event)
+{
+}
+
+void Frame::onPlayStartDateClose(wxCommandEvent & event)
+{
+}
+
+void Frame::onPlayBackStartDate(wxDateEvent & event)
+{
+	wxLogMessage("in start");
+	long date = monthToLong(playDateStartSpinBox->GetValue());
+	playDateEndSpinBox->Enable(true);
+	playTimeStartSpinBox->Enable(false);
+	playTimeEndSpinBox->Enable(false);
+
+	//playDateEndSpinBox->Clear();
+	////playTimeStartSpinBox->Clear();
+	////playTimeEndSpinBox->Clear();
+
+	long min = 99999999;
+	long max = 0;
+	playBackEndDates.clear();
+	for (databaseInfo cur : *playBackOptions) {
+		if (cur.carID == playBackCars.at(playIdComboBox->GetCurrentSelection())) {
+			if (cur.startDate == date) {
+				playBackEndDates.push_back(cur.endDate);
+				//playDateEndSpinBox->Append(std::to_string(cur.endDate));
+				if (min > cur.startDate) {
+					min = cur.startDate;
+				}
+				if (max < cur.startDate) {
+					max = cur.startDate;
+				}
+
+			}
+		}
+	}
+	wxDateTime d1(wxDateTime::Now());
+	wxDateTime d2(wxDateTime::Now());
+	createDateTimes(min, max, &d1, &d2);
+	playDateEndSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
+}
+void Frame::onPlayBackStartDate2(wxDateTime d3)
+{
+	wxLogMessage("in start");
+	long date = monthToLong(d3);
+	playDateEndSpinBox->Enable(true);
+	playTimeStartSpinBox->Enable(false);
+	playTimeEndSpinBox->Enable(false);
+
+	//playDateEndSpinBox->Clear();
+	////playTimeStartSpinBox->Clear();
+	////playTimeEndSpinBox->Clear();
+
+	long min = 99999999;
+	long max = 0;
+	playBackEndDates.clear();
+	wxDateTime d1(wxDateTime::Now());
+	wxDateTime d2(wxDateTime::Now());
+	for (databaseInfo cur : *playBackOptions) {
+		if (cur.carID == playBackCars.at(playIdComboBox->GetCurrentSelection())) {
+			if (cur.startDate == date) {
+				playBackEndDates.push_back(cur.endDate);
+				//playDateEndSpinBox->Append(std::to_string(cur.endDate));
+				if (min > cur.startDate) {
+					min = cur.startDate;
+					d1.SetHour(cur.startTime / 10000000);
+					d1.SetMinute((cur.startTime % 10000000) / 100000);
+					d1.SetSecond(cur.startTime % 100000 / 1000);
+					d1.SetMillisecond(cur.endTime % 1000);
+					
+				}
+				if (max < cur.endDate) {
+					max = cur.endDate;
+					d2.SetHour(cur.endTime / 10000000);
+					d2.SetMinute((cur.endTime % 10000000) / 100000);
+					d2.SetSecond(cur.endTime % 100000 / 1000);
+					d2.SetMillisecond(cur.endTime % 1000);
+				}
+
+			}
+		}
+	}
+	createDateTimes(min, max, &d1, &d2);
+	playDateEndSpinBox->SetRange((const wxDateTime)d1, (const wxDateTime)d2);
+
+	onPlayBackEndDate2(d3, d2);
+}
+
+void Frame::onPlayBackEndDate2(wxDateTime d1, wxDateTime d2)
+{
+	playTimeStartSpinBox->Enable(true);
+	playTimeEndSpinBox->Enable(true);
+
+	maxTime = d2.GetHour()    * 10000000;
+	maxTime += d2.GetMinute() * 100000;
+	maxTime += d2.GetSecond() * 1000;
+	maxTime += d2.GetMillisecond();
+
+	minTime = d1.GetHour()    * 10000000;
+	minTime += d1.GetMinute() * 100000;
+	minTime += d1.GetSecond() * 1000;
+	minTime += d1.GetMillisecond();
+
+	playTimeStartSpinBox->SetTime(d1.GetHour(), d1.GetMinute(), d1.GetSecond());
+	playTimeEndSpinBox->SetTime(d2.GetHour(), d2.GetMinute(), d2.GetSecond());
+
+	
+}
+
+
+void Frame::onPlayComboClose(wxCommandEvent & event)
+{
+	//playComboOpen = false;
+}
 void Frame::comStart(wxCommandEvent & event)
 {
 	int selection = comComboBox->GetSelection();
@@ -149,11 +387,12 @@ Frame::~Frame()
 	logTimer->Stop();
 }
 
-bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars)
+bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars, std::vector<databaseInfo>* playBackOptions)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->activeCars = activeCars;
 	this->displayedCars = displayedCars;
+	this->playBackOptions = playBackOptions;
 
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_EXIT);
@@ -185,7 +424,7 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 
 	mapPanel = Map(this);
 	mapPanel.initMap(aMIVCOTS, this->displayedCars);
-	
+
 
 	createUIPanel();
 
@@ -303,8 +542,13 @@ bool Frame::createUIPanel()
 
 	hbox1->Add(fgs2, 1, wxALL | wxEXPAND, 15);
 
+	createPlaybackWidget();
+	hbox1->Add(playBackBox, 1, wxALL | wxEXPAND, 15);
+
 	vbox->Add(hbox1, 1, wxALL | wxEXPAND, 15);
-	vbox->Add(hbox2, 1, wxALL | wxEXPAND, 15);
+	//vbox->Add(hbox2, 1, wxALL | wxEXPAND, 15);
+
+
 	uiPanel->SetSizer(vbox);
 	return false;
 }
@@ -360,7 +604,7 @@ void Frame::checkForNewCars()
 			activeCars->push_back(i);
 			carComboBox->Append(std::to_string(i));
 			carCheckListBox->Append(std::to_string(i));
-			carCheckListBox->Check(activeCars->size()-1);
+			carCheckListBox->Check(activeCars->size() - 1);
 			displayedCars->push_back(i);
 		}
 		carComboBox->SetSelection(sel);
@@ -384,4 +628,71 @@ void Frame::paneClosed(wxAuiManagerEvent & event)
 			statusWidgets.erase(statusWidgets.begin() + i);
 		}
 	}
+}
+
+int Frame::createDateTimes(long start, long end, wxDateTime * d1, wxDateTime * d2)
+{
+	wxDateTime::Month month_c;
+	switch ((start % 10000) / 100)
+	{
+	case  1: month_c = wxDateTime::Jan; break;
+	case  2: month_c = wxDateTime::Feb; break;
+	case  3: month_c = wxDateTime::Mar; break;
+	case  4: month_c = wxDateTime::Apr; break;
+	case  5: month_c = wxDateTime::May; break;
+	case  6: month_c = wxDateTime::Jun; break;
+	case  7: month_c = wxDateTime::Jul; break;
+	case  8: month_c = wxDateTime::Aug; break;
+	case  9: month_c = wxDateTime::Sep; break;
+	case 10: month_c = wxDateTime::Oct; break;
+	case 11: month_c = wxDateTime::Nov; break;
+	case 12: month_c = wxDateTime::Dec; break;
+	default: month_c = wxDateTime::Jan;
+	}
+	d1->SetYear((int)(start / 10000));
+	d1->SetMonth(month_c);
+	d1->SetDay((int)(start % 100));
+
+	switch ((end % 10000) / 100)
+	{
+	case  1: month_c = wxDateTime::Jan; break;
+	case  2: month_c = wxDateTime::Feb; break;
+	case  3: month_c = wxDateTime::Mar; break;
+	case  4: month_c = wxDateTime::Apr; break;
+	case  5: month_c = wxDateTime::May; break;
+	case  6: month_c = wxDateTime::Jun; break;
+	case  7: month_c = wxDateTime::Jul; break;
+	case  8: month_c = wxDateTime::Aug; break;
+	case  9: month_c = wxDateTime::Sep; break;
+	case 10: month_c = wxDateTime::Oct; break;
+	case 11: month_c = wxDateTime::Nov; break;
+	case 12: month_c = wxDateTime::Dec; break;
+	default: month_c = wxDateTime::Jan;
+	}
+	d2->SetYear(end / 10000);
+	d2->SetMonth(month_c);
+	d2->SetDay(end % 100);
+	return 0;
+}
+
+long Frame::monthToLong(wxDateTime in)
+{
+	long result = in.GetYear() * 10000;
+	result += in.GetDay();
+	switch (in.GetMonth())
+	{
+	case  wxDateTime::Jan: result += 1 * 100; break;
+	case  wxDateTime::Feb: result += 2 * 100; break;
+	case  wxDateTime::Mar: result += 3 * 100; break;
+	case  wxDateTime::Apr: result += 4 * 100; break;
+	case  wxDateTime::May: result += 5 * 100; break;
+	case  wxDateTime::Jun: result += 6 * 100; break;
+	case  wxDateTime::Jul: result += 7 * 100; break;
+	case  wxDateTime::Aug: result += 8 * 100; break;
+	case  wxDateTime::Sep: result += 9 * 100; break;
+	case  wxDateTime::Oct: result += 10 * 100; break;
+	case  wxDateTime::Nov: result += 11 * 100; break;
+	case  wxDateTime::Dec: result += 12 * 100; break;
+	}
+	return result;
 }

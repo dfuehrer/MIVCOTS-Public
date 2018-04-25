@@ -85,7 +85,7 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 	if (carID == 0) {
 		tmpimg = baseStationimg->Copy();
 	}
-	if (carID < 0) {
+	else if (carID < 0) {
 		tmpimg = alphaImg->Copy();
 	}
 	else {
