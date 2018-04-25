@@ -368,94 +368,98 @@ int DatabaseConnector::selectDatabase() {
 ////////////////////////////////////////////////////////Public Functions///////////////////////////////////////////////////////////////////////////////////////
 
 int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*availableInfo) {
-	//int pass = 0;
-	long tempResultL = 0;
-	long numberOfTables = 0;
-	std::string tempResultS = "";
-	int carnums[200];
-	availableInfo->clear();
-	int i = 0;
-	
-	//Gets the Number of tables in the DB
-	std::string str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
-	const char* cstr = new char[str.length() + 1];
-	cstr = str.c_str();
-	mysql_query(&mysql, cstr);
-	result = mysql_store_result(&mysql);
-	row = mysql_fetch_row(result);
-	tempResultS = row[0];
-	numberOfTables = std::stol(tempResultS, NULL, 10);
-	mysql_free_result(result);
-	//Gets the actual carnums in the DB
-	str = "SHOW TABLES;";
-	cstr = new char[str.length() + 1];
-	cstr = str.c_str();
-	mysql_query(&mysql, cstr);
-	result = mysql_store_result(&mysql);
-	while (row = mysql_fetch_row(result)) {
+	if (databaseConnected == true) {
+		//int pass = 0;
+		long tempResultL = 0;
+		long numberOfTables = 0;
+		std::string tempResultS = "";
+		int carnums[200];
+		availableInfo->clear();
+		int i = 0;
+
+		//Gets the Number of tables in the DB
+		std::string str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
+		const char* cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		row = mysql_fetch_row(result);
 		tempResultS = row[0];
-		carnums[i] = tempResultS[3] - 48;
-		i++;
+		numberOfTables = std::stol(tempResultS, NULL, 10);
+		mysql_free_result(result);
+		//Gets the actual carnums in the DB
+		str = "SHOW TABLES;";
+		cstr = new char[str.length() + 1];
+		cstr = str.c_str();
+		mysql_query(&mysql, cstr);
+		result = mysql_store_result(&mysql);
+		while (row = mysql_fetch_row(result)) {
+			tempResultS = row[0];
+			carnums[i] = tempResultS[3] - 48;
+			i++;
+		}
+
+		for (long i = 0; i < numberOfTables; i++) {
+			//Gets the endDate which is the Max DATE_S from the DB
+			databaseInfo temp;
+			temp.carID = carnums[i];
+			str = "SELECT MAX(DATE_S) AS DATE_S FROM car";
+			str.append(std::to_string(carnums[i]));
+			str.append(";");
+			cstr = new char[str.length() + 1];
+			cstr = str.c_str();
+			mysql_query(&mysql, cstr);
+			result = mysql_store_result(&mysql);
+			row = mysql_fetch_row(result);
+			tempResultS = row[0];
+			tempResultL = std::stol(tempResultS, NULL, 10);
+			temp.endDate = tempResultL;
+
+			//Gets the startDate which is the Min DATE_S from the DB
+			str = "SELECT MIN(DATE_S) AS DATE_S FROM car";
+			str.append(std::to_string(carnums[i]));
+			str.append(";");
+			cstr = new char[str.length() + 1];
+			cstr = str.c_str();
+			mysql_query(&mysql, cstr);
+			result = mysql_store_result(&mysql);
+			row = mysql_fetch_row(result);
+			tempResultS = row[0];
+			tempResultL = std::stol(tempResultS, NULL, 10);
+			temp.startDate = tempResultL;
+
+			//Gets the endTime which is the Max TIME_S from the DB
+			str = "SELECT MAX(TIME_S) AS TIME_S FROM car";
+			str.append(std::to_string(carnums[i]));
+			str.append(";");
+			cstr = new char[str.length() + 1];
+			cstr = str.c_str();
+			mysql_query(&mysql, cstr);
+			result = mysql_store_result(&mysql);
+			row = mysql_fetch_row(result);
+			tempResultS = row[0];
+			tempResultL = std::stol(tempResultS, NULL, 10);
+			temp.endTime = tempResultL;
+
+			//Gets the startTime which is the Min TIME_S from the DB
+			str = "SELECT MIN(TIME_S) AS TIME_S FROM car";
+			str.append(std::to_string(carnums[i]));
+			str.append(";");
+			cstr = new char[str.length() + 1];
+			cstr = str.c_str();
+			mysql_query(&mysql, cstr);
+			result = mysql_store_result(&mysql);
+			row = mysql_fetch_row(result);
+			tempResultS = row[0];
+			tempResultL = std::stol(tempResultS, NULL, 10);
+			temp.startTime = tempResultL;
+			availableInfo->push_back(temp);
+		}
+		mysql_free_result(result);
+		return SUCCESS;
 	}
-
-	for (long i = 0; i < numberOfTables; i++) {
-		//Gets the endDate which is the Max DATE_S from the DB
-		databaseInfo temp;
-		temp.carID = carnums[i];
-		str = "SELECT MAX(DATE_S) AS DATE_S FROM car";
-		str.append(std::to_string(carnums[i]));
-		str.append(";");
-		cstr = new char[str.length() + 1];
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
-		result = mysql_store_result(&mysql);
-		row = mysql_fetch_row(result);
-		tempResultS = row[0];
-		tempResultL = std::stol(tempResultS, NULL, 10);
-		temp.endDate = tempResultL;
-
-		//Gets the startDate which is the Min DATE_S from the DB
-		str = "SELECT MIN(DATE_S) AS DATE_S FROM car";
-		str.append(std::to_string(carnums[i]));
-		str.append(";");
-		cstr = new char[str.length() + 1];
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
-		result = mysql_store_result(&mysql);
-		row = mysql_fetch_row(result);
-		tempResultS = row[0];
-		tempResultL = std::stol(tempResultS, NULL, 10);
-		temp.startDate = tempResultL;
-
-		//Gets the endTime which is the Max TIME_S from the DB
-		str = "SELECT MAX(TIME_S) AS TIME_S FROM car";
-		str.append(std::to_string(carnums[i]));
-		str.append(";");
-		cstr = new char[str.length() + 1];
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
-		result = mysql_store_result(&mysql);
-		row = mysql_fetch_row(result);
-		tempResultS = row[0];
-		tempResultL = std::stol(tempResultS, NULL, 10);
-		temp.endTime = tempResultL;
-
-		//Gets the startTime which is the Min TIME_S from the DB
-		str = "SELECT MIN(TIME_S) AS TIME_S FROM car";
-		str.append(std::to_string(carnums[i]));
-		str.append(";");
-		cstr = new char[str.length() + 1];
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
-		result = mysql_store_result(&mysql);
-		row = mysql_fetch_row(result);
-		tempResultS = row[0];
-		tempResultL = std::stol(tempResultS, NULL, 10);
-		temp.startTime = tempResultL;
-		availableInfo->push_back(temp);
-	}
-	mysql_free_result(result);
-	return SUCCESS;
+	else
+		return ERR_DATABASE;
 }
 
 int DatabaseConnector::InitializeDatabase() {
@@ -465,6 +469,7 @@ int DatabaseConnector::InitializeDatabase() {
 
 	if (ErrorNum != 1007 && ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		databaseConnected = false;
 		return ERR_DATABASE;
 	}
 
@@ -472,6 +477,7 @@ int DatabaseConnector::InitializeDatabase() {
 
 	if (ErrorNum2 != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		databaseConnected = false;
 		return ERR_DATABASE;
 	}
 	/*
@@ -486,34 +492,39 @@ int DatabaseConnector::InitializeDatabase() {
 		knownCarTables[i] = 0;
 		columnDataTypes[i] = "";
 	}
+	databaseConnected = true;
 	return SUCCESS;
 }
 
 int DatabaseConnector::AddData(CarData *receivedData) {
-	int ErrorNum = 0;
-	int ErrorNum2 = 0;
-	long carnum;
-	receivedData->get(ID_S, &carnum);
-	if (knownCarTables[carnum] == 0) {
-		knownCarTables[carnum] = 1;
-		ErrorNum = createTable(receivedData);
-		ErrorNum2 = addNewColumn(receivedData);
-	}
-	if (ErrorNum != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return ERR_DATABASE;
-	}
-	else if (ErrorNum2 != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return ERR_DATABASE;
-	}
+	if (databaseConnected == true) {
+		int ErrorNum = 0;
+		int ErrorNum2 = 0;
+		long carnum;
+		receivedData->get(ID_S, &carnum);
+		if (knownCarTables[carnum] == 0) {
+			knownCarTables[carnum] = 1;
+			ErrorNum = createTable(receivedData);
+			ErrorNum2 = addNewColumn(receivedData);
+		}
+		if (ErrorNum != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return ERR_DATABASE;
+		}
+		else if (ErrorNum2 != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return ERR_DATABASE;
+		}
 
-	int ErrorNum3 = addDataToTable(receivedData);
-	if (ErrorNum3 != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-		return ERR_DATABASE;
+		int ErrorNum3 = addDataToTable(receivedData);
+		if (ErrorNum3 != 0) {
+			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			return ERR_DATABASE;
+		}
+		return SUCCESS;
 	}
-	return SUCCESS;
+	else
+		return ERR_DATABASE;
 }
 
 //int DatabaseConnector::GetData(long carnum,long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue) {
@@ -679,127 +690,129 @@ int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFa
 int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue, double timeFactor) {
 	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
+	if (databaseConnected == true) {
+		std::string carRowData[numKeys + 1];
+		mysql_thread_init();
 
-	std::string carRowData[numKeys + 1];
-	mysql_thread_init();
+		CarData* carDP;
+		std::map<std::string, std::string> ::iterator iter;
+		unsigned int num_fields;
+		unsigned int i;
+		int pass = 0;
+		std::string KeyNameWithType = "";
+		char typeCompChar;
+		int length;
+		long LData;
+		unsigned long ULData;
+		double DData;
 
-	CarData* carDP;
-	std::map<std::string, std::string> ::iterator iter;
-	unsigned int num_fields;
-	unsigned int i;
-	int pass = 0;
-	std::string KeyNameWithType = "";
-	char typeCompChar;
-	int length;
-	long LData;
-	unsigned long ULData;
-	double DData;
+		long prevCarTime(0), curCarTime(0), fetchTime;
+		long long curTime(0), prevTime(0);
 
-	long prevCarTime(0), curCarTime(0), fetchTime;
-	long long curTime(0), prevTime(0);
+		std::string str1 = "SELECT * FROM car";
+		std::string str2 = std::to_string(carnum);
+		std::string str3 = " WHERE DATE_S >= ";
+		std::string str4 = std::to_string(minDateValue);
+		std::string str5 = " AND DATE_S <= ";
+		std::string str6 = std::to_string(maxDateValue);
+		str6.append(" AND TIME_S >= ");
+		str6.append(std::to_string(minTimeValue));
+		str6.append(" AND TIME_S <= ");
+		str6.append(std::to_string(maxTimeValue));
+		std::string str7 = " ORDER BY TIME_S ASC;";
+		std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
+		const char* cstr = new char[finalString.length() + 1];
+		cstr = finalString.c_str();
+		pass = mysql_query(&mysql, cstr);
 
-	std::string str1 = "SELECT * FROM car";
-	std::string str2 = std::to_string(carnum);
-	std::string str3 = " WHERE DATE_S >= ";
-	std::string str4 = std::to_string(minDateValue);
-	std::string str5 = " AND DATE_S <= ";
-	std::string str6 = std::to_string(maxDateValue);
-	str6.append(" AND TIME_S >= ");
-	str6.append(std::to_string(minTimeValue));
-	str6.append(" AND TIME_S <= ");
-	str6.append(std::to_string(maxTimeValue));
-	std::string str7 = " ORDER BY TIME_S ASC;";
-	std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
-	const char* cstr = new char[finalString.length() + 1];
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
-
-	if (pass == 0) {
-		result = mysql_store_result(&mysql);
-		num_fields = mysql_num_fields(result);//returns the number of valeus in a row
-		while (row = mysql_fetch_row(result)) {//Retrieves the row of a result set. Returns NULL when no more rows
-			unsigned long *lengths;
-			lengths = mysql_fetch_lengths(result);
-			for (i = 0; i < num_fields; i++) {
-				carRowData[i] = row[i] ? row[i] : "NULL";
-				//get data into multiple cardata objects and then use cashebank->feed to return car data objects
-			}
-			CarSource->getCar(&carDP);
-			//indert data that is not NULL and no need for uniqueID
-			iter = keyMap.begin();
-			for (i = 1; i < num_fields; i++) {
-				if (carRowData[i] != "NULL" && carRowData[i] != "") {
-					KeyNameWithType = iter->second;
-					length = KeyNameWithType.length();
-					typeCompChar = KeyNameWithType[length - 1];
-					switch (typeCompChar) {
-					case 'S': {//Long
-						if (iter->second == "ID_S") {
-							carDP->addKey(iter->first);
-							LData = std::stol(carRowData[i], NULL, 10);
-							LData = -LData;
-							carDP->set(iter->first, LData);
-						}
-						else {
-							carDP->addKey(iter->first);
-							LData = std::stol(carRowData[i], NULL, 10);
-							carDP->set(iter->first, LData);
-						}
-						break;
-					}
-					case 'U': {//Unsigned Long
-						carDP->addKey(iter->first);
-						ULData = std::stoul(carRowData[i], NULL, 10);
-						carDP->set(iter->first, ULData);
-						break;
-					}
-					case 'D': {//Double
-						carDP->addKey(iter->first);
-						DData = std::stod(carRowData[i], NULL);
-						carDP->set(iter->first, DData);
-						break;
-					}
-					default: {
-						wxLogDebug("GetData problem in the switch statement");
-						break;
-					}
-					}
+		if (pass == 0) {
+			result = mysql_store_result(&mysql);
+			num_fields = mysql_num_fields(result);//returns the number of valeus in a row
+			while (row = mysql_fetch_row(result)) {//Retrieves the row of a result set. Returns NULL when no more rows
+				unsigned long *lengths;
+				lengths = mysql_fetch_lengths(result);
+				for (i = 0; i < num_fields; i++) {
+					carRowData[i] = row[i] ? row[i] : "NULL";
+					//get data into multiple cardata objects and then use cashebank->feed to return car data objects
 				}
-				iter++;
-			}
-			//Use add to add the key
-			//use set to set the key value
+				CarSource->getCar(&carDP);
+				//indert data that is not NULL and no need for uniqueID
+				iter = keyMap.begin();
+				for (i = 1; i < num_fields; i++) {
+					if (carRowData[i] != "NULL" && carRowData[i] != "") {
+						KeyNameWithType = iter->second;
+						length = KeyNameWithType.length();
+						typeCompChar = KeyNameWithType[length - 1];
+						switch (typeCompChar) {
+						case 'S': {//Long
+							if (iter->second == "ID_S") {
+								carDP->addKey(iter->first);
+								LData = std::stol(carRowData[i], NULL, 10);
+								LData = -LData;
+								carDP->set(iter->first, LData);
+							}
+							else {
+								carDP->addKey(iter->first);
+								LData = std::stol(carRowData[i], NULL, 10);
+								carDP->set(iter->first, LData);
+							}
+							break;
+						}
+						case 'U': {//Unsigned Long
+							carDP->addKey(iter->first);
+							ULData = std::stoul(carRowData[i], NULL, 10);
+							carDP->set(iter->first, ULData);
+							break;
+						}
+						case 'D': {//Double
+							carDP->addKey(iter->first);
+							DData = std::stod(carRowData[i], NULL);
+							carDP->set(iter->first, DData);
+							break;
+						}
+						default: {
+							wxLogDebug("GetData problem in the switch statement");
+							break;
+						}
+						}
+					}
+					iter++;
+				}
+				//Use add to add the key
+				//use set to set the key value
 
-			prevTime = curTime;
-			prevCarTime = curCarTime;
+				prevTime = curTime;
+				prevCarTime = curCarTime;
 
-			carDP->get(TIME_S, &fetchTime);
-			curTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			wxLogDebug("Cur Time: %s", std::to_string(curTime));
-			
-
-			curCarTime = convertTimestamp(fetchTime);
-			wxLogDebug("Left side %s", std::to_string(((double)(curTime - prevTime) * timeFactor)));
-			wxLogDebug("Right side %s", std::to_string((double)(curCarTime - prevCarTime)));
-			while (((double)(curTime - prevTime) * timeFactor) < (double)(curCarTime - prevCarTime)) {
-				Sleep(1);
+				carDP->get(TIME_S, &fetchTime);
 				curTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				wxLogDebug("Cur Time: %s", std::to_string(curTime));
+
+
+				curCarTime = convertTimestamp(fetchTime);
+				wxLogDebug("Left side %s", std::to_string(((double)(curTime - prevTime) * timeFactor)));
+				wxLogDebug("Right side %s", std::to_string((double)(curCarTime - prevCarTime)));
+				while (((double)(curTime - prevTime) * timeFactor) < (double)(curCarTime - prevCarTime)) {
+					Sleep(1);
+					curTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				}
+				wxLogDebug("Time diff: %s", std::to_string(curTime - prevTime));
+				outputCache->feed(carDP);
+
+				wxLogDebug("Logging at time %s", std::to_string(curTime));
 			}
-			wxLogDebug("Time diff: %s", std::to_string(curTime - prevTime));
-			outputCache->feed(carDP);
+			//mysql_free_result(tbl_cols);
+			mysql_free_result(result);
 
-			wxLogDebug("Logging at time %s", std::to_string(curTime));
+			mysql_thread_end();
+			status->store(true, std::memory_order_relaxed);
+
+			return SUCCESS;
 		}
-		//mysql_free_result(tbl_cols);
-		mysql_free_result(result);
-
 		mysql_thread_end();
 		status->store(true, std::memory_order_relaxed);
-
-		return SUCCESS;
+		return mysql_errno(&mysql);//Failed
 	}
-
-	mysql_thread_end();
-	status->store(true, std::memory_order_relaxed);
-	return mysql_errno(&mysql);//Failed
+	else
+		return ERR_DATABASE;
 }

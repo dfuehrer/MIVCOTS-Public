@@ -51,7 +51,7 @@ private:
 	std::atomic<bool> isRunning;
 	std::thread databaseThread;
 	void runDatabaseThread();
-
+	bool databaseConnected;
 	endpoint<CarData*>* dataQ;
 	endpoint<CarData*>* boxDataQ;
 	CarPool* carSource;
