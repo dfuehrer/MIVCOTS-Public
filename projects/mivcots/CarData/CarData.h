@@ -22,6 +22,7 @@ class CarData
 {
 public:
 	CarData();
+	CarData(CarData* toCopy);
 	~CarData();
 
 	int addKey(std::string key);
