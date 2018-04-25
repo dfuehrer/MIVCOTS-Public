@@ -41,20 +41,20 @@ bool GUI::OnInit()
 	//databaseInfo test;
 	//test.carID = 1;
 	//test.startTime = 1;
-
+<<<<<<< HEAD
 	//test.endTime = 50;
 	//test.startDate = 20180415;
 	//test.endDate = 20180417;
 
 	//Sleep(1000);
 	//aMIVCOTS.startPlayback(test, .001);
-
+=======
 	//test.endTime = 5000;
 	//test.startDate = 20180415;
 	//test.endDate = 20180417;
 
 	//aMIVCOTS.startPlayback(test, .5);
-
+>>>>>>> ca1663fee9442c4d76d3ed477d740cf9043c707f
 
 	return true;
 }

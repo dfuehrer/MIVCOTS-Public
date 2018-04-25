@@ -138,8 +138,8 @@ int AnalysisParent::loop()
 	// while counter is less than length of children vector
 	while (analysisFinishedCounterInt.load(std::memory_order_relaxed) < (int)analysisChildVector.size()) {
 		// aggregate stuff in output queues from children
-		//this->aggregate();
-		Sleep(100);
+		this->aggregate();
+		//Sleep(100);
 	}
 	while (analysisChildrenUpdateQueue.size()) {
 		this->aggregate();// finish aggregating

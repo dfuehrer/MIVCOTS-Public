@@ -71,9 +71,18 @@ int CacheBank::feed(CarData* toFeed)
 		rc |= rc2;
 	}
 	rc |= loc->second->inputQ.getEndpoint1()->send(toFeed);
-	rc |= loc->second->cache.feedCache();
-	return  rc;
-	//return 0;
+	int rc3 = loc->second->cache.feedCache();
+
+	if (rc3 == ERR_NON_INCREASING_TIME) {
+		return rc3;
+	}
+
+	// wait for analysis to catch up
+	while (rc3 == ERR_ANALYSIS_DELAY) {
+		rc3 = loc->second->cache.feedCache();
+		Sleep(1);
+	}
+	return  rc | rc3;
 }
 
 int CacheBank::acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
@@ -197,6 +206,10 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 		rc |= toInsert->cache.initialize(maxCacheSize,
 			toInsert->inputQ.getEndpoint2(),
 			toInsert->updateQ.getEndpoint2());
+
+		//toInsert->analysis.init(nullptr,
+		//	&(toInsert->cache), toInsert->updateQ.getEndpoint1(),
+		//	carSource, cfgFileName);
 
 		toInsert->analysis.init(&(carModuleMap.at(0)->cache),
 			&(toInsert->cache), toInsert->updateQ.getEndpoint1(),
