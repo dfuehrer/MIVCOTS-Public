@@ -73,6 +73,10 @@ int CacheBank::feed(CarData* toFeed)
 	rc |= loc->second->inputQ.getEndpoint1()->send(toFeed);
 	int rc3 = loc->second->cache.feedCache();
 
+	if (rc3 == ERR_NON_INCREASING_TIME) {
+		return rc3;
+	}
+
 	// wait for analysis to catch up
 	while (rc3 == ERR_ANALYSIS_DELAY) {
 		rc3 = loc->second->cache.feedCache();

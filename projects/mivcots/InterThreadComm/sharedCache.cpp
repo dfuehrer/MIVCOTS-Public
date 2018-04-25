@@ -33,23 +33,49 @@ int sharedCache<CarData*>::feedCache()
 	CarData* received;
 	int rc = feedQ->receiveQfront(&received);
 
+	// Couldn't read q
 	if (rc != SUCCESS) {
 		ulock.unlock();
 		return rc;
 	}
 
+	// Nothing in buffer. Insert new item
+	if (buffer.size() == 0) {
+		buffer.push_front(received);
+		feedQ->receive(&received);
+		//trackUpdates(received);
+		ulock.unlock();
+		return SUCCESS;
+	}
+
+	// Make sure the new item has a larger timestamp than the old newest item
+	CarData* temp;
+	temp = buffer.back();
+	long curTimestamp, newTimestamp;
+	temp->get(TIME_S, &curTimestamp);
+	received->get(TIME_S, &newTimestamp);
+
+	if (newTimestamp < curTimestamp) {
+		feedQ->receive(&received);
+		wxLogMessage("Message with a non-increasing timestamp received. Discarding.");
+		delete received;
+		return ERR_NON_INCREASING_TIME;
+	}
+
+	// Remove element if at max size
 	if (buffer.size() == maxSize) {
 		CarData* temp = buffer.front();
 		unsigned long analysisCount;
 
+		// Check the analysis count on the oldest item in the cache
 		temp->get(ANALYSIS_COUNT_U, &analysisCount);
 
 		if (analysisCount < 1) { // TODO: set to max analysis level
 			wxLogDebug("Analysis is falling behind");
-			//wxLogDebug("%d items in queue", feedQ->receiveQsize());
 			return ERR_ANALYSIS_DELAY;
 		}
 		else {
+			// Make sure the removal doesn't invalidate a tracked item
 			for (unsigned int ii = 0; ii < latestUpdated.size(); ++ii) {
 				if (latestUpdated.at(ii) == temp) {
 					latestUpdated.at(ii) = nullptr;
@@ -59,33 +85,6 @@ int sharedCache<CarData*>::feedCache()
 			buffer.pop_front();
 		}
 	}
-	else if (buffer.size() == 0) {
-		buffer.push_front(received);
-		feedQ->receive(&received);
-		//trackUpdates(received);
-		ulock.unlock();
-		return SUCCESS;
-	}
-
-	/*
-	long newTime, insertTime;
-	std::deque<CarData*>::reverse_iterator insertIter = buffer.rbegin();
-
-	received->get("TM", &newTime);
-	(*insertIter)->get("TM", &insertTime);
-
-	while (newTime < insertTime) {
-		++insertIter;
-		if (insertIter == buffer.rend()) {
-			buffer.push_front(received);
-			ulock.unlock();
-			return SUCCESS;
-		}
-		(*insertIter)->get("TM", &insertTime);
-	}
-	
-	buffer.insert(insertIter.base(), received);
-	*/
 	
 	buffer.push_back(received);
 	feedQ->receive(&received);
