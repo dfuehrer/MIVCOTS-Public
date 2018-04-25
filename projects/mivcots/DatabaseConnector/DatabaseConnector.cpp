@@ -287,6 +287,8 @@ int DatabaseConnector::createDatabase() {
 //Get Column names and associated types from database run on init and make function to append to this list when a new column is added
 //column names will be unique key 
 int DatabaseConnector::getColumnTypes(long carnum) {
+	MYSQL_RES *result;
+	MYSQL_ROW row;
 	int pass = 0;
 	int rowCnt = 0;
 	std::string str1 = "SHOW COLUMNS FROM car";
@@ -318,6 +320,7 @@ int DatabaseConnector::getColumnTypes(long carnum) {
 //int DatabaseConnector::tableUpdate(long carnum, int uniqueID,std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputqupdate) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
 int DatabaseConnector::tableUpdate(long carnum, int uniqueID, std::string columnName, double updatedValue) {
 int pass = 0;
+
 	std::string str1 = "UPDATE car";
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " SET ";
@@ -344,12 +347,6 @@ int DatabaseConnector::closeConnection() {
 	return SUCCESS;
 }
 
-//free result
-
-int DatabaseConnector::freeResult() {
-	mysql_free_result(result);
-	return SUCCESS;
-}
 
 int DatabaseConnector::selectDatabase() {
 	int pass = 0;
@@ -370,6 +367,8 @@ int DatabaseConnector::selectDatabase() {
 int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*availableInfo) {
 	if (databaseConnected == true) {
 		//int pass = 0;
+		MYSQL_RES *result;
+		MYSQL_ROW row;
 		long tempResultL = 0;
 		long numberOfTables = 0;
 		std::string tempResultS = "";
@@ -383,7 +382,13 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		cstr = str.c_str();
 		mysql_query(&mysql, cstr);
 		result = mysql_store_result(&mysql);
+		if (result == NULL) {
+			return ERR_NODATAINDB;
+		}
 		row = mysql_fetch_row(result);
+		if (row[0] == NULL) {
+			return ERR_NODATAINDB;
+		}
 		tempResultS = row[0];
 		numberOfTables = std::stol(tempResultS, NULL, 10);
 		mysql_free_result(result);
@@ -410,8 +415,15 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			cstr = str.c_str();
 			mysql_query(&mysql, cstr);
 			result = mysql_store_result(&mysql);
+			if (result == NULL) {
+				return ERR_NODATAINDB;
+			}
 			row = mysql_fetch_row(result);
+			if (row[0] == NULL) {
+				return ERR_NODATAINDB;
+			}
 			tempResultS = row[0];
+			tempResultS.erase(0,2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.endDate = tempResultL;
 
@@ -423,8 +435,15 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			cstr = str.c_str();
 			mysql_query(&mysql, cstr);
 			result = mysql_store_result(&mysql);
+			if (result == NULL) {
+				return ERR_NODATAINDB;
+			}
 			row = mysql_fetch_row(result);
+			if (row[0] == NULL) {
+				return ERR_NODATAINDB;
+			}
 			tempResultS = row[0];
+			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.startDate = tempResultL;
 
@@ -436,8 +455,15 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			cstr = str.c_str();
 			mysql_query(&mysql, cstr);
 			result = mysql_store_result(&mysql);
+			if (result == NULL) {
+				return ERR_NODATAINDB;
+			}
 			row = mysql_fetch_row(result);
+			if (row[0] == NULL) {
+				return ERR_NODATAINDB;
+			}
 			tempResultS = row[0];
+			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.endTime = tempResultL;
 
@@ -449,8 +475,15 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			cstr = str.c_str();
 			mysql_query(&mysql, cstr);
 			result = mysql_store_result(&mysql);
+			if (result == NULL) {
+				return ERR_NODATAINDB;
+			}
 			row = mysql_fetch_row(result);
+			if (row[0] == NULL) {
+				return ERR_NODATAINDB;
+			}
 			tempResultS = row[0];
+			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.startTime = tempResultL;
 			availableInfo->push_back(temp);
@@ -694,6 +727,8 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
 	if (databaseConnected == true) {
+		MYSQL_RES *result;
+		MYSQL_ROW row;
 		std::string carRowData[numKeys + 1];
 		mysql_thread_init();
 
