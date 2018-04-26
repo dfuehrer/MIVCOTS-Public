@@ -506,7 +506,7 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	mapPanel.initMap(aMIVCOTS, this->displayedCars);
 	// graph plotting
 	graph = Plotting(this);
-	graph.createPlot(aMIVCOTS);
+	graph.createPlot(aMIVCOTS, this->displayedCars);
 	m_mgr.AddPane(graph.getPlot(), wxAuiPaneInfo().Right());
 
 	createUIPanel();
