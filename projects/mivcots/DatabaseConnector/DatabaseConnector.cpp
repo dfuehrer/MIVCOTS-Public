@@ -755,7 +755,7 @@ int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFa
 
 		for (unsigned int ii = 0; ii < playbackThreads.size(); ++ii) {
 			if (playbackThreadStatus.at(ii)->load(std::memory_order_relaxed)) {
-				
+				// We can reuse a thread!
 				if (playbackThreads.at(ii).joinable()) {
 					playbackThreads.at(ii).join();
 				}
@@ -764,19 +764,18 @@ int DatabaseConnector::startPlayback(databaseInfo playbackRequest, double timeFa
 					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
 					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
 				playbackThreadStatus.at(ii)->store(false, std::memory_order_relaxed);
-			}
-			// All threads are busy
-			else {
-				// Start a new one
-				playbackThreads.emplace_back();
-				playbackThreadStatus.push_back(new std::atomic<bool>);
-				playbackThreads.at(ii + 1) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(ii),
-					playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
-					playbackRequest.startTime, playbackRequest.endTime, timeFactor);
-				playbackThreadStatus.at(ii + 1)->store(false, std::memory_order_relaxed);
-
+				return SUCCESS;
 			}
 		}
+
+		// All threads are busy. Start a new one
+		playbackThreads.emplace_back();
+		playbackThreadStatus.push_back(new std::atomic<bool>);
+		playbackThreads.at(playbackThreads.size() - 1) = std::thread(&DatabaseConnector::getDataTimestamp, this, playbackThreadStatus.at(playbackThreadStatus.size() - 1),
+			playbackRequest.carID, playbackRequest.startDate, playbackRequest.endDate,
+			playbackRequest.startTime, playbackRequest.endTime, timeFactor);
+		playbackThreadStatus.at(playbackThreadStatus.size() - 1)->store(false, std::memory_order_relaxed);
+
 
 		return SUCCESS;
 	}
@@ -903,6 +902,13 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 			mysql_free_result(result);
 			mysql_thread_end();
 			status->store(true, std::memory_order_relaxed);
+
+			long invertedCarnum = -carnum;
+			if (invertedCarnum == 0) {
+				invertedCarnum = std::numeric_limits<long>::min();
+			}
+			//outputCache->endPlayback(-carnum);
+
 			return SUCCESS;
 		}
 		mysql_thread_end();

@@ -18,6 +18,8 @@ typedef struct carModule_t {
 	AnalysisParent analysis;
 	InterThreadComm<CarData*> inputQ;
 	InterThreadComm<CarData*> updateQ;
+
+	~carModule_t();
 } carModule;
 
 class CacheBank {
@@ -49,6 +51,7 @@ public:
 	
 	int getCarNums(std::vector<long>* toWrite, bool* isChanged);
 
+	int endPlayback(long carID);
 private:
 	std::map<int, carModule*> carModuleMap;
 	std::mutex cmmMtx;
