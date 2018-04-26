@@ -148,19 +148,19 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 //Add Data to Table. EIther use Insert into or possibly update.
 //int DatabaseConnector::addDataToTable(long carnum, long long datetime, std::string columnName, double storedata, endpoint <CarData*, CarData* > inputqadd) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
-int pass = 0;
-int getDataErrorCode = 0;
-long carnum = 0;
-long LongData = 0;//change to std::string when overload implemented
-unsigned long ULongData = 0;
-double DoubleData = 0;
-std::string KeyNameWithType = "";
-int length = 0;
-char typeCompChar = 'S';
+	int pass = 0;
+	int getDataErrorCode = 0;
+	long carnum = 0;
+	long LongData = 0;//change to std::string when overload implemented
+	unsigned long ULongData = 0;
+	double DoubleData = 0;
+	std::string KeyNameWithType = "";
+	int length = 0;
+	char typeCompChar = 'S';
 
-std::map<std::string, std::string> ::iterator iter;
-		  //create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
-									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
+	std::map<std::string, std::string> ::iterator iter;
+	//create look to check that the KeyNames match the column order using for loop comparing it to the known string array 
+	//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
 	receivedData->get(ID_S, &carnum);
@@ -361,9 +361,6 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 	std::string str3 = " SET ";
 	iter = keyMap.begin();
 	for (iter; iter != keyMap.end(); iter++) {
-		if (i != 0) {
-			str3.append(",");
-		}
 		KeyNameWithType = iter->second;
 		if (KeyNameWithType == "DATE_S") {
 			updateData->get(iter->first, &date);
@@ -380,6 +377,7 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 					str3.append(KeyNameWithType);
 					str3.append("=");
 					str3.append(std::to_string(LongData));
+					str3.append(",");
 				}
 				break;
 			}
@@ -389,6 +387,7 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 					str3.append(KeyNameWithType);
 					str3.append("=");
 					str3.append(std::to_string(ULongData));
+					str3.append(",");
 				}
 				break;
 			}
@@ -398,6 +397,7 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 					str3.append(KeyNameWithType);
 					str3.append("=");
 					str3.append(std::to_string(DoubleData));
+					str3.append(",");
 				}
 				break;
 			}
@@ -407,7 +407,8 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 			}
 		}
 	}
-	str3.append("WHERE DATE_S=");
+	str3.pop_back();
+	str3.append(" WHERE DATE_S=");
 	str3.append(std::to_string(date));
 	str3.append(" AND TIME_S=");
 	str3.append(std::to_string(time));
@@ -726,7 +727,7 @@ void DatabaseConnector::runDatabaseThread()
 
 		while (analysisQ->receiveQsize() > 0) {
 			analysisQ->receive(&receivedAnalysisData);
-			AddData(receivedAnalysisData);	// TODO: is this the right function?
+			UpdateData(receivedAnalysisData);	// TODO: is this the right function?
 			carSource->releaseCar(receivedAnalysisData);
 		}
 
