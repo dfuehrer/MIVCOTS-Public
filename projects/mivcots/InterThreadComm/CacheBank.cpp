@@ -120,6 +120,7 @@ int CacheBank::readCacheUpdates(long carNum, mCache::cacheIter * startIter, mCac
 
 int CacheBank::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned long updateCount)
 {
+	std::lock_guard<std::mutex> lock(cmmMtx);
 	return carModuleMap.at(carNum)->cache.readLatestUpdate(iter, updateCount);
 }
 
@@ -183,6 +184,23 @@ int CacheBank::getCarNums(std::vector<long>* toWrite, bool* isChanged)
 	return SUCCESS;
 }
 
+// TODO: make it stop throwing inifinite exceptions
+int CacheBank::endPlayback(long carID)
+{
+	CMMiter loc = carModuleMap.find(carID);
+	if (loc == carModuleMap.end()) {
+		return ERR_NOTFOUND;
+	}
+
+	std::lock_guard<std::mutex> lock(cmmMtx);
+	carModule* toDelete = loc->second;
+	carModuleMap.erase(loc);
+	//Sleep(5000);
+
+	delete toDelete;
+	return SUCCESS;
+}
+
 bool CacheBank::isNewCarNum(long carNum, CMMiter* loc)
 {
 	*loc = carModuleMap.find(carNum);
@@ -228,4 +246,9 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 	else {
 		return ERR_ELEMENTEXISTS;
 	}
+}
+
+carModule_t::~carModule_t()
+{
+	analysis.stop();
 }

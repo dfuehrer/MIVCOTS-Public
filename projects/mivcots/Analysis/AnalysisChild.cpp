@@ -78,7 +78,10 @@ int AnalysisChild::stop()
 
 	isRunning.store(false, std::memory_order_relaxed);
 	// some other stuff needs to happen here
-	analysisThread.join();
+	if (analysisThread.joinable()) {
+		analysisThread.join();
+	}
+	
 	return 0;
 }
 

@@ -80,11 +80,18 @@ int AnalysisParent::start()
 int AnalysisParent::stop()
 
 {
+	isRunning.store(false, std::memory_order_relaxed);
 	//TODO: Make sure to call delete on all the stuff that start() calls new on.
 	while (analysisChildVector.size() > 0) {	// TODO: This should be a for loop
 		analysisChildVector.back()->stop();
+		analysisChildVector.pop_back();
 	}
 	analysisChildVector.clear();
+
+	if (analysisParentThread.joinable()) {
+		analysisParentThread.join();
+	}
+
 	return 0;
 }
 
