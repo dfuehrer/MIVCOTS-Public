@@ -40,7 +40,7 @@ public:
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
 	//int GetData(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);
-	int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue);
+	int UpdateData(CarData *updateData);
 	int shutdown();
 	int dropTable(long carnum);
 	int dropRowFromTable(long carnum, long long timestamp);
@@ -73,7 +73,7 @@ private:
 	int initDB();
 	int addNewColumn(CarData *receivedData);
 	int addDataToTable(CarData *receivedData);
-	int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue);
+	int tableUpdate(CarData *updateData);
 	
 	int createDatabase();
 	int createTable(CarData *receivedData);
