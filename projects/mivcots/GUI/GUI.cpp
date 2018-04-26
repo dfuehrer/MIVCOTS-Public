@@ -684,9 +684,21 @@ void Frame::checkForNewCars()
 			}
 		}
 		if (!found) {
+			if (i >= 0) {
+				carComboBox->Append(std::to_string(i));
+				carCheckListBox->Append(std::to_string(i));
+			}
+			else {
+				if (i == std::numeric_limits<long>::min()) {
+					carComboBox->Append("Past 0");
+					carCheckListBox->Append("Past 0");
+				}
+				else {
+					carComboBox->Append("Past" + std::to_string(-i));
+					carCheckListBox->Append("Past" + std::to_string(-i));
+				}
+			}
 			activeCars->push_back(i);
-			carComboBox->Append(std::to_string(i));
-			carCheckListBox->Append(std::to_string(i));
 			carCheckListBox->Check(activeCars->size() - 1);
 			displayedCars->push_back(i);
 		}

@@ -95,7 +95,10 @@ int StatusWidget::update()
 	rc = aMIVCOTS->readLatestUpdate(carID, &iter, 1);
 	
 	if (rc == SUCCESS) {
-		if (((*iter)->get(LON_D, &lon) | (*iter)->get(LAT_D, &lat) | (*iter)->get(MPH_D, &mph)) != SUCCESS) {
+		if (((*iter)->get(LON_D, &lon) | 
+			(*iter)->get(LAT_D, &lat) | 
+			(*iter)->get(MPH_D, &mph) 
+			) != SUCCESS) {
 		}
 		else {
 			//do things

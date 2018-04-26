@@ -38,6 +38,9 @@ public:
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
 
+	double baseLat;
+	double baseLon;
+
 	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars, std::vector<databaseInfo>* playBackOptions);
 	void checkForNewCars();
 	void checkForNewCarsTimer(wxTimerEvent &event);
