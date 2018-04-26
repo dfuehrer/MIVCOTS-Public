@@ -9,13 +9,15 @@ public:
 	Plotting(wxWindow *parent);
 	Plotting();
 	~Plotting();
-	void createPlot(MIVCOTS* aMIVCOTS);
+	void createPlot(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars);
 	mpWindow *getPlot();
 	void Reload();
-	void SetDataVector(std::vector<double>a, std::vector<double>b);
+	void SetDataVector(double a, double b, int carNum);
+	std::vector<long>* activeCars;
 
 private:
-	mpFXYVector * test = new mpFXYVector();;
+	mpFXYVector * car0 = new mpFXYVector();
+	mpFXYVector * car1 = new mpFXYVector();
 	MIVCOTS * aMIVCOTS;
 	wxWindow * parent;
 	wxPanel * panel;
@@ -23,5 +25,7 @@ private:
 	wxTextCtrl *m_log;
 	std::vector<double> x = { 0 };
 	std::vector<double> y = { 0 };
+	std::vector<double> m = { 0 };
+	std::vector<double> n = { 0 };
 
 };
