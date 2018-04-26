@@ -68,12 +68,16 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 	std::string str1 = "CREATE TABLE IF NOT EXISTS car";
 	std::string str2 = "";
 	receivedData->get(ID_S, &carnum);
+	if (carnum == std::numeric_limits<long>::min()) {
+		carnum = 0;
+	}
+	else if (carnum < 0) {
+		carnum = -carnum;
+	}
 	str2 = std::to_string(carnum);
 	std::string str3 = "(UniqueID MEDIUMINT NOT NULL AUTO_INCREMENT,PRIMARY KEY (UniqueID));";// NOT NULL AUTO_INCREMENT PRIMARY KEY (UniqueID)  ADD Miliseconds Column 
 	std::string NewCarTable = str1 + str2 + str3;
-	const char* cstr = new char[NewCarTable.length() + 1]; // TODO: delete this?
-	cstr = NewCarTable.c_str();
-	pass = mysql_query(&mysql, cstr);
+	pass = mysql_query(&mysql, NewCarTable.c_str());
 	if (pass == 0) {//Success
 		return SUCCESS;
 	}
@@ -84,29 +88,25 @@ int DatabaseConnector::createTable(CarData *receivedData) {
 
 int DatabaseConnector::addNewColumn(CarData *receivedData) {
 	int columnFound = 0;
-	long carIDNum = 0;
+	long carnum = 0;
 	std::string KeyNameWithType = "";
 	char typeCompChar = 'S';
 	int length = 0;
 
 	std::map<std::string, std::string> ::iterator iter;
 
-	//std::string str1 = columnName;
-	//const char wild = NULL;
-	//result = mysql_list_tables(&mysql, wild);
-	//while (row = mysql_fetch_row(result)) {
-	//	int endOfRow = 1;
-	//	for (int i = 0; i < endOfRow; i++) {
-	//		if (row[i] == str1) {
-	//			columnFound = 1;
-	//		}
-	//	}
-	//}
 	for (iter = keyMap.begin();iter !=keyMap.end(); iter++) {
 		std::string str1 = "ALTER TABLE car";
 		std::string str2 = "";
-		receivedData->get(ID_S, &carIDNum);
-		str2 = std::to_string(carIDNum);
+		receivedData->get(ID_S, &carnum);
+		
+		if (carnum == std::numeric_limits<long>::min()) {
+			carnum = 0;
+		}
+		else if (carnum < 0) {
+			carnum = -carnum;
+		}
+		str2 = std::to_string(carnum);
 		std::string str3 = " ADD ";
 		std::string str4 = iter->second;//columnName
 		std::string str5 = " ";
@@ -132,10 +132,16 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 			}
 		}
 		std::string NewCarTable = str1 + str2 + str3 + str4 + str5;
-		const char* cstr = new char[NewCarTable.length() + 1]; // TODO: delete this?
-		cstr = NewCarTable.c_str();
-		mysql_query(&mysql, cstr);
+		mysql_query(&mysql, NewCarTable.c_str());
 	}
+	std::string str = "CREATE UNIQUE INDEX Uniquedatetime ON car";
+	str.append(std::to_string(carnum));
+	str.append("(TIME_S,DATE_S);");
+	mysql_query(&mysql, str.c_str());
+	str = "CREATE INDEX searchdatetime ON car";
+	str.append(std::to_string(carnum));
+	str.append("(TIME_S,DATE_S);");
+	mysql_query(&mysql, str.c_str());
 	return SUCCESS;
 }
 
@@ -144,7 +150,7 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 int DatabaseConnector::addDataToTable(CarData *receivedData) {
 int pass = 0;
 int getDataErrorCode = 0;
-long carIDNum = 0;
+long carnum = 0;
 long LongData = 0;//change to std::string when overload implemented
 unsigned long ULongData = 0;
 double DoubleData = 0;
@@ -157,8 +163,14 @@ std::map<std::string, std::string> ::iterator iter;
 									//does not need to be order dependent. For best perf only do this if the error 1054 is returned
 	std::string str1 = "INSERT INTO car";
 	std::string str2 = "";
-	receivedData->get(ID_S, &carIDNum);
-	str2 = std::to_string(carIDNum);
+	receivedData->get(ID_S, &carnum);
+	if (carnum == std::numeric_limits<long>::min()) {
+		carnum = 0;
+	}
+	else if (carnum < 0) {
+		carnum = -carnum;
+	}
+	str2 = std::to_string(carnum);
 	std::string str3 = " (";
 	iter = keyMap.begin();
 	str3.append(iter->second);
@@ -177,7 +189,18 @@ std::map<std::string, std::string> ::iterator iter;
 		case 'S': {//Long
 			getDataErrorCode = receivedData->get(iter->first, &LongData);//check return code for SUCCESS which means data is good. Otherwise write NULL
 			if (getDataErrorCode == SUCCESS) {
+				if (KeyNameWithType == "ID_S") {
+					if (LongData == std::numeric_limits<long>::min()) {
+						LongData = 0;
+					}
+					else if (LongData < 0) {
+						LongData = -LongData;
+					}	
 				str7.append(std::to_string(LongData));
+				}
+				else {
+					str7.append(std::to_string(LongData));
+				}
 			}
 			else {
 				str7.append("NULL");
@@ -256,10 +279,7 @@ std::map<std::string, std::string> ::iterator iter;
 	}
 	std::string str8 = ");";
 	std::string NewCarTable = str1 + str2 + str3  + str7 + str8;
-	const char* cstr = new char[NewCarTable.length() + 1]; // TODO: delete this?
-	cstr = new char[NewCarTable.length() + 1]; // TODO: delete this?
-	cstr = NewCarTable.c_str();
-	pass = mysql_query(&mysql, cstr);
+	pass = mysql_query(&mysql, NewCarTable.c_str());
 	if (pass == 0) {
 		return SUCCESS;
 	}
@@ -272,11 +292,10 @@ int DatabaseConnector::createDatabase() {
 	int pass = 0;
 	std::string str1 = "CREATE DATABASE ";
 	std::string str2 = database;
+	str2.append(";");
 	std::string finalString = str1 + str2;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
-	if (pass == 0) {;
+	pass = mysql_query(&mysql, finalString.c_str());
+	if (pass == 0) {
 		return SUCCESS;
 	}
 	else {
@@ -292,11 +311,16 @@ int DatabaseConnector::getColumnTypes(long carnum) {
 	int pass = 0;
 	int rowCnt = 0;
 	std::string str1 = "SHOW COLUMNS FROM car";
+	if(carnum == std::numeric_limits<long>::min()) {
+		carnum = 0;
+	}
+	else if (carnum < 0) {
+		carnum = -carnum;
+	}
 	std::string str2 = std::to_string(carnum);
+	str2.append(";");
 	std::string finalString = str1 + str2;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
+	pass = mysql_query(&mysql, finalString.c_str());
 	if (pass == 0) {
 		result = mysql_store_result(&mysql);
 		while ((row = mysql_fetch_row(result))) {
@@ -318,21 +342,78 @@ int DatabaseConnector::getColumnTypes(long carnum) {
 
 //update table UPDATE [table name] SET Select_priv = 'Y',Insert_priv = 'Y',Update_priv = 'Y' where [field name] = 'user';
 //int DatabaseConnector::tableUpdate(long carnum, int uniqueID,std::string columnName, double updatedValue, endpoint <CarData*, CarData* > inputqupdate) {//can also use timestamp instead of uniqueID. Also can add multiple column update.
-int DatabaseConnector::tableUpdate(long carnum, int uniqueID, std::string columnName, double updatedValue) {
-int pass = 0;
-
+int DatabaseConnector::tableUpdate(CarData *updateData) {
+	int pass = 0;
+	int i = 0;
+	int dataFound = 0;
+	long carnum, date, time;
+	std::string KeyNameWithType;
+	int length;
+	char typeCompChar;
+	long LongData;
+	unsigned long ULongData;
+	double DoubleData;
+	std::map<std::string, std::string> ::iterator iter;
+	
 	std::string str1 = "UPDATE car";
+	updateData->get(ID_S, &carnum);
 	std::string str2 = std::to_string(carnum);
 	std::string str3 = " SET ";
-	std::string str4 = columnName;
-	std::string str5 = " = '";
-	std::string str6 = std::to_string(updatedValue);
-	std::string str7 = "' WHERE UniqueID = ";
-	std::string str8 = std::to_string(uniqueID);
-	std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
+	iter = keyMap.begin();
+	for (iter; iter != keyMap.end(); iter++) {
+		if (i != 0) {
+			str3.append(",");
+		}
+		KeyNameWithType = iter->second;
+		if (KeyNameWithType == "DATE_S") {
+			updateData->get(iter->first, &date);
+		}
+		if (KeyNameWithType == "TIME_S") {
+			updateData->get(iter->first, &time);
+		}
+		length = KeyNameWithType.length();
+		typeCompChar = KeyNameWithType[length - 1];
+		switch (typeCompChar) {
+			case 'S': {//Long
+				dataFound = updateData->get(iter->first, &LongData);//check return code for SUCCESS which means data is good. Otherwise write NULL
+				if (dataFound == SUCCESS) {
+					str3.append(KeyNameWithType);
+					str3.append("=");
+					str3.append(std::to_string(LongData));
+				}
+				break;
+			}
+			case 'U': {//Unsigned Long
+				dataFound = updateData->get(iter->first, &ULongData);
+				if (dataFound == SUCCESS) {
+					str3.append(KeyNameWithType);
+					str3.append("=");
+					str3.append(std::to_string(ULongData));
+				}
+				break;
+			}
+			case 'D': {//Double
+				dataFound = updateData->get(iter->first, &DoubleData);
+				if (dataFound == SUCCESS) {
+					str3.append(KeyNameWithType);
+					str3.append("=");
+					str3.append(std::to_string(DoubleData));
+				}
+				break;
+			}
+			default: {
+				wxLogDebug("addDataToTable problem in second switch statement");
+				break;
+			}
+		}
+	}
+	str3.append("WHERE DATE_S=");
+	str3.append(std::to_string(date));
+	str3.append(" AND TIME_S=");
+	str3.append(std::to_string(time));
+	std::string str4 = ";";
+	std::string NewCarTable = str1 + str2 + str3 + str4;
+	pass = mysql_query(&mysql, NewCarTable.c_str());
 	if (pass == 0) {
 		return SUCCESS;
 	}
@@ -366,7 +447,7 @@ int DatabaseConnector::selectDatabase() {
 
 int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*availableInfo) {
 	if (databaseConnected == true) {
-		//int pass = 0;
+		int pass = 0;
 		MYSQL_RES *result;
 		MYSQL_ROW row;
 		long tempResultL = 0;
@@ -378,9 +459,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 
 		//Gets the Number of tables in the DB
 		std::string str = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='mivcots';";
-		const char* cstr = new char[str.length() + 1]; // TODO: delete this?
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
+		pass = mysql_query(&mysql, str.c_str());
 		result = mysql_store_result(&mysql);
 		if (result == NULL) {
 			return ERR_NODATAINDB;
@@ -394,9 +473,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		mysql_free_result(result);
 		//Gets the actual carnums in the DB
 		str = "SHOW TABLES;";
-		cstr = new char[str.length() + 1]; // TODO: delete this?
-		cstr = str.c_str();
-		mysql_query(&mysql, cstr);
+		pass = mysql_query(&mysql, str.c_str());
 		result = mysql_store_result(&mysql);
 		while (row = mysql_fetch_row(result)) {
 			tempResultS = row[0];
@@ -411,9 +488,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			str = "SELECT MAX(DATE_S) AS DATE_S FROM car";
 			str.append(std::to_string(carnums[i]));
 			str.append(";");
-			cstr = new char[str.length() + 1]; // TODO: delete this?
-			cstr = str.c_str();
-			mysql_query(&mysql, cstr);
+			pass = mysql_query(&mysql, str.c_str());
 			result = mysql_store_result(&mysql);
 			if (result == NULL) {
 				return ERR_NODATAINDB;
@@ -423,7 +498,6 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 				return ERR_NODATAINDB;
 			}
 			tempResultS = row[0];
-			tempResultS.erase(0,2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.endDate = tempResultL;
 
@@ -431,9 +505,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			str = "SELECT MIN(DATE_S) AS DATE_S FROM car";
 			str.append(std::to_string(carnums[i]));
 			str.append(";");
-			cstr = new char[str.length() + 1]; // TODO: delete this?
-			cstr = str.c_str();
-			mysql_query(&mysql, cstr);
+			pass = mysql_query(&mysql, str.c_str());
 			result = mysql_store_result(&mysql);
 			if (result == NULL) {
 				return ERR_NODATAINDB;
@@ -443,7 +515,6 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 				return ERR_NODATAINDB;
 			}
 			tempResultS = row[0];
-			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.startDate = tempResultL;
 
@@ -451,9 +522,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			str = "SELECT MAX(TIME_S) AS TIME_S FROM car";
 			str.append(std::to_string(carnums[i]));
 			str.append(";");
-			cstr = new char[str.length() + 1]; // TODO: delete this?
-			cstr = str.c_str();
-			mysql_query(&mysql, cstr);
+			pass = mysql_query(&mysql, str.c_str());
 			result = mysql_store_result(&mysql);
 			if (result == NULL) {
 				return ERR_NODATAINDB;
@@ -463,7 +532,6 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 				return ERR_NODATAINDB;
 			}
 			tempResultS = row[0];
-			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.endTime = tempResultL;
 
@@ -471,9 +539,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 			str = "SELECT MIN(TIME_S) AS TIME_S FROM car";
 			str.append(std::to_string(carnums[i]));
 			str.append(";");
-			cstr = new char[str.length() + 1]; // TODO: delete this?
-			cstr = str.c_str();
-			mysql_query(&mysql, cstr);
+			pass = mysql_query(&mysql, str.c_str());
 			result = mysql_store_result(&mysql);
 			if (result == NULL) {
 				return ERR_NODATAINDB;
@@ -483,7 +549,6 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 				return ERR_NODATAINDB;
 			}
 			tempResultS = row[0];
-			tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.startTime = tempResultL;
 			availableInfo->push_back(temp);
@@ -560,18 +625,10 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 		return ERR_DATABASE;
 }
 
-//int DatabaseConnector::GetData(long carnum,long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue) {
-//	int ErrorNum = getDataTimestamp(carnum, minDateValue, maxDateValue, minTimeValue, maxTimeValue);
-//	if (ErrorNum != 0) {
-//		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
-//		return ERR_DATABASE;
-//	}
-//	return SUCCESS;
-//}
 
-int DatabaseConnector::UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue) {
+int DatabaseConnector::UpdateData(CarData *updateData) {
 	
-	int ErrorNum = tableUpdate(carnum, uniqueID, columnName, updatedValue);
+	int ErrorNum = tableUpdate(updateData);
 	if (ErrorNum != 0) {
 		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
@@ -602,10 +659,7 @@ int DatabaseConnector::dropTable(long carnum) {
 	std::string str2 = "";
 	str2 = std::to_string(carnum);
 	std::string finalString = str1 + str2;
-	std::cout << finalString << std::endl;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
+	pass = mysql_query(&mysql, finalString.c_str());
 	if (pass == 0) {
 		return SUCCESS;
 	}
@@ -625,9 +679,7 @@ int DatabaseConnector::dropRowFromTable(long carnum, long long timestamp) {
 	std::string str4 = std::to_string(timestamp);
 	std::string str5 = ";";
 	std::string finalString = str1 + str2 + str3 + str4 + str5;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);
+	pass = mysql_query(&mysql, finalString.c_str());
 	if (pass == 0) {
 		return SUCCESS;
 	}
@@ -647,9 +699,7 @@ int DatabaseConnector::dropColumn(long carnum, std::string columnName) {
 	std::string str4 = columnName;
 	std::string str5 = ";";
 	std::string finalString = str1 + str2 + str3 + str4 + str5;
-	const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-	cstr = finalString.c_str();
-	pass = mysql_query(&mysql, cstr);//returns 0 if success. 1 if failed
+	pass = mysql_query(&mysql, finalString.c_str());
 	if (pass == 0) {
 		return SUCCESS;
 	}
@@ -758,6 +808,12 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 		long long curTime(0), prevTime(0);
 
 		std::string str1 = "SELECT * FROM car";
+		if (carnum == std::numeric_limits<long>::min()) {
+			carnum = 0;
+		}
+		else if (carnum < 0) {
+			carnum = -carnum;
+		}
 		std::string str2 = std::to_string(carnum);
 		std::string str3 = " WHERE DATE_S >= ";
 		std::string str4 = std::to_string(minDateValue);
@@ -769,10 +825,7 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 		str6.append(std::to_string(maxTimeValue));
 		std::string str7 = " ORDER BY TIME_S ASC;";
 		std::string finalString = str1 + str2 + str3 + str4 + str5 + str6 + str7;
-		const char* cstr = new char[finalString.length() + 1]; // TODO: delete this?
-		cstr = finalString.c_str();
-		pass = mysql_query(&mysql, cstr);
-
+		pass = mysql_query(&mysql, finalString.c_str());
 		if (pass == 0) {
 			result = mysql_store_result(&mysql);
 			num_fields = mysql_num_fields(result);//returns the number of valeus in a row
@@ -797,6 +850,9 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 								carDP->addKey(iter->first);
 								LData = std::stol(carRowData[i], NULL, 10);
 								LData = -LData;
+								if (LData == 0) {
+									LData = std::numeric_limits<long>::min();
+								}
 								carDP->set(iter->first, LData);
 							}
 							else {
@@ -826,17 +882,11 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 					}
 					iter++;
 				}
-				//Use add to add the key
-				//use set to set the key value
-
 				prevTime = curTime;
 				prevCarTime = curCarTime;
-
 				carDP->get(TIME_S, &fetchTime);
 				curTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				wxLogDebug("Cur Time: %s", std::to_string(curTime));
-
-
 				curCarTime = convertTimestamp(fetchTime);
 				wxLogDebug("Left side %s", std::to_string(((double)(curTime - prevTime) * timeFactor)));
 				wxLogDebug("Right side %s", std::to_string((double)(curCarTime - prevCarTime)));
