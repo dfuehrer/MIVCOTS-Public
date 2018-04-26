@@ -17,12 +17,13 @@ CacheBank::~CacheBank()
 	carModuleMap.clear();
 }
 
-int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsigned int _maxCacheSize)
+int CacheBank::initialize(endpoint<CarData*>* _storageQueue, CarPool * _carSource, std::string _cfgFileName, unsigned int _maxCacheSize)
 {
 	if (_carSource == nullptr) {
 		return ERR_NULLPTR;
 	}
 	
+	storageQueue = _storageQueue;
 	carSource = _carSource;
 	cfgFileName = _cfgFileName;
 	maxCacheSize = _maxCacheSize;
@@ -33,10 +34,11 @@ int CacheBank::initialize(CarPool * _carSource, std::string _cfgFileName, unsign
 
 	toInsert->cache.initialize(maxCacheSize,
 		toInsert->inputQ.getEndpoint2(),
-		toInsert->updateQ.getEndpoint2());
+		toInsert->updateQ.getEndpoint2(),
+		carSource);
 
 	toInsert->analysis.init(&(toInsert->cache), &(toInsert->cache), 
-		toInsert->updateQ.getEndpoint1(), carSource, cfgFileName);
+		toInsert->updateQ.getEndpoint1(), storageQueue, carSource, cfgFileName);
 
 	return SUCCESS;
 }
@@ -205,7 +207,8 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 		int rc = SUCCESS;
 		rc |= toInsert->cache.initialize(maxCacheSize,
 			toInsert->inputQ.getEndpoint2(),
-			toInsert->updateQ.getEndpoint2());
+			toInsert->updateQ.getEndpoint2(),
+			carSource);
 
 		//toInsert->analysis.init(nullptr,
 		//	&(toInsert->cache), toInsert->updateQ.getEndpoint1(),
@@ -213,7 +216,7 @@ int CacheBank::addCarNum(long carNum, CMMiter* loc)
 
 		toInsert->analysis.init(&(carModuleMap.at(0)->cache),
 			&(toInsert->cache), toInsert->updateQ.getEndpoint1(),
-			carSource, cfgFileName);
+			storageQueue, carSource, cfgFileName);
 
 		if (isStarted) {
 			rc |= toInsert->analysis.start();

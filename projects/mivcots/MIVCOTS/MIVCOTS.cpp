@@ -12,8 +12,10 @@ int MIVCOTS::initialize()
 {
 	int rc = SUCCESS;
 	rc |= dataStorage.initialize(dataSource_dataStorage.getEndpoint2(), 
-		boxDataSource_dataStorage.getEndpoint2(), &carSource, &cacheBank);
-	rc |= cacheBank.initialize(&carSource, "fixthis", 40);
+		boxDataSource_dataStorage.getEndpoint2(), analysis_dataStorage.getEndpoint2(),
+		&carSource, &cacheBank);
+	rc |= cacheBank.initialize(analysis_dataStorage.getEndpoint1(), 
+		&carSource, "fixthis", 40);
 	return rc;
 }
 

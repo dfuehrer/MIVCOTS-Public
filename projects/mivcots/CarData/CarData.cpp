@@ -7,13 +7,12 @@ CarData::CarData()
 
 CarData::CarData(CarData * toCopy)
 {
-	if (toCopy = nullptr) {
+	if (toCopy == nullptr) {
 		wxLogDebug("Copying a nullptr cardata");
 		return;
 	}
 
-	dataMap = std::map<std::string, dataValue>(toCopy->dataMap.begin(), toCopy->dataMap.end());
-
+	dataMap = dataMap_t(toCopy->dataMap.begin(), toCopy->dataMap.end());
 }
 
 CarData::~CarData()

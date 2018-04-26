@@ -10,17 +10,19 @@ sharedCache<CarData*>::~sharedCache()
 
 }
 
-int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>* _feedQ, endpoint<CarData*>* _updateQ)
+int sharedCache<CarData*>::initialize(unsigned int _maxSize, endpoint<CarData*>* _feedQ, endpoint<CarData*>* _updateQ, CarPool* _carSource)
 {
 	maxSize = _maxSize;
 
-	if ((feedQ == nullptr) ||
-		(updateQ == nullptr)) {
+	if ((_feedQ == nullptr) ||
+		(_updateQ == nullptr) ||
+		(_carSource == nullptr)) {
 		return ERR_NULLPTR;
 	}
 
 	feedQ = _feedQ;
 	updateQ = _updateQ;
+	carSource = _carSource;
 
 	return SUCCESS;
 }
@@ -43,7 +45,7 @@ int sharedCache<CarData*>::feedCache()
 	if (buffer.size() == 0) {
 		buffer.push_front(received);
 		feedQ->receive(&received);
-		//trackUpdates(received);
+		trackUpdates(received);
 		ulock.unlock();
 		return SUCCESS;
 	}
@@ -58,7 +60,7 @@ int sharedCache<CarData*>::feedCache()
 	if (newTimestamp < curTimestamp) {
 		feedQ->receive(&received);
 		wxLogMessage("Message with a non-increasing timestamp received. Discarding.");
-		delete received;
+		carSource->releaseCar(received);
 		return ERR_NON_INCREASING_TIME;
 	}
 
@@ -81,14 +83,14 @@ int sharedCache<CarData*>::feedCache()
 					latestUpdated.at(ii) = nullptr;
 				}
 			}
-			delete buffer.front();
+			carSource->releaseCar(buffer.front());
 			buffer.pop_front();
 		}
 	}
 	
 	buffer.push_back(received);
 	feedQ->receive(&received);
-	//trackUpdates(received);
+	trackUpdates(received);
 	ulock.unlock();
 	return SUCCESS;
 }
@@ -111,14 +113,13 @@ int sharedCache<CarData*>::updateCache()
 			CarData* toDelete = buffer.at(ind);
 			buffer.at(ind) = tempData;
 
-			//for (unsigned int ii = 0; ii < latestUpdated.size(); ++ii) {
-			//	if (latestUpdated.at(ii) == toDelete) {
-			//		latestUpdated.at(ii) = nullptr;
-			//	}
-			//}
-
-			delete toDelete;
+			carSource->releaseCar(toDelete);
 			
+			for (int ii = 0; ii < latestUpdated.size(); ++ii) {
+				if (latestUpdated.at(ii) == toDelete) {
+					latestUpdated.at(ii) = nullptr;
+				}
+			}
 			
 		}
 		else {

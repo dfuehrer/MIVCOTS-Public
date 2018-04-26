@@ -34,6 +34,7 @@ public:
 		sharedCache<CarData *> * boxCache, 
 		sharedCache<CarData *> * carCache, 
 		endpoint<CarData *> * updateQueue, 
+		endpoint<CarData*>* storageQueue,
 		CarPool * carPool, 
 		std::string configFileName
 	);
@@ -48,6 +49,7 @@ private:
 	sharedCache<CarData*> * boxCache;
 	sharedCache<CarData*> * carCache;
 	endpoint<CarData*> * updateQueue;
+	endpoint<CarData*> * storageQueue;
 	CarPool * carPool;
 	std::string configFileName;
 	std::ifstream configFileInputStream;

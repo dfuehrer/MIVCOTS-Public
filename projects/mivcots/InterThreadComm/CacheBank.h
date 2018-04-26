@@ -25,7 +25,8 @@ public:
 	CacheBank();
 	~CacheBank();
 
-	int initialize(CarPool* _carSource, std::string _cfgFileName, unsigned int _maxCacheSize);
+	int initialize(endpoint<CarData*>* _storageQueue, CarPool* _carSource, 
+				   std::string _cfgFileName, unsigned int _maxCacheSize);
 
 	bool isNewCarNum(long carNum);
 	int addCarNum(long carNum);
@@ -51,6 +52,8 @@ public:
 private:
 	std::map<int, carModule*> carModuleMap;
 	std::mutex cmmMtx;
+
+	endpoint<CarData*>* storageQueue;
 	std::string cfgFileName;
 	CarPool* carSource;
 	unsigned int maxCacheSize;

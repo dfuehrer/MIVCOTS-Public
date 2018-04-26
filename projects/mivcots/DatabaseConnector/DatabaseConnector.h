@@ -29,7 +29,9 @@ public:
 	DatabaseConnector();
 	~DatabaseConnector();
 
-	int initialize(endpoint<CarData*>* _dataQ, endpoint<CarData*>* _boxDataQ, CarPool* _carSource, CacheBank* _outputCache);
+	int initialize(endpoint<CarData*>* _dataQ, endpoint<CarData*>* _boxDataQ, 
+				   endpoint<CarData*>* _analysisQ, CarPool* _carSource, 
+		           CacheBank* _outputCache);
 
 	int start();
 	int stop();
@@ -38,7 +40,7 @@ public:
 	int AddData(CarData *receivedData); 
 	int InitializeDatabase();
 	//int GetData(long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue);
-	int UpdateData(long carnum, int uniqueID, std::string columnName, double updatedValue);
+	int UpdateData(CarData *updateData);
 	int shutdown();
 	int dropTable(long carnum);
 	int dropRowFromTable(long carnum, long long timestamp);
@@ -54,12 +56,11 @@ private:
 	bool databaseConnected;
 	endpoint<CarData*>* dataQ;
 	endpoint<CarData*>* boxDataQ;
+	endpoint<CarData*>* analysisQ;
 	CarPool* carSource;
 	CacheBank* outputCache;
 
 	MYSQL mysql;
-
-	CarPool* CarSource;
 
 	char host[32] = "localhost";
 	char user[32] = "root";
@@ -69,10 +70,10 @@ private:
 	std::string columnDataTypes[128];//[carNum][columnNum]
 	int endpointOfColumnTypeList;
 
-	int initDB(CarPool* _CarSource);
+	int initDB();
 	int addNewColumn(CarData *receivedData);
 	int addDataToTable(CarData *receivedData);
-	int tableUpdate(long carnum, int uniqueID, std::string columnName, double undatedValue);
+	int tableUpdate(CarData *updateData);
 	
 	int createDatabase();
 	int createTable(CarData *receivedData);

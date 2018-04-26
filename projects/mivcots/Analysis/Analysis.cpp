@@ -20,6 +20,7 @@ int AnalysisParent::init(
 	sharedCache<CarData*> * boxCache,
 	sharedCache<CarData*> * carCache,
 	endpoint<CarData*> * updateQueue,
+	endpoint<CarData*>* storageQueue,
 	CarPool * carPool,
 	std::string configFileName
 )
@@ -65,6 +66,7 @@ int AnalysisParent::init(
 
 	}
 
+	this->storageQueue = storageQueue; // TODO: error checking
 
 	return returnCode;
 }
@@ -162,11 +164,18 @@ int AnalysisParent::loop()
 		(*tempCarDataMergedPtr) += *(*tempCarDataOriginalIter);		// copy original to update slot
 		(*tempCarDataMergedPtr) += (*currentCarDataPtr);			// apply updates to copies
 		//analysisUpdateQueue.push_back(tempCarDataMergedPtr);
+
+		// push updated copies into databases and cache update queues
 		updateQueue->send(tempCarDataMergedPtr);					// Send stuff back to cache
+		// new copy for the database
+		CarData* tempCarDataCopy;
+		carPool->copyCar(&tempCarDataCopy, tempCarDataMergedPtr);
+		storageQueue->send(tempCarDataCopy);						// Send copy to database
+
 		tempCarDataMergedPtr->printCar();	// For debugging :)
 		
 		// TODO: add second queue for sending stuff back to database
-		// push updated copies into databases and cache update queues
+		
 		
 	}
 	analysisAggregationSet.clear();
@@ -197,8 +206,8 @@ int AnalysisParent::aggregate()
 	std::pair<std::set<CarData*, carTimeStampCompareLess>::iterator, bool> tmpPair = analysisAggregationSet.insert(tmpCarDataPtr);// TODO: add typedef for the iterator... seriously
 	if (!(tmpPair.second)) {
 		*(*(tmpPair.first)) += (*tmpCarDataPtr);	// Insert Item into analysisAggregationQueue or Merge into existing update entry
-		// TODO: release the memory associated with this car in a less terrifying way
-		delete tmpCarDataPtr;
+		
+		carPool->releaseCar(tmpCarDataPtr);
 	}
 	// TODO: get rid of the memory leak (it should be fixed, but leaving this here until we know for sure)
 	return 0;
