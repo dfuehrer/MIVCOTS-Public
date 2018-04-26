@@ -22,12 +22,12 @@ void Plotting::createPlot(MIVCOTS* aMIVCOTS) {
 	m_plot->AddLayer(new mpScaleY(wxT("mph")));
 
 	e = test;
-
+	m_plot->EnableDoubleBuffer(true);// eliminating the flicker
 
 	//x.push_back(2);
 	//y.push_back(2);
 	test->SetData(x, y);
-	e->SetPen(wxPen(*wxRED, 6, wxSOLID));
+	e->SetPen(wxPen(*wxRED, 3, wxSOLID));
 	e->SetContinuity(TRUE);
 	m_plot->AddLayer(e);
 	m_plot->Fit();
@@ -50,6 +50,10 @@ void Plotting::Reload() {
 
 	double Speed = 0.0;
 	double time = 0.0;
+	long timeLong;
+	long timeA;
+	double sec;
+
 	int rc = SUCCESS;
 	sharedCache<CarData*>::cacheIter iter;
 	std::shared_lock<std::shared_mutex> toLock;
@@ -58,12 +62,14 @@ void Plotting::Reload() {
 	rc = aMIVCOTS->readLatestUpdate(0, &iter, 1);
 
 	if (rc == SUCCESS) {
-		if (((*iter)->get(MPH_D, &Speed) | (*iter)->get(TIME_D, &time)) != SUCCESS) {
+		if (((*iter)->get(MPH_D, &Speed) | (*iter)->get(TIME_S, &timeLong)) != SUCCESS) {
 		}
 		else {
 
-			x.push_back(Speed);
-			y.push_back(time);
+			timeA = convertTimestamp(timeLong);
+			sec = timeA * 0.001;
+			x.push_back(sec);
+			y.push_back(Speed);
 			test->SetData(x, y);
 			m_plot->Refresh();
 		}
@@ -77,7 +83,7 @@ void Plotting::Reload() {
 
 
 
-	//test->SetData(x, y);
-	//m_plot->Refresh();
+
 
 }
+

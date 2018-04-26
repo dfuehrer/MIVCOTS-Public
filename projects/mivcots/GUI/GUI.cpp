@@ -45,6 +45,7 @@ void GUI::update(wxTimerEvent & event)
 {
 	//wxLogMessage("updating gui");
 	frame->mapPanel.update();
+	//frame->(graph->Reload());
 	frame->graph.Reload();
 
 	frame->Show();
@@ -499,11 +500,9 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 
 	mapPanel = Map(this);
 	mapPanel.initMap(aMIVCOTS, this->displayedCars);
-
+	// graph plotting
 	graph = Plotting(this);
-
 	graph.createPlot(aMIVCOTS);
-
 	m_mgr.AddPane(graph.getPlot(), wxAuiPaneInfo().Right());
 
 	createUIPanel();
