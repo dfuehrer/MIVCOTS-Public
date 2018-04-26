@@ -23,4 +23,5 @@ private:
 	wxTextCtrl *m_log;
 	std::vector<double> x = { 0 };
 	std::vector<double> y = { 0 };
+
 };
