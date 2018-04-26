@@ -483,7 +483,7 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 				return ERR_NODATAINDB;
 			}
 			tempResultS = row[0];
-			tempResultS.erase(0, 2);
+			//tempResultS.erase(0, 2);
 			tempResultL = std::stol(tempResultS, NULL, 10);
 			temp.startTime = tempResultL;
 			availableInfo->push_back(temp);

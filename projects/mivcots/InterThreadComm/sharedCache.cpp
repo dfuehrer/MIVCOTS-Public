@@ -45,7 +45,7 @@ int sharedCache<CarData*>::feedCache()
 	if (buffer.size() == 0) {
 		buffer.push_front(received);
 		feedQ->receive(&received);
-		//trackUpdates(received);
+		trackUpdates(received);
 		ulock.unlock();
 		return SUCCESS;
 	}
@@ -90,7 +90,7 @@ int sharedCache<CarData*>::feedCache()
 	
 	buffer.push_back(received);
 	feedQ->receive(&received);
-	//trackUpdates(received);
+	trackUpdates(received);
 	ulock.unlock();
 	return SUCCESS;
 }
@@ -115,6 +115,11 @@ int sharedCache<CarData*>::updateCache()
 
 			carSource->releaseCar(toDelete);
 			
+			for (int ii = 0; ii < latestUpdated.size(); ++ii) {
+				if (latestUpdated.at(ii) == toDelete) {
+					latestUpdated.at(ii) = nullptr;
+				}
+			}
 			
 		}
 		else {

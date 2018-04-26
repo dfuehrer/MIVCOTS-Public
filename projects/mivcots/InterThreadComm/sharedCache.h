@@ -12,6 +12,7 @@
 
 // TODO: use a condition variable to give priority to updates
 // TODO: actually write newdata functions
+// TODO: rewrite update tracking logic to be less cancerous
 
 template <class T> class sharedCache
 {
@@ -44,6 +45,7 @@ public:
 
 	bool newRawData();
 	bool newAnalyzedData();
+
 	int find(CarData * toFind, cacheIter * iter);
 	int find(CarData * toFind, int* ind);
 	
