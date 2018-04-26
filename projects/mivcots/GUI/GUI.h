@@ -34,9 +34,12 @@ public:
 	Plotting graph;
 	Map mapPanel;
 	//StatusWidget statusWidget;
-	std::vector<StatusWidget> statusWidgets;
+	std::vector<StatusWidget*> statusWidgets;
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
+
+	double baseLat;
+	double baseLon;
 
 	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars, std::vector<databaseInfo>* playBackOptions);
 	void checkForNewCars();
