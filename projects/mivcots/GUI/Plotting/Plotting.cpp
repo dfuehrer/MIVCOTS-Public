@@ -18,8 +18,8 @@ void Plotting::createPlot(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars) {
 	this->activeCars = activeCars;
 	mpLayer *e, *h;
 
-	mpScaleX* xaxis = new mpScaleX(wxT("time"), mpALIGN_CENTER, true);
-	mpScaleY* yaxis = new mpScaleY(wxT("mph"), mpALIGN_CENTER,true);
+	mpScaleX* xaxis = new mpScaleX(wxT("time"), mpALIGN_CENTER, false);
+	mpScaleY* yaxis = new mpScaleY(wxT("mph"), mpALIGN_CENTER,false);
 	m_plot = new mpWindow(parent, -1, wxPoint(-1, -1), wxSize(1000, 1000), wxSUNKEN_BORDER);
 	m_plot->AddLayer(xaxis);
 	m_plot->AddLayer(yaxis);
