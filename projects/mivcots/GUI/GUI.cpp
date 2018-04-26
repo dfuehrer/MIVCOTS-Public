@@ -503,7 +503,7 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	wxLog::SetActiveTarget(new wxLogTextCtrl(log));
 
 	mapPanel = Map(this);
-	mapPanel.initMap(aMIVCOTS, this->displayedCars);
+	mapPanel.initMap(aMIVCOTS, this->displayedCars, &baseLat, &baseLon);
 	// graph plotting
 	graph = Plotting(this);
 	graph.createPlot(aMIVCOTS, this->displayedCars);
@@ -639,7 +639,7 @@ bool Frame::createUIPanel()
 StatusWidget* Frame::createStatusWidget(long carID)
 {
 	StatusWidget* statusWidget = new StatusWidget(this);
-	statusWidget->initStatusWidget(aMIVCOTS, carID);
+	statusWidget->initStatusWidget(aMIVCOTS, carID, &baseLat, &baseLon);
 
 	statusWidgets.push_back(statusWidget);
 

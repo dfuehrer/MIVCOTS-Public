@@ -23,10 +23,12 @@ wxPanel * StatusWidget::getPanel()
 	return panel;
 }
 
-bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID)
+bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID, double* baseLat, double* baseLon)
 {
 	this->aMIVCOTS = aMIVCOTS;
 	this->carID = carID;
+	this->baseLat = baseLat;
+	this->baseLon = baseLon;
 	panel = new wxPanel(parent, wxID_ANY);
 	wxBoxSizer* vbox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* hbox1 = new wxBoxSizer(wxHORIZONTAL);
@@ -83,7 +85,7 @@ bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID)
 int StatusWidget::update()
 {
 	sharedCache<CarData*>::cacheIter iter;
-	double lat, lon, mph;
+	double lat, lon, mph, dist;
 	int rc = SUCCESS;
 	std::shared_lock<std::shared_mutex> toLock;
 	rc = aMIVCOTS->acquireReadLock(carID, &toLock);
@@ -102,6 +104,12 @@ int StatusWidget::update()
 		}
 		else {
 			//do things
+			if (*baseLat != -1 && *baseLon != -1 ) {	//TODO: Check this math its probably wrong
+				double x = (*baseLon - lon) * cos((*baseLat + lat) / 2);
+				double y = (*baseLat - lat);
+				dist = sqrt(x*x + y * y) * 3959;
+			}
+			distText->SetLabel(std::to_string(dist));
 			mphText->SetLabel(std::to_string(mph));
 		}
 	}

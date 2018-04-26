@@ -38,8 +38,8 @@ public:
 	std::vector<std::string> comObjects;
 	std::vector<long>* activeCars;
 
-	double baseLat;
-	double baseLon;
+	double baseLat = -1;
+	double baseLon = -1;
 
 	bool initFrame(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, std::vector<long>* displayedCars, std::vector<databaseInfo>* playBackOptions);
 	void checkForNewCars();

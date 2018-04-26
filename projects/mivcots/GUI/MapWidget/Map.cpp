@@ -13,10 +13,12 @@ Map::~Map()
 {
 }
 
-bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars)
+bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, double* baseLat, double* baseLon)
 {
 	panel = new wxPanel(parent, wxID_ANY);
 	this->activeCars = activeCars;
+	this->baseLat = baseLat;
+	this->baseLon = baseLon;
 
 	mapName = "map1";
 	wxImage::AddHandler(new wxPNGHandler);
@@ -156,6 +158,10 @@ bool Map::update()
 			if (((*iter)->get(LON_D, &lon) | (*iter)->get(LAT_D, &lat) | (*iter)->get(HEADING_D, &course)) != SUCCESS) {
 			}
 			else {
+				if (i == 0) {
+					*baseLat = lat;
+					*baseLon = lon;
+				}
 				drawCar(lat, lon, course * 0.01745329252, i);
 
 				refresh();
