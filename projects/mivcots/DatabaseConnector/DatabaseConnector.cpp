@@ -907,7 +907,7 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 			if (invertedCarnum == 0) {
 				invertedCarnum = std::numeric_limits<long>::min();
 			}
-			//outputCache->endPlayback(-carnum);
+			outputCache->endPlayback(invertedCarnum);
 
 			return SUCCESS;
 		}

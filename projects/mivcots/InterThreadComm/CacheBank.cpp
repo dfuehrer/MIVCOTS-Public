@@ -115,18 +115,28 @@ int CacheBank::readCache(long carNum, mCache::cacheIter * startIter, mCache::cac
 
 int CacheBank::readCacheUpdates(long carNum, mCache::cacheIter * startIter, mCache::cacheIter * endIter, unsigned int updateCount)
 {
+	if (isNewCarNum(carNum)) {
+		return ERR_NOTFOUND;
+	}
 	return carModuleMap.at(carNum)->cache.readCacheUpdates(startIter, endIter, updateCount);
 }
 
 int CacheBank::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned long updateCount)
 {
-	std::lock_guard<std::mutex> lock(cmmMtx);
+	//std::lock_guard<std::mutex> lock(cmmMtx);
+	if (isNewCarNum(carNum)) {
+		return ERR_NOTFOUND;
+	}
 	return carModuleMap.at(carNum)->cache.readLatestUpdate(iter, updateCount);
 }
 
 int CacheBank::releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);
+	if (isNewCarNum(carNum)) {
+		return ERR_NOTFOUND;
+	}
+	
 	return carModuleMap.at(carNum)->cache.releaseReadLock(toLock);
 }
 
@@ -197,7 +207,7 @@ int CacheBank::endPlayback(long carID)
 	carModuleMap.erase(loc);
 	//Sleep(5000);
 
-	delete toDelete;
+	//delete toDelete;
 	return SUCCESS;
 }
 
