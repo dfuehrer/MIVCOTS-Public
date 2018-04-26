@@ -787,11 +787,10 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 	//SELECT * FROM car# WHERE timestamp > # AND timestamp < #;  
 	//Can add sorting of results with "ORDER BY timestamp;"
 	if (databaseConnected == true) {
+		mysql_thread_init();
 		MYSQL_RES *result;
 		MYSQL_ROW row;
 		std::string carRowData[numKeys + 1];
-		mysql_thread_init();
-
 		CarData* carDP;
 		std::map<std::string, std::string> ::iterator iter;
 		unsigned int num_fields;
@@ -901,9 +900,9 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 			}
 			//mysql_free_result(tbl_cols);
 			mysql_free_result(result);
-
 			mysql_thread_end();
 			status->store(true, std::memory_order_relaxed);
+
 			long invertedCarnum = -carnum;
 			if (invertedCarnum == 0) {
 				invertedCarnum = std::numeric_limits<long>::min();
