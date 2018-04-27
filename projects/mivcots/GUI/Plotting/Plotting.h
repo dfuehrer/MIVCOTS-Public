@@ -23,9 +23,9 @@ private:
 	wxPanel * panel;
 	mpWindow   *m_plot;
 	wxTextCtrl *m_log;
-	std::vector<double> x = { 0 };
-	std::vector<double> y = { 0 };
-	std::vector<double> m = { 0 };
-	std::vector<double> n = { 0 };
+	std::vector<double> x = { };
+	std::vector<double> y = { };
+	std::vector<double> m = { };
+	std::vector<double> n = { };
 
 };
