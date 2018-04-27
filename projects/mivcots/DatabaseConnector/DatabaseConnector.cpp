@@ -127,7 +127,7 @@ int DatabaseConnector::addNewColumn(CarData *receivedData) {
 				break;
 			}
 			default: {
-				wxLogDebug("addNewColumn problem in switch statement");
+				//wxLogDebug("addNewColumn problem in switch statement");
 				break;
 			}
 		}
@@ -228,7 +228,7 @@ int DatabaseConnector::addDataToTable(CarData *receivedData) {
 			break;
 		}
 		default: {
-			wxLogDebug("addDataToTable problem in first switch statement ");
+			//wxLogDebug("addDataToTable problem in first switch statement ");
 			break;
 		}
 	}
@@ -272,7 +272,7 @@ int DatabaseConnector::addDataToTable(CarData *receivedData) {
 				break;
 			}
 			default: {
-				wxLogDebug("addDataToTable problem in second switch statement");
+				//wxLogDebug("addDataToTable problem in second switch statement");
 				break;
 			}
 		}
@@ -402,7 +402,7 @@ int DatabaseConnector::tableUpdate(CarData *updateData) {
 				break;
 			}
 			default: {
-				wxLogDebug("addDataToTable problem in second switch statement");
+				//wxLogDebug("addDataToTable problem in second switch statement");
 				break;
 			}
 		}
@@ -567,7 +567,7 @@ int DatabaseConnector::InitializeDatabase() {
 	int ErrorNum = createDatabase();
 
 	if (ErrorNum != 1007 && ErrorNum != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		databaseConnected = false;
 		return ERR_DATABASE;
 	}
@@ -575,7 +575,7 @@ int DatabaseConnector::InitializeDatabase() {
 	int ErrorNum2 = selectDatabase();
 
 	if (ErrorNum2 != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		databaseConnected = false;
 		return ERR_DATABASE;
 	}
@@ -607,17 +607,17 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 			ErrorNum2 = addNewColumn(receivedData);
 		}
 		if (ErrorNum != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return ERR_DATABASE;
 		}
 		else if (ErrorNum2 != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return ERR_DATABASE;
 		}
 
 		int ErrorNum3 = addDataToTable(receivedData);
 		if (ErrorNum3 != 0) {
-			wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+			//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 			return ERR_DATABASE;
 		}
 		return SUCCESS;
@@ -631,7 +631,7 @@ int DatabaseConnector::UpdateData(CarData *updateData) {
 	
 	int ErrorNum = tableUpdate(updateData);
 	if (ErrorNum != 0) {
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return 1;
 	}
 
@@ -649,7 +649,7 @@ int DatabaseConnector::shutdown() {
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;//Failed
 	}
 }
@@ -666,7 +666,7 @@ int DatabaseConnector::dropTable(long carnum) {
 	}
 	else {
 		int ErrorNum = mysql_errno(&mysql);
-		wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
+		//wxLogError(_(std::to_string(ErrorNum) + mysql_error(&mysql)));
 		return ERR_DATABASE;//Failed
 	}
 }

@@ -16,6 +16,9 @@ int MIVCOTS::initialize()
 		&carSource, &cacheBank);
 	rc |= cacheBank.initialize(analysis_dataStorage.getEndpoint1(), 
 		&carSource, "fixthis", 40);
+
+	rc |= boxDataSource.initialize(BOX_SERIAL_PORT, 115200, boxDataSource_dataStorage.getEndpoint1(), &carSource);
+	boxDataSource.start();
 	return rc;
 }
 

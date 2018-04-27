@@ -9,7 +9,8 @@
 #include "InterThreadComm.h"
 #include "sharedCache.h"
 
-//TODO: send analyzed data back to datastorage
+#define BOX_SERIAL_PORT "COM9"
+
 class MIVCOTS
 {
 public:
@@ -43,7 +44,7 @@ public:
 	int startPlayback(databaseInfo playbackRequest, double timeFactor);
 
 private:
-	DataInterface dataSource;
+	DataInterface dataSource, boxDataSource;
 	DatabaseConnector dataStorage;
 	CacheBank cacheBank;
 	CarPool carSource;
