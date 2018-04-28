@@ -25,6 +25,8 @@ int DatabaseConnector::start()
 	isRunning.store(true, std::memory_order_relaxed);
 	databaseThread = std::thread(&DatabaseConnector::runDatabaseThread, this);
 
+
+
 	if (databaseThread.joinable()) {
 		return SUCCESS;
 	}
@@ -36,9 +38,26 @@ int DatabaseConnector::start()
 int DatabaseConnector::stop()
 {
 	isRunning.store(false, std::memory_order_relaxed);
+	for (unsigned int ii = 0; ii < playbackThreadStatus.size(); ++ii) {
+		playbackThreadStatus.at(ii)->store(true, std::memory_order_relaxed);
+	}
+
+	for (unsigned int ii = 0; ii < playbackThreads.size(); ++ii) {
+		if (playbackThreads.at(ii).joinable()) {
+			playbackThreads.at(ii).join();
+		}
+	}
+
+	for (unsigned int ii = 0; ii < playbackThreadStatus.size(); ++ii) {
+		delete playbackThreadStatus.at(ii);
+	}
+
 	if (databaseThread.joinable()) {
 		databaseThread.join();
 	}
+
+	closeConnection();
+
 	return SUCCESS;
 }
 
@@ -603,7 +622,10 @@ int DatabaseConnector::AddData(CarData *receivedData) {
 		int ErrorNum = 0;
 		int ErrorNum2 = 0;
 		long carnum;
-		receivedData->get(ID_S, &carnum);
+		int rc = receivedData->get(ID_S, &carnum);
+		if (rc != SUCCESS) {
+			return rc;
+		}
 		if (knownCarTables[carnum] == 0) {
 			knownCarTables[carnum] = 1;
 			ErrorNum = createTable(receivedData);
@@ -900,6 +922,9 @@ int DatabaseConnector::getDataTimestamp(std::atomic<bool>* status, long carnum, 
 				outputCache->feed(carDP);
 
 				wxLogDebug("Logging at time %s", std::to_string(curTime));
+				if (status->load(std::memory_order_relaxed)) {
+					return SUCCESS;
+				}
 			}
 			//mysql_free_result(tbl_cols);
 			mysql_free_result(result);

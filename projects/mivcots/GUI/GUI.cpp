@@ -410,8 +410,14 @@ void Frame::comStart(wxCommandEvent & event)
 			wxLogMessage("No com port selected");
 		}
 		else {
-			aMIVCOTS->initSerial(115200, comObjects.at(selection));
-			aMIVCOTS->startSerial();
+			int rc = aMIVCOTS->initSerial(115200, comObjects.at(selection));
+			if (rc == SUCCESS) {
+				aMIVCOTS->startSerial();
+			}
+			else {
+				wxLogMessage("Couldn't open serial");
+				return;
+			}
 			openComButton->SetLabel("Stop");
 		}
 	}

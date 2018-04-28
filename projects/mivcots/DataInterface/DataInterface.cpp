@@ -38,7 +38,7 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 		return ERR_INITERR;
 	}
 
-	serialPort->setTimeout(0, 500, 0, 500, 0);
+	serialPort->setTimeout(500, 0, 500, 0, 0);
 	serialPort->setParity(serial::parity_even);
 	wxLogMessage("Opened serial port %s", portName);
 	return SUCCESS;
