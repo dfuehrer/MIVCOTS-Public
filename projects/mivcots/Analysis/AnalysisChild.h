@@ -8,6 +8,15 @@
 #include <condition_variable>
 #include "error_codes.h"
 
+// Stores all of the threading-related pointers for analysis children
+typedef struct AnalysisSyncVars_st {
+	std::mutex * analysisFinishedCounterMutex;
+	std::atomic<int> * analysisFinishedCounterInt;
+	std::mutex * analysisStepMutex;
+	std::condition_variable * analysisStepConditionVariable;
+	std::atomic<bool>* analysisStepInt;
+} AnalysisSyncVars;
+
 class AnalysisChild
 {
 public:
@@ -18,11 +27,7 @@ public:
 		sharedCache<CarData *> * carCache,
 		lockedQueue<CarData*> * updateQueue,
 		CarPool * carPool,
-		std::mutex * analysisFinishedCounterMutex,
-		std::atomic<int> * analysisFinishedCounterInt,
-		std::mutex * analysisStepMutex,
-		std::condition_variable * analysisStepConditionVariable,
-		std::atomic<bool>* analysisStepInt
+		AnalysisSyncVars * analysisSyncVars
 	);
 	int start();
 	int stop();
@@ -38,12 +43,7 @@ protected:
 	std::thread analysisThread;
 	std::atomic<bool> isRunning;
 
-	std::mutex * analysisStepMutex;
-	std::condition_variable * analysisStepConditionVariable;
-
-	std::mutex * analysisFinishedCounterMutex;
-	std::atomic<int> * analysisFinishedCounterInt;
-	std::atomic<bool>* analysisStepInt;
+	AnalysisSyncVars * analysisSyncVars;
 
 	virtual int setup();
 	virtual int loop();

@@ -54,6 +54,9 @@ private:
 	std::string configFileName;
 	std::ifstream configFileInputStream;
 
+
+	AnalysisSyncVars analysisSyncVars;
+
 	// These are used to tell the analysis children when to start
 	std::mutex analysisStepMutex;
 	std::condition_variable analysisStepConditionVariable;

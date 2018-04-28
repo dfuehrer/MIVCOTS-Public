@@ -7,6 +7,11 @@
 AnalysisParent::AnalysisParent()
 {
 	analysisFinishedCounterInt.store(0, std::memory_order_relaxed);
+	this->analysisSyncVars.analysisFinishedCounterInt = &(this->analysisFinishedCounterInt);
+	this->analysisSyncVars.analysisFinishedCounterMutex = &(this->analysisFinishedCounterMutex);
+	this->analysisSyncVars.analysisStepConditionVariable = &(this->analysisStepConditionVariable);
+	this->analysisSyncVars.analysisStepInt = &(this->analysisStepInt);
+	this->analysisSyncVars.analysisStepMutex = &(this->analysisStepMutex);
 }
 
 
@@ -115,11 +120,7 @@ int AnalysisParent::setup()
 		carCache,
 		&analysisChildrenUpdateQueue,
 		carPool,
-		&analysisFinishedCounterMutex,
-		&analysisFinishedCounterInt,
-		&analysisStepMutex,
-		&analysisStepConditionVariable,
-		&analysisStepInt
+		&analysisSyncVars
 	);
 	if (returnCode) {
 		return returnCode;
@@ -159,7 +160,7 @@ int AnalysisParent::loop()
 		//analysisStepLock.lock();
 		analysisStepInt.store(false, std::memory_order_relaxed);
 		//analysisStepLock.unlock();
-		Sleep(ANALYSIS_PARENT_DELAY_MS);
+		Sleep(ANALYSIS_PARENT_DELAY_MS);// This is necessary to stop the thread from eating the processor
 		return 0;
 	}
 
