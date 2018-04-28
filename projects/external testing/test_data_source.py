@@ -9,7 +9,7 @@ timestamp = ""
 
 mph = 100
 # Open the Serial Port
-ser = serial.Serial(port = "COM42", baudrate=115200)
+ser = serial.Serial(port = "COM42", baudrate=115200, parity=serial.PARITY_EVEN)
 
 with open("newer_test_data.csv") as f:
     data = f.readlines()
