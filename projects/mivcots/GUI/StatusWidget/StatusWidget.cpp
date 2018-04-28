@@ -85,7 +85,7 @@ bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID, double* base
 int StatusWidget::update()
 {
 	sharedCache<CarData*>::cacheIter iter;
-	double lat, lon, mph, dist;
+	double lat, lon, mph, dist, temp;
 	int rc = SUCCESS;
 	std::shared_lock<std::shared_mutex> toLock;
 	rc = aMIVCOTS->acquireReadLock(carID, &toLock);
@@ -99,7 +99,8 @@ int StatusWidget::update()
 	if (rc == SUCCESS) {
 		if (((*iter)->get(LON_D, &lon) | 
 			(*iter)->get(LAT_D, &lat) | 
-			(*iter)->get(MPH_D, &mph) 
+			(*iter)->get(MPH_D, &mph) |
+			(*iter)->get(TEMP_D, &temp)
 			) != SUCCESS) {
 		}
 		else {
@@ -108,9 +109,11 @@ int StatusWidget::update()
 				double x = (*baseLon - lon) * cos((*baseLat + lat) / 2);
 				double y = (*baseLat - lat);
 				dist = sqrt(x*x + y * y) * 3959;
+				distText->SetLabel(std::to_string(dist));
 			}
-			distText->SetLabel(std::to_string(dist));
+			
 			mphText->SetLabel(std::to_string(mph));
+			tempText->SetLabel(std::to_string(temp));
 		}
 	}
 	else {
