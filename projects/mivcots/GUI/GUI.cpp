@@ -65,12 +65,17 @@ void GUI::onExit(wxCommandEvent & event)
 
 void Frame::onCheck(wxCommandEvent & event)
 {
+	int oldSize = this->displayedCars->size();
 	this->displayedCars->clear();
 	wxArrayInt tmp;
 	carCheckListBox->GetCheckedItems(tmp);
 	for (int i : tmp) {
 		displayedCars->push_back(activeCars->at(i));
 		wxLogMessage("Display: %d", i);
+	}
+	int newSize = this->displayedCars->size();;
+	if (newSize < oldSize) {
+		mapPanel.mapRefresh();
 	}
 }
 
@@ -676,6 +681,12 @@ void Frame::checkForNewCars()
 	std::vector<long> newCars;
 	aMIVCOTS->getCarNums(&newCars, &tmp);
 	int sel = carComboBox->GetSelection();
+	if (newCars.size() < activeCars->size()) {
+		activeCars->clear();	//TODO: do this more efficent
+		carComboBox->Clear();
+		carCheckListBox->Clear();
+		mapPanel.mapRefresh();
+	}
 	for (long i : newCars) {
 		bool found = false;
 		for (long j : *activeCars) {

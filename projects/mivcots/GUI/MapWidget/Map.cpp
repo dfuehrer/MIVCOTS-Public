@@ -128,6 +128,12 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 	return false;
 }
 
+int Map::mapRefresh() {
+	picWindow->setBitmap(*imgBitmap);
+	refresh();
+	return SUCCESS;
+}
+
 coords Map::getCoords()
 {
 	return coordinates;
@@ -138,6 +144,9 @@ bool Map::update()
 	*imgBitmap = wxBitmap(*imgImg);
 
 	sharedCache<CarData*>::cacheIter iter; 
+	if (activeCars->size() == 0) {
+		mapRefresh();
+	}
 	for (int i : *activeCars) {
 		double lat = -1;
 		double lon = -1;

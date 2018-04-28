@@ -40,6 +40,7 @@ public:
 	double* baseLon;
 	std::vector<long>* activeCars;
 
+	int mapRefresh();
 
 private:
 	wxWindow * parent;
