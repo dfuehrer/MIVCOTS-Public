@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Analysis\Analysis.cpp" />
     <ClCompile Include="Analysis\AnalysisChild.cpp" />
+    <ClCompile Include="Analysis\AnomalyDetection.cpp" />
     <ClCompile Include="CarData\CarData.cpp" />
     <ClCompile Include="CarPool\CarPool.cpp" />
     <ClCompile Include="DatabaseConnector\DatabaseConnector.cpp" />
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClInclude Include="Analysis\Analysis.h" />
     <ClInclude Include="Analysis\AnalysisChild.h" />
+    <ClInclude Include="Analysis\AnomalyDetection.h" />
     <ClInclude Include="CarData\CarData.h" />
     <ClInclude Include="CarPool\CarPool.h" />
     <ClInclude Include="DatabaseConnector\DatabaseConnector.h" />

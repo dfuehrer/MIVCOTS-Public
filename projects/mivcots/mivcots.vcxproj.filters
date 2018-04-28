@@ -66,6 +66,9 @@
     <ClCompile Include="Utilities\Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Analysis\AnomalyDetection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CarData\CarData.h">
@@ -126,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Analysis\AnomalyDetection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
