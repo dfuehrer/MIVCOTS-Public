@@ -115,17 +115,24 @@ int AnalysisParent::setup()
 {
 	int returnCode = SUCCESS;
 	analysisChildVector.push_back(new AnalysisChild);
-	returnCode = analysisChildVector.begin().operator*()->init(
-		boxCache,
-		carCache,
-		&analysisChildrenUpdateQueue,
-		carPool,
-		&analysisSyncVars
-	);
+	analysisChildVector.push_back(new AnomalyDetection);
+	for (AnalysisChild* tempPtr : analysisChildVector) {
+		returnCode |= tempPtr->init(
+			boxCache,
+			carCache,
+			&analysisChildrenUpdateQueue,
+			carPool,
+			&analysisSyncVars
+		);
+	}
+	
 	if (returnCode) {
 		return returnCode;
 	}
-	returnCode = analysisChildVector.begin().operator*()->start();
+	for (AnalysisChild* tempPtr : analysisChildVector) {
+		returnCode = tempPtr->start();
+	}
+	
 	return returnCode;
 }
 

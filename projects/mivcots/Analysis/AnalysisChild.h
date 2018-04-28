@@ -1,3 +1,4 @@
+#pragma once
 #include "CarData\CarData.h"
 #include "CarPool\CarPool.h"
 #include "InterThreadComm\sharedCache.h"

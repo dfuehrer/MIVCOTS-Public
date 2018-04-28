@@ -134,13 +134,14 @@ int AnalysisChild::loop()
 			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)1);
 
 			// do analysis
-			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0, mphRaw = 0, tempRaw = 0;
+			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0, mphRaw = 0, tempRaw = 0, tempAlt = 0;
 			(*tempIter)->get(TIME_S, &timeStamp);
 			(*tempIter)->get(LAT_S, &latRaw);
 			(*tempIter)->get(LON_S, &lonRaw);
 			(*tempIter)->get(HEADING_S, &angleRaw);
 			(*tempIter)->get(MPH_S, &mphRaw);
 			(*tempIter)->get(TEMP_S, &tempRaw);
+			//(*tempIter)->get(ALTITUDE_S, &tempAlt);
 
 			tempCarDataPtr->addKey(TIME_S);
 			tempCarDataPtr->addKey(LAT_D);
@@ -148,6 +149,7 @@ int AnalysisChild::loop()
 			tempCarDataPtr->addKey(HEADING_D);
 			tempCarDataPtr->addKey(MPH_D);
 			tempCarDataPtr->addKey(TEMP_D);
+			//tempCarDataPtr->addKey(ALTITUDE_D);
 
 			tempCarDataPtr->set(TIME_S, (long)timeStamp);
 			tempCarDataPtr->set(LAT_D, (double)latRaw / 1000000.0);
@@ -155,6 +157,7 @@ int AnalysisChild::loop()
 			tempCarDataPtr->set(HEADING_D, (double)angleRaw / 100.0);
 			tempCarDataPtr->set(MPH_D, (double)mphRaw / 10.0);
 			tempCarDataPtr->set(TEMP_D, (double)tempRaw / 10.0);
+			//tempCarDataPtr->set(ALTITUDE_D, (double)tempAlt);
 
 
 			// push to update Queue
