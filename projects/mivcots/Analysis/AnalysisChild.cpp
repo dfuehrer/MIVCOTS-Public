@@ -98,8 +98,8 @@ int AnalysisChild::runThread()
 		this->loop();
 
 		// increment semaphore
-		std::unique_lock<std::mutex> analysisFinishedCounterLock(*analysisFinishedCounterMutex);	// Create lock and block until mutex is locked
-		analysisFinishedCounterInt->store(analysisFinishedCounterInt->load(std::memory_order_relaxed) + 1,
+		std::unique_lock<std::mutex> analysisFinishedCounterLock(*(this->analysisSyncVars->analysisFinishedCounterMutex));	// Create lock and block until mutex is locked
+		this->analysisSyncVars->analysisFinishedCounterInt->store(this->analysisSyncVars->analysisFinishedCounterInt->load(std::memory_order_relaxed) + 1,
 			std::memory_order_relaxed);	// Increment Semaphore
 		analysisFinishedCounterLock.unlock();	// Unlock mutex 
 
