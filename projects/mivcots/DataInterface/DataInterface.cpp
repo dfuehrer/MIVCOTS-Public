@@ -16,7 +16,13 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 	CarSource = _CarSource;
 	
 	if (serialPort == nullptr) {
-		serialPort = new serial::Serial(portName, baud);
+		try {
+			serialPort = new serial::Serial(portName, baud);
+		}
+		catch (...) {
+			wxLogWarning("Failed to open serial port %s", portName);
+			return ERR_INITERR;
+		}
 	}
 	else {
 		if (serialPort->isOpen()) {

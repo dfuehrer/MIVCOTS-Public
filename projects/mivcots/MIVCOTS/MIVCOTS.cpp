@@ -14,11 +14,24 @@ int MIVCOTS::initialize()
 	rc |= dataStorage.initialize(dataSource_dataStorage.getEndpoint2(), 
 		boxDataSource_dataStorage.getEndpoint2(), analysis_dataStorage.getEndpoint2(),
 		&carSource, &cacheBank);
+
+
 	rc |= cacheBank.initialize(analysis_dataStorage.getEndpoint1(), 
 		&carSource, "fixthis", 40);
 
-	rc |= boxDataSource.initialize(BOX_SERIAL_PORT, 115200, boxDataSource_dataStorage.getEndpoint1(), &carSource);
-	boxDataSource.start();
+	if (rc != SUCCESS) {
+		wxLogError("Could not initialize database connector or caches");
+		return rc;
+	}
+
+	rc = boxDataSource.initialize(BOX_SERIAL_PORT, 115200, boxDataSource_dataStorage.getEndpoint1(), &carSource);
+	
+	if (rc != SUCCESS) {
+		wxLogWarning("Could not initialize data ingestion for internal GPS");
+		return rc;
+	}
+
+	rc |= boxDataSource.start();
 	return rc;
 }
 
