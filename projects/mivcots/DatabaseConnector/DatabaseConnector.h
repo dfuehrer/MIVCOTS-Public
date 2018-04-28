@@ -81,7 +81,7 @@ private:
 	int selectDatabase();
 	int getColumnTypes(long carnum);
 
-	// TODO: cleanup all of this
+	// TODO: don't keep all the threads ever
 	std::vector<std::atomic<bool>*> playbackThreadStatus;
 	std::vector<std::thread> playbackThreads;
 	int getDataTimestamp(std::atomic<bool>* status, long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue, double timeFactor);

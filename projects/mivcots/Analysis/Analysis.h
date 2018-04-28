@@ -9,6 +9,7 @@
 #include "CarPool/CarPool.h"
 #include "CarData/CarData.h"
 #include "AnalysisChild.h"
+#include "AnomalyDetection.h"
 #include <wx/wx.h>
 #include <fstream>
 #include <set>
