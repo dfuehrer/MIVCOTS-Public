@@ -19,11 +19,7 @@ int AnalysisChild::init(
 	sharedCache<CarData*> * carCache,
 	lockedQueue<CarData*> * updateQueue,
 	CarPool * carPool,
-	std::mutex * analysisFinishedCounterMutex,
-	std::atomic<int> * analysisFinishedCounterInt,
-	std::mutex * analysisStepMutex,
-	std::condition_variable * analysisStepConditionVariable,
-	std::atomic<bool>* analysisStepInt
+	AnalysisSyncVars * analysisSyncVars
 )
 {
 	int returnCode = 0;
@@ -59,18 +55,14 @@ int AnalysisChild::init(
 		return returnCode;
 	}
 	// TODO: Add error checking here
-	this->analysisFinishedCounterMutex = analysisFinishedCounterMutex;
-	this->analysisFinishedCounterInt = analysisFinishedCounterInt;
-	this->analysisStepMutex = analysisStepMutex;
-	this->analysisStepConditionVariable = analysisStepConditionVariable;
-	this->analysisStepInt = analysisStepInt;
+	this->analysisSyncVars = analysisSyncVars;
 	return returnCode;
 }
 
 int AnalysisChild::start()
 {
 	this->analysisThread = std::thread(&AnalysisChild::runThread, this);
-	return 0;
+	return SUCCESS;
 }
 
 int AnalysisChild::stop()
@@ -92,13 +84,13 @@ int AnalysisChild::runThread()
 	while (isRunning.load(std::memory_order_relaxed)) {	// Keep going as long as the thread is alive
 
 		// wait to be notified
-		std::unique_lock<std::mutex> analysisStepLock(*analysisStepMutex);
+		std::unique_lock<std::mutex> analysisStepLock(*(analysisSyncVars->analysisStepMutex));
 		do {
-			analysisStepConditionVariable->wait(analysisStepLock);// TODO: add loop
-		} while (!(analysisStepInt->load(std::memory_order_relaxed)));
+			analysisSyncVars->analysisStepConditionVariable->wait(analysisStepLock);// TODO: add loop
+		} while (!(analysisSyncVars->analysisStepInt->load(std::memory_order_relaxed)));
 
 		analysisStepLock.unlock();
-		// TODO: Check for spurious wakeup
+		// TODO: Run some kind of analysis to make sure the variables are set in the correct order.
 
 
 
