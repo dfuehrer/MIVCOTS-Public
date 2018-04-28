@@ -34,6 +34,7 @@ public:
 	int readCache(mCache::cacheIter* startIter, mCache::cacheIter* endIter, long carNum, unsigned int length);
 	int readCacheUpdates(long carNum, mCache::cacheIter* startIter, mCache::cacheIter* endIter, unsigned int updateCount);
 	int readLatestUpdate(long carNum, mCache::cacheIter* iter, unsigned long updateCount);
+	int readLatestUpdateGreaterThan(long carNum, mCache::cacheIter* iter, unsigned long minUpdateCount);
 	int endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock);
 
 	bool newData(long carNum);

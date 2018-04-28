@@ -39,7 +39,9 @@ public:
 	int readCache(cacheIter* startIter, cacheIter* endIter);
 	int readCache(cacheIter* startIter, cacheIter* endIter, unsigned int length);
 	int readCacheUpdates(cacheIter* startIter, cacheIter* endIter, unsigned int updateCount);
-	int readLatestUpdate(cacheIter* iter, unsigned int updateCount);
+	int readLatestUpdate(cacheIter* iter, unsigned int updateCount);	// TODO: change to unsigned long
+	int readLatestUpdateGreaterThan(cacheIter* iter, unsigned int minUpdateCount);	// TODO: change to unsigned long
+
 	//int readData()
 	int releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock);
 

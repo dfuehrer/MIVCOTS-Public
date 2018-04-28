@@ -130,6 +130,14 @@ int CacheBank::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned 
 	return carModuleMap.at(carNum)->cache.readLatestUpdate(iter, updateCount);
 }
 
+int CacheBank::readLatestUpdateGreaterThan(long carNum, mCache::cacheIter * iter, unsigned long minUpdateCount)
+{
+	if (isNewCarNum(carNum)) {
+		return ERR_NOTFOUND;
+	}
+	return carModuleMap.at(carNum)->cache.readLatestUpdateGreaterThan(iter, minUpdateCount);
+}
+
 int CacheBank::releaseReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	//std::lock_guard<std::mutex> lock(cmmMtx);

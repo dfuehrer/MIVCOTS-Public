@@ -95,6 +95,11 @@ int MIVCOTS::readLatestUpdate(long carNum, mCache::cacheIter * iter, unsigned lo
 	return cacheBank.readLatestUpdate(carNum, iter, updateCount);
 }
 
+int MIVCOTS::readLatestUpdateGreaterThan(long carNum, mCache::cacheIter * iter, unsigned long minUpdateCount)
+{
+	return cacheBank.readLatestUpdateGreaterThan(carNum, iter, minUpdateCount);
+}
+
 int MIVCOTS::endCacheRead(long carNum, std::shared_lock<std::shared_mutex>* toLock)
 {
 	return cacheBank.releaseReadLock(carNum, toLock);

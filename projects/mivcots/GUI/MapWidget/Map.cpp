@@ -162,7 +162,7 @@ bool Map::update()
 			continue;
 		}
 
-		rc = aMIVCOTS->readLatestUpdate(i, &iter, 1); // TODO: don't hardcode the update count
+		rc = aMIVCOTS->readLatestUpdateGreaterThan(i, &iter, 1); // TODO: don't hardcode the update count
 		if (rc == SUCCESS) {
 			if (((*iter)->get(LON_D, &lon) | (*iter)->get(LAT_D, &lat) | (*iter)->get(HEADING_D, &course)) != SUCCESS) {
 			}

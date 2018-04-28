@@ -221,6 +221,35 @@ int sharedCache<CarData*>::readLatestUpdate(cacheIter * iter, unsigned int updat
 	return find(latestUpdated.at(updateCount) , iter);
 }
 
+template<>
+int sharedCache<CarData*>::readLatestUpdateGreaterThan(cacheIter * iter, unsigned int minUpdateCount)
+{
+	if (iter == nullptr) {
+		return ERR_NULLPTR;
+	}
+
+	if ((int)minUpdateCount > (int)latestUpdated.size() - 1) {
+		return ERR_INVALID_UPDATECOUNT;
+	}
+
+	// TODO: make this start at minUpdateCount instead of the beginning
+	// TODO: make this actually find the latest, even if it is higher value
+	for (std::vector<CarData*>::iterator tempIter = latestUpdated.begin(); tempIter!=latestUpdated.end();tempIter++) {
+		unsigned long updateCount = 0;
+		// Don't break if an analysis count got skipped
+		if (*tempIter == nullptr) {
+			continue;
+		}
+		(*tempIter)->get(ANALYSIS_COUNT_U, &updateCount);
+		if (updateCount>=minUpdateCount) {
+			return find(latestUpdated.at(updateCount), iter);
+		}
+	}
+
+	return ERR_NOTFOUND;
+	
+}
+
 int sharedCache<CarData*>::releaseReadLock(std::shared_lock<std::shared_mutex>* toUnlock){
 	toUnlock->unlock();
 	return SUCCESS;
