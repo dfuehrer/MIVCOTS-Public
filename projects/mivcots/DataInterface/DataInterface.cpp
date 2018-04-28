@@ -39,6 +39,7 @@ int DataInterface::initialize(std::string portName, long int baud, endpoint<CarD
 	}
 
 	serialPort->setTimeout(0, 500, 0, 500, 0);
+	serialPort->setParity(serial::parity_even);
 	wxLogMessage("Opened serial port %s", portName);
 	return SUCCESS;
 }
@@ -136,8 +137,9 @@ int DataInterface::parseString(std::string toParse, CarData** parsed)
 	}
 
 	// Do the first field manually
-	// Replace # with MN for message number
-	tmpKey = "MN";
+	// Replace # with message number key
+	tmpKey = MESSAGE_NUMBER_S;
+	tmpKey.pop_back();			// Remove the S so we can add it again later
 
 	// loop through the remainder
 	while (tmpKey != ENDOFMSG) {

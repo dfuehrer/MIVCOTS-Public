@@ -478,7 +478,10 @@ int DatabaseConnector::AvailablePlaybackData(std::vector<databaseInfo>*available
 		result = mysql_store_result(&mysql);
 		while (row = mysql_fetch_row(result)) {
 			tempResultS = row[0];
-			carnums[i] = tempResultS[3] - 48;
+			tempResultS.erase(0, 3);
+			carnums[i] = std::stoi(tempResultS);	// HACK: this might explode
+													// TODO: try catch
+
 			i++;
 		}
 

@@ -15,9 +15,6 @@
 #define DELIMITER ","
 #define ENDOFMSG "!"
 
-// TODO: concatenate timestamps
-// TODO: fix MN field
-
 class DataInterface
 {
 public:

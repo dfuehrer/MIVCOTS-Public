@@ -115,7 +115,7 @@ int sharedCache<CarData*>::updateCache()
 
 			carSource->releaseCar(toDelete);
 			
-			for (int ii = 0; ii < latestUpdated.size(); ++ii) {
+			for (unsigned int ii = 0; ii < latestUpdated.size(); ++ii) {
 				if (latestUpdated.at(ii) == toDelete) {
 					latestUpdated.at(ii) = nullptr;
 				}

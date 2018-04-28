@@ -63,7 +63,11 @@ int MIVCOTS::stopSerial()
 
 int MIVCOTS::stop()
 {
-	return 0;
+	int rc = dataSource.stop();
+	rc |= boxDataSource.stop();
+	rc |= cacheBank.stopAnalyses();
+	rc |= dataStorage.stop();
+	return rc;
 }
 
 int MIVCOTS::acquireReadLock(long carNum, std::shared_lock<std::shared_mutex>* toLock)

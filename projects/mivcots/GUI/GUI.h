@@ -22,7 +22,7 @@
 #include "Plotting.h"
 #define FRAMERATE 30
 #define LOG_FREQUENCY 60000 //once a minute
-#define DEFAULT_SERIAL "COM43"
+#define DEFAULT_SERIAL "COM7"
 
 
 class Frame : public wxFrame
