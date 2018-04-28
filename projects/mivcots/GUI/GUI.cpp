@@ -167,6 +167,15 @@ void Frame::onPlayBackCombo(wxCommandEvent & event)
 	playTimeStartSpinBox->Enable(false);
 	playTimeEndSpinBox->Enable(false);
 
+	
+	startPlayBack->Enable(true);
+	for (int cur : *activeCars) {
+		if (-cur == playBackCars.at(sel)) {
+			startPlayBack->Enable(false);
+			break;
+		}
+		
+	}
 	//playDateStartSpinBox->Clear();
 	//playDateEndSpinBox->Clear();
 	//playTimeStartSpinBox->Clear();
@@ -340,6 +349,8 @@ void Frame::onStartPlayBack(wxCommandEvent & event)
 	replay.endTime = ((hour * 10000000) + (min * 100000) + (sec * 1000));
 	
 	aMIVCOTS->startPlayback(replay, 1);
+	startPlayBack->Enable(false);
+	playIdComboBox->SetSelection(wxNOT_FOUND);
 }
 
 void Frame::onTimeStart(wxDateEvent & event)
