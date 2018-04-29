@@ -58,10 +58,7 @@ void GUI::update(wxTimerEvent & event)
 
 void GUI::onExit(wxCommandEvent & event)
 {
-	timer->Stop();
-	frame->Close(true);
-	aMIVCOTS.stop();
-	free(timer);
+	closeProgram();
 }
 
 void Frame::onCheck(wxCommandEvent & event)
@@ -470,12 +467,32 @@ void Frame::onEraseBackground(wxEraseEvent & event)
 	//doing nothing on purpose
 }
 
+void Frame::OnQuit(wxCloseEvent & evt)
+{
+	if (evt.CanVeto()) {
+		wxCommandEvent ev(wxEVT_MENU, wxID_EXIT);
+		wxTheApp->GetTopWindow()->GetEventHandler()->ProcessEvent(ev);
+	}
+	evt.Skip();
+}
+
 void GUI::OnQuit(wxCloseEvent & evt)
 {
-	timer->Stop();
-	frame->GetParent()->Close(true);
-	aMIVCOTS.stop();
+	//timer->Stop();
+	//frame->GetParent()->Close(true);
+	//aMIVCOTS.stop();
 	//aMIVCOTS.~MIVCOTS();
+	//evt.Veto();
+	//closeProgram();
+	aMIVCOTS.stop();
+}
+
+void GUI::closeProgram()
+{
+	timer->Stop();
+	aMIVCOTS.stop();
+	free(timer);
+	frame->Close(true);
 }
 
 Frame::Frame(wxWindow * parent) : wxFrame(parent, -1, _("wxAUI Test"),
@@ -530,7 +547,8 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	// graph plotting
 	graph = Plotting(this);
 	graph.createPlot(aMIVCOTS, this->displayedCars);
-	m_mgr.AddPane(graph.getPlot(), wxAuiPaneInfo().Right());
+	m_mgr.AddPane(graph.getPlot(), wxAuiPaneInfo().Right().
+		CloseButton(false));
 
 	createUIPanel();
 
@@ -540,16 +558,19 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	m_mgr.AddPane(mapPanel.getPanel(), wxAuiPaneInfo().Caption(wxT("Map")).
 		Center().
 		MinSize(200, 200).
-		BestSize(200, 200));
+		BestSize(200, 200).
+		CloseButton(false));
 	m_mgr.AddPane(uiPanel, wxAuiPaneInfo().Caption(wxT("UI")).
 		Bottom().
 		MinSize(200, 200).
-		BestSize(200, 200));
+		BestSize(200, 200).
+		CloseButton(false));
 	m_mgr.AddPane(log, wxAuiPaneInfo().Caption(wxT("LOG")).
 		Bottom().
 		MinSize(200, 200).
 		BestSize(200, 200).
-		MaxSize(200, 200));
+		MaxSize(200, 200).
+		CloseButton(false));
 	createStatusWidgets();
 
 	// tell the manager to "commit" all the changes just made
