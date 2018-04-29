@@ -157,7 +157,7 @@ bool Map::update()
 		rc = aMIVCOTS->acquireReadLock(i, &toLock);
 
 		if (rc != SUCCESS) {
-			wxLogDebug("Couldn't read cache for car %d", i);
+			//wxLogDebug("Couldn't read cache for car %d", i);
 			aMIVCOTS->endCacheRead(i, &toLock);
 			continue;
 		}
@@ -177,7 +177,7 @@ bool Map::update()
 			}
 		}
 		else {
-			wxLogDebug("Couldn't read updates from cache for car %d", i);
+			//wxLogDebug("Couldn't read updates from cache for car %d", i);
 		}
 
 		aMIVCOTS->endCacheRead(i, &toLock);

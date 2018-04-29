@@ -104,7 +104,7 @@ void DataInterface::runSerialThread()
 		if (readStr.empty()) {
 			continue; // Read timed out - probably no data
 		}
-		//readStr = "#,5,ID,14,ST,3,LT,12345,LG,54321";
+		
 		rc |= CarSource->getCar(&tmpCarData);
 		rc |= parseString(readStr, &tmpCarData);
 
@@ -112,7 +112,8 @@ void DataInterface::runSerialThread()
 		//tmpCarData->printCar();
 		if (rc != SUCCESS) {
 			std::string errormsg = "Serial Thread Error with code: " + std::to_string(rc);
-			wxLogWarning(_(errormsg));
+			CarSource->releaseCar(tmpCarData);
+			wxLogDebug(_(errormsg));
 		}
 		else {
 			outputQ->send(tmpCarData);
@@ -121,70 +122,154 @@ void DataInterface::runSerialThread()
 	}
 }
 
-// Test string: "#,5,ID,14,ST,3,LT,12345,LG,54321,!"
 int DataInterface::parseString(std::string toParse, CarData** parsed)
 {
-	//wxLogDebug("Received: %s", toParse);
-
 	// Parsing stuff
 	size_t delimPosRight = toParse.find(DELIMITER); // Find the first comma
 	size_t delimPosLeft = 0;
 	std::string tmpKey, tmpValue;
-	long tmpLong;
+	long tmpLong, numPairs;
+	int rc, numFields;
 
+	// First count the number of fields in the message
+	countFields(toParse, numFields);
+
+	// Number of keys + number of values + the end of msg symbol 
+	// Should be odd
+	if ((numFields % 2) == 0) {
+		return ERR_INVALIDMSGFORMAT;
+	}
+
+	// Calculate the number of pairs
+	numPairs = (numFields - 1) / 2;
+
+	// Check the beginning of message symbol
 	if (toParse.substr(delimPosLeft, delimPosRight) != "#") {
 		return ERR_INVALIDMSGFORMAT;
 	}
 
-	// Do the first field manually
+	// Do the first four fields manually
 	// Replace # with message number key
 	tmpKey = MESSAGE_NUMBER_S;
 	tmpKey.pop_back();			// Remove the S so we can add it again later
+	// Assigns the message number field
+	rc = parseLoop(toParse, delimPosLeft, delimPosRight, tmpKey, tmpValue, tmpLong, parsed);
+	if (rc != SUCCESS){
+		return rc;
+	}
+
+	// Assigns the Number of fields
+	rc = parseLoop(toParse, delimPosLeft, delimPosRight, tmpKey, tmpValue, tmpLong, parsed);
+	if (rc != SUCCESS) {
+		return rc;
+	}
+
+	if (tmpLong != numPairs) {
+		return ERR_INVALIDMSGFORMAT;
+	}
 
 	// loop through the remainder
 	while (tmpKey != ENDOFMSG) {
-		// First add the key to the CarData
-		(*parsed)->addKey(tmpKey + "S");
-
-		// Advance to the next field, which should be a value
-		delimPosLeft = delimPosRight + 1;
-		delimPosRight = toParse.find(DELIMITER, delimPosLeft);
-
-		// Extract value to a substring
-		tmpValue = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
-
-		//wxLogDebug("Reading value: %s", tmpValue);
-
-		// Convert to long
-		try {
-			tmpLong = std::stol(tmpValue);
+		rc = parseLoop(toParse, delimPosLeft, delimPosRight, tmpKey, tmpValue, tmpLong, parsed);
+		if (rc != SUCCESS) {
+			return rc;
 		}
-		catch (...) {
-			return ERR_VALUEERR;
-		}
+	}
 
-		// Set the value in the carData
-		(*parsed)->set(tmpKey + "S", tmpLong);
+	long parsedTime;
+	(*parsed)->get(TIME_S, &parsedTime);
 
-		// In case the message doesn't have an end of msg symbol
-		if (delimPosRight == std::string::npos) {
-			wxLogMessage("Missing End-of-Message symbol");
-			break;
-		}
-
-		// Advance to the next field, which should be a key
-		delimPosLeft = delimPosRight + 1;
-		delimPosRight = toParse.find(DELIMITER, delimPosLeft);
-
-		// Extract key to a substring
-		tmpKey = toParse.substr(delimPosLeft, delimPosRight - delimPosLeft);
-		trim(tmpKey);
-
-		//wxLogDebug("Reading Key: %s", tmpKey);
+	if (parsedTime < 0) {
+		return ERR_TIME;
 	}
 
 	(*parsed)->addKey(ANALYSIS_COUNT_U);
 	(*parsed)->set(ANALYSIS_COUNT_U,(unsigned long)0);
+
+	//long numFields
+
 	//(*parsed)->printCar();
 	return SUCCESS;
+}
+
+int DataInterface::countFields(std::string & toParse, int & numFields)
+{
+	size_t delimPosRight = toParse.find(DELIMITER); // Find the first comma
+	size_t delimPosLeft = 0;
+	
+	if (delimPosRight == std::string::npos) {
+		numFields = 0;
+		return ERR_INVALIDMSGFORMAT;
+	}
+	else {
+		numFields = 1; // We found the first field. Now start counting
+	}
+
+	while (delimPosRight != std::string::npos) {
+		advanceDelimiters(delimPosLeft, delimPosRight, toParse);
+		++numFields;
+	}
+	
+	return SUCCESS;
+}
+
+int DataInterface::advanceDelimiters(size_t & left, size_t & right, std::string & toParse)
+{
+	left = right + 1;
+	right = toParse.find(DELIMITER, left);
+	
+	return SUCCESS;
+}
+
+int DataInterface::convertLong(std::string &toConvert, long &output)
+{
+	try {
+		output = std::stol(toConvert);
+	}
+	catch (...) {
+		return ERR_VALUEERR;
+	}
+
+	return SUCCESS;
+}
+
+int DataInterface::parseLoop(std::string & toParse, size_t & left, size_t & right, std::string & tmpKey, std::string & tmpValue, long & tmpLong, CarData ** parsed)
+{
+	// First add the key to the CarData
+	(*parsed)->addKey(tmpKey + "S");
+
+	// Advance to the next field, which should be a value
+	advanceDelimiters(left, right, toParse);
+
+	// Extract value to a substring
+	tmpValue = toParse.substr(left, right - left);
+
+	//wxLogDebug("Reading value: %s", tmpValue);
+
+	// Convert to long
+	int convRC = convertLong(tmpValue, tmpLong);
+
+	if (convRC != SUCCESS) {
+		return convRC;
+	}
+
+	// Set the value in the carData
+	(*parsed)->set(tmpKey + "S", tmpLong);
+
+	// In case the message doesn't have an end of msg symbol
+	if (right == std::string::npos) {
+		wxLogMessage("Missing End-of-Message symbol");
+		return ERR_INVALIDMSGFORMAT;
+	}
+
+	// Advance to the next field, which should be a key
+	advanceDelimiters(left, right, toParse);
+
+	// Extract key to a substring
+	tmpKey = toParse.substr(left, right - left);
+	trim(tmpKey);
+
+	return SUCCESS;
+
+	//wxLogDebug("Reading Key: %s", tmpKey);
 }
