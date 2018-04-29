@@ -52,13 +52,13 @@ mpWindow* Plotting::getPlot() {
 
 void Plotting::SetDataVector(double a, double b, int carNum) {// for test
 
-	if (carNum == 0) {
+	if (carNum == 1) {
 		x.push_back(a);// time 
 		y.push_back(b);// speed
 		car0->SetData(x, y);
 
-}
-	if (carNum == 1) {
+     }
+	if (carNum == 2) {
 		m.push_back(a);
 		n.push_back(b);
 		car1->SetData(m, n);
@@ -130,6 +130,7 @@ void Plotting::Reload() {
 						sec = timeA * 0.001;
 						SetDataVector(sec, Speed, i);
 						m_plot->Refresh();
+						m_plot->Fit();
 			}
 		}
 		else {
