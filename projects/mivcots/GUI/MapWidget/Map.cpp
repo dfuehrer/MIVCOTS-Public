@@ -142,7 +142,7 @@ coords Map::getCoords()
 bool Map::update()
 {
 	*imgBitmap = wxBitmap(*imgImg);
-
+	
 	sharedCache<CarData*>::cacheIter iter; 
 	if (activeCars->size() == 0) {
 		mapRefresh();
