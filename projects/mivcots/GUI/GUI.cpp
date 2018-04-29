@@ -533,7 +533,7 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	CreateStatusBar();
 	SetStatusText("Welcome to MIVCOTS!");
 
-	m_mgr.SetManagedWindow(this);
+	m_mgr.SetManagedWindow(this);	
 
 	log = new wxTextCtrl(this, -1, wxEmptyString,
 		wxDefaultPosition, wxSize(200, 150),
@@ -548,6 +548,9 @@ bool Frame::initFrame(MIVCOTS * aMIVCOTS, std::vector<long>* activeCars, std::ve
 	graph = Plotting(this);
 	graph.createPlot(aMIVCOTS, this->displayedCars);
 	m_mgr.AddPane(graph.getPlot(), wxAuiPaneInfo().Right().
+		MinSize(900,1000).
+		BestSize(900, 1000).
+		MaxSize(900, 1000).
 		CloseButton(false));
 
 	createUIPanel();

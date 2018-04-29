@@ -20,7 +20,7 @@ private:
 	mpFXYVector * car1 = new mpFXYVector();
 	MIVCOTS * aMIVCOTS;
 	wxWindow * parent;
-	wxPanel * panel;
+//	wxPanel * panel;
 	mpWindow   *m_plot;
 	wxTextCtrl *m_log;
 	std::vector<double> x = { };

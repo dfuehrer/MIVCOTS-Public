@@ -18,6 +18,10 @@ void Plotting::createPlot(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars) {
 	this->activeCars = activeCars;
 	mpLayer *e, *h;
 
+	//mpInfoCoords*c;
+
+	//c= new mpInfoCoords(wxRect(100, 100,150, 50), wxLIGHT_GREY_BRUSH);
+
 	mpScaleX* xaxis = new mpScaleX(wxT("time"), mpALIGN_CENTER, false);
 	mpScaleY* yaxis = new mpScaleY(wxT("mph"), mpALIGN_LEFT,false);
 	m_plot = new mpWindow(parent, -1, wxPoint(-1, -1), wxSize(1000, 1000), wxSUNKEN_BORDER);
@@ -28,9 +32,9 @@ void Plotting::createPlot(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars) {
 	h = car1;
 
 	m_plot->EnableDoubleBuffer(true);// eliminating the flicker
+
 	
-	//x.push_back(2);
-	//y.push_back(2);
+
 	car0->SetData(x, y);
 	car1->SetData(m, n);
 
@@ -40,6 +44,7 @@ void Plotting::createPlot(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars) {
 	h->SetPen(wxPen(*wxRED, 3, wxSOLID));
 	h->SetContinuity(TRUE);
 
+//	m_plot->AddLayer(c);
 	m_plot->AddLayer(e);
 	m_plot->AddLayer(h);
 	m_plot->Fit();
@@ -68,39 +73,6 @@ void Plotting::SetDataVector(double a, double b, int carNum) {// for test
 
 
 void Plotting::Reload() {
-
-	//double Speed = 0.0;
-	//double time = 0.0;
-	//long timeLong;
-	//long timeA;
-	//double sec;
-
-	//int rc = SUCCESS;
-	//sharedCache<CarData*>::cacheIter iter;
-	//std::shared_lock<std::shared_mutex> toLock;
-
-	//// reading data for car 0
-	//rc = aMIVCOTS->acquireReadLock(0, &toLock);
-
-	//rc = aMIVCOTS->readLatestUpdate(0, &iter, 1);
-
-	//if (rc == SUCCESS) {
-	//	if (((*iter)->get(MPH_D, &Speed) | (*iter)->get(TIME_S, &timeLong)) != SUCCESS) {
-	//	}
-	//	else {
-
-	//		timeA = convertTimestamp(timeLong);
-	//		sec = timeA * 0.001;
-	//		x.push_back(sec);
-	//		y.push_back(Speed);
-	//		car0->SetData(x, y);
-	//		m_plot->Refresh();
-	//	}
-	//}
-	//else {
-	//	wxLogDebug("Couldn't read updates from cache for car %d", 0);
-	//}
-	//aMIVCOTS->endCacheRead(0, &toLock);
 
 	sharedCache<CarData*>::cacheIter iter;
 	for (int i : *activeCars) {
