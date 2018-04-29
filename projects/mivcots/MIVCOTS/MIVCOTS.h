@@ -9,7 +9,7 @@
 #include "InterThreadComm.h"
 #include "sharedCache.h"
 
-#define BOX_SERIAL_PORT "COM9"
+#define BOX_SERIAL_PORT "COM9"	// TODO: put this in a cfg file
 
 class MIVCOTS
 {

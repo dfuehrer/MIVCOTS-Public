@@ -59,7 +59,7 @@ int sharedCache<CarData*>::feedCache()
 
 	if (newTimestamp <= curTimestamp) {
 		feedQ->receive(&received);
-		wxLogMessage("Message with a non-increasing timestamp received. Discarding.");
+		wxLogDebug("Message with a non-increasing timestamp received. Discarding.");
 		carSource->releaseCar(received);
 		return ERR_NON_INCREASING_TIME;
 	}
