@@ -93,6 +93,12 @@ int AnalysisParent::stop()
 	}
 	analysisChildVector.clear();
 	isRunning.store(false, std::memory_order_relaxed);
+	// notify all
+	std::unique_lock<std::mutex> analysisStepLock(analysisStepMutex);
+	analysisStepInt.store(true, std::memory_order_relaxed);
+	analysisStepLock.unlock();
+	analysisStepConditionVariable.notify_all();
+	
 	if (analysisParentThread.joinable()) {
 		analysisParentThread.join();
 	}

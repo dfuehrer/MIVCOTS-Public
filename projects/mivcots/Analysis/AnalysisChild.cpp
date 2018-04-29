@@ -92,6 +92,10 @@ int AnalysisChild::runThread()
 		analysisStepLock.unlock();
 		// TODO: Run some kind of analysis to make sure the variables are set in the correct order.
 
+		// If the program is trying to exit, let it
+		if (!(isRunning.load(std::memory_order_relaxed))) {
+			return 0;
+		}
 
 
 		// do things
