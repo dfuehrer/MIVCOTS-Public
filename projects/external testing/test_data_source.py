@@ -11,7 +11,7 @@ mph = 100
 # Open the Serial Port
 ser = serial.Serial(port = "COM42", baudrate=115200, parity=serial.PARITY_EVEN)
 
-with open("newer_test_data.csv") as f:
+with open("new_test_data.csv") as f:
     data = f.readlines()
 
 # line = data[0]
@@ -53,7 +53,7 @@ while 1:
         else:
             timestamp = timestamp + str(mstime)
 
-        line = line.replace("!\n","") + "AC," + timestamp + ",AR," + str(mph) + ",!\n"
+        line = line.replace("!\n","") + "AC," + timestamp + ",AR," + str(mph) +",AU,11"+ ",!\n"
         ser.write(line.encode("utf-8"))
         mstime+=100
         timestamp = ""
