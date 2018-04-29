@@ -197,7 +197,7 @@ int AnalysisParent::loop()
 		
 		// TODO: add second queue for sending stuff back to database
 		
-		
+		carPool->releaseCar(currentCarDataPtr);
 	}
 	analysisAggregationSet.clear();
 

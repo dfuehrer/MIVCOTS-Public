@@ -104,11 +104,18 @@ int StatusWidget::update()
 			) != SUCCESS) {
 		}
 		else {
+			long R = 6371000;
 			//do things
 			if (*baseLat != -1 && *baseLon != -1 ) {	//TODO: Check this math its probably wrong
-				double x = (*baseLon - lon) * cos((*baseLat + lat) / 2);
-				double y = (*baseLat - lat);
-				dist = sqrt(x*x + y * y) * 3959;
+				double phi_1 = *baseLat * 0.0174533;
+				double phi_2 = lat * 0.0174533;
+
+				double del_phi = phi_2 - phi_1;
+				double del_lam = (lon - *baseLon) * 0.0174533;
+				double a = sin(del_phi / 2.0) *sin(del_phi / 2.0) + cos(phi_1)*cos(phi_2)*sin(del_lam / 2.0)*sin(del_lam / 2.0);
+				double c = atan2(sqrt(a), sqrt(1 - a));
+
+				dist = 5280 * 0.000621371 * R *c;
 				distText->SetLabel(std::to_string(dist));
 			}
 			

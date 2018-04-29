@@ -1,7 +1,7 @@
 #pragma once
 #include<map>
 #include<string>
-#define numKeys 60
+#define numKeys 63
 #define ID_U "AAU"
 #define ID_D "AAD"
 #define ID_S "AAS"
@@ -62,6 +62,9 @@
 #define MESSAGE_NUMBER_U "ATU"
 #define MESSAGE_NUMBER_D "ATD"
 #define MESSAGE_NUMBER_S "ATS"
+#define NUMBER_KEYS_U "AUU"
+#define NUMBER_KEYS_D "AUD"
+#define NUMBER_KEYS_S "AUS"
 static std::map<std::string, std::string> keyMap {
 {ID_U, "ID_U"},
 {ID_D, "ID_D"},
@@ -122,4 +125,7 @@ static std::map<std::string, std::string> keyMap {
 {TEMP_S, "TEMP_S"},
 {MESSAGE_NUMBER_U, "MESSAGE_NUMBER_U"},
 {MESSAGE_NUMBER_D, "MESSAGE_NUMBER_D"},
-{MESSAGE_NUMBER_S, "MESSAGE_NUMBER_S"}};
+{MESSAGE_NUMBER_S, "MESSAGE_NUMBER_S"},
+{NUMBER_KEYS_U, "NUMBER_KEYS_U"},
+{NUMBER_KEYS_D, "NUMBER_KEYS_D"},
+{NUMBER_KEYS_S, "NUMBER_KEYS_S"}};

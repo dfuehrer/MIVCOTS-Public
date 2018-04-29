@@ -94,16 +94,23 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 {
 	wxImage tmpimg;
 	if (carID == 0) {
-		tmpimg = baseStationimg->Copy();
+		//tmpimg = baseStationimg->Copy();
+		wxPoint center = wxPoint(baseStationimg->GetWidth() / 2, baseStationimg->GetHeight() / 2);
+		tmpimg = baseStationimg->Rotate(angle, center);
 	}
 	else if (carID < 0) {
-		tmpimg = alphaImg->Copy();
+		//tmpimg = alphaImg->Copy();
+		wxPoint center = wxPoint(alphaImg->GetWidth() / 2, alphaImg->GetHeight() / 2);
+		tmpimg = alphaImg->Rotate(angle, center);
 	}
 	else {
-		tmpimg = carimg->Copy();
+		//tmpimg = carimg->Copy();
+		wxPoint center = wxPoint(carimg->GetWidth() / 2, carimg->GetHeight() / 2);
+		tmpimg = carimg->Rotate(angle, center);
+
 	}
-	wxPoint center = wxPoint(tmpimg.GetWidth() / 2, tmpimg.GetHeight() / 2);
-	tmpimg = tmpimg.Rotate(angle, center);
+	
+	//tmpimg = tmpimg.Rotate(angle, center);
 
 	double x = (lon - lonOffset)*lonFactor;
 	double y = -(lat - latOffset)*latFactor;
@@ -142,7 +149,7 @@ coords Map::getCoords()
 bool Map::update()
 {
 	*imgBitmap = wxBitmap(*imgImg);
-
+	
 	sharedCache<CarData*>::cacheIter iter; 
 	if (activeCars->size() == 0) {
 		mapRefresh();
@@ -157,7 +164,7 @@ bool Map::update()
 		rc = aMIVCOTS->acquireReadLock(i, &toLock);
 
 		if (rc != SUCCESS) {
-			wxLogDebug("Couldn't read cache for car %d", i);
+			//wxLogDebug("Couldn't read cache for car %d", i);
 			aMIVCOTS->endCacheRead(i, &toLock);
 			continue;
 		}
@@ -177,7 +184,7 @@ bool Map::update()
 			}
 		}
 		else {
-			wxLogDebug("Couldn't read updates from cache for car %d", i);
+			//wxLogDebug("Couldn't read updates from cache for car %d", i);
 		}
 
 		aMIVCOTS->endCacheRead(i, &toLock);

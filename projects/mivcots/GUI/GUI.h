@@ -45,6 +45,8 @@ public:
 	void checkForNewCars();
 	void checkForNewCarsTimer(wxTimerEvent &event);
 	void onEraseBackground(wxEraseEvent &event);
+
+	void OnQuit(wxCloseEvent& evt);
 	//wxTimer *timer;
 	//void onExit(wxCommandEvent &event);
 private:
@@ -130,6 +132,8 @@ private:
 	void update(wxTimerEvent &event);
 	void onExit(wxCommandEvent &event);
 	
+	void closeProgram();
+	
 
 	wxDECLARE_EVENT_TABLE();
 };
@@ -154,6 +158,7 @@ enum
 wxBEGIN_EVENT_TABLE(GUI, wxApp)
 	EVT_TIMER(gui_timer, GUI::update)
 	EVT_MENU(wxID_EXIT, GUI::onExit)
+	//EVT_CLOSE(GUI::OnQuit)
 wxEND_EVENT_TABLE()
 
 wxBEGIN_EVENT_TABLE(Frame, wxFrame)
@@ -182,7 +187,7 @@ wxBEGIN_EVENT_TABLE(Frame, wxFrame)
 	//EVT_COMBOBOX(playDateStartSpinBoxID, Frame::onPlayBackStartDate)
 
 
-	//EVT_CLOSE(GUI::OnQuit)
+	EVT_CLOSE(Frame::OnQuit)
 wxEND_EVENT_TABLE()
 
 
