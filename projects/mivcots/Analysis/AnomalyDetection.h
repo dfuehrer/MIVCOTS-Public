@@ -12,6 +12,8 @@ private:
 	bool speedAnomalyDetected;
 	bool upsideDownAnomalyDetected;
 
+	int upsideDownCounter;
+
 	int setup();
 	int loop();
 

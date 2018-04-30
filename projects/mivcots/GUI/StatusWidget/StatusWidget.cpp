@@ -59,7 +59,7 @@ bool StatusWidget::initStatusWidget(MIVCOTS * aMIVCOTS, long carID, double* base
 	vbox2->Add(new wxStaticText(panel, -1, "Temp:"));
 	vbox2->Add(hbox2);
 
-	distText = new wxStaticText(panel, -1, "200");
+	distText = new wxStaticText(panel, -1, "??");
 	hbox3->Add(distText);
 	hbox3->Add(new wxStaticText(panel, -1, "Feet"));
 	vbox3->Add(new wxStaticText(panel, -1, "Distance to pit:"));
