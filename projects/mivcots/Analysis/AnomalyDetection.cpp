@@ -36,6 +36,32 @@ int AnomalyDetection::loop()
 			tempCarDataPtr->addKey(ANALYSIS_COUNT_U);
 			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)2);
 
+			double accelZ;
+			(*tempIter)->get(ACC_Z_D, &accelZ);
+
+			if ((accelZ < 0) && (!upsideDownAnomalyDetected)) {
+				++upsideDownCounter;
+			}
+			else if (accelZ > 0) {
+				if (upsideDownCounter > 0) {
+					--upsideDownCounter;
+				}
+				else {
+					upsideDownAnomalyDetected = false; // stable
+				}
+			}
+
+			if (upsideDownCounter > 30) {
+				//upsideDownCounter = 0;
+				
+				long carNum;
+				(*tempIter)->get(ID_S, &carNum);
+				if (!upsideDownAnomalyDetected) {
+					wxLogWarning("Car %d Appears to be upside down!", carNum);
+				}
+				upsideDownAnomalyDetected = true;
+			}
+
 			long timeStamp = 0;
 			(*tempIter)->get(TIME_S, &timeStamp);
 			tempCarDataPtr->addKey(TIME_S);

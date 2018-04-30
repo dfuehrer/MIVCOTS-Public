@@ -138,13 +138,14 @@ int AnalysisChild::loop()
 			tempCarDataPtr->set(ANALYSIS_COUNT_U, (unsigned long)1);
 
 			// do analysis
-			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0, mphRaw = 0, tempRaw = 0, tempAlt = 0;
+			long latRaw = 0, lonRaw = 0, angleRaw = 0, timeStamp = 0, mphRaw = 0, tempRaw = 0, tempAlt = 0, accelZ = 0;
 			(*tempIter)->get(TIME_S, &timeStamp);
 			(*tempIter)->get(LAT_S, &latRaw);
 			(*tempIter)->get(LON_S, &lonRaw);
 			(*tempIter)->get(HEADING_S, &angleRaw);
 			(*tempIter)->get(MPH_S, &mphRaw);
 			(*tempIter)->get(TEMP_S, &tempRaw);
+			(*tempIter)->get(ACC_Z_S, &accelZ);
 			//(*tempIter)->get(ALTITUDE_S, &tempAlt);
 
 			tempCarDataPtr->addKey(TIME_S);
@@ -153,16 +154,30 @@ int AnalysisChild::loop()
 			tempCarDataPtr->addKey(HEADING_D);
 			tempCarDataPtr->addKey(MPH_D);
 			tempCarDataPtr->addKey(TEMP_D);
+			tempCarDataPtr->addKey(ACC_Z_D);
 			//tempCarDataPtr->addKey(ALTITUDE_D);
 
 			tempCarDataPtr->set(TIME_S, (long)timeStamp);
 			tempCarDataPtr->set(LAT_D, (double)latRaw / 1000000.0);
 			tempCarDataPtr->set(LON_D, (double)lonRaw / 1000000.0);
 			tempCarDataPtr->set(HEADING_D, (double)angleRaw / 100.0);
-			tempCarDataPtr->set(MPH_D, (double)mphRaw / 10.0);
-			tempCarDataPtr->set(TEMP_D, (double)tempRaw / 10.0);
+			if (mphRaw != 255) { // GPS is wrong - this is a default value
+				tempCarDataPtr->set(MPH_D, (double)mphRaw / 1.0);
+			}
+			
+			// TODO: this is very specific to the imu and should be done on chip
+			tempCarDataPtr->set(TEMP_D, ((double)tempRaw / 340.00 + 36.53) * 1.8 + 32);
 			//tempCarDataPtr->set(ALTITUDE_D, (double)tempAlt);
 
+			// TODO: need to know accel range before hand.
+			double accelRange = 2.0;
+			double accelZ_conv;
+			if (accelZ != 0) {
+				accelZ_conv = double(accelZ) / ((double)(1 << 16)) * accelRange * 2;
+				//wxLogMessage("Z accel: %f", accelZ_conv);
+			}
+			
+			tempCarDataPtr->set(ACC_Z_D, accelZ_conv);
 
 			// push to update Queue
 			updateQueue->push(tempCarDataPtr);
