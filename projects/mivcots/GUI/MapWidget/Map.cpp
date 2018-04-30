@@ -94,9 +94,9 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 {
 	wxImage tmpimg;
 	if (carID == 0) {
-		//tmpimg = baseStationimg->Copy();
-		wxPoint center = wxPoint(baseStationimg->GetWidth() / 2, baseStationimg->GetHeight() / 2);
-		tmpimg = baseStationimg->Rotate(angle, center);
+		tmpimg = baseStationimg->Copy();
+		//wxPoint center = wxPoint(baseStationimg->GetWidth() / 2, baseStationimg->GetHeight() / 2);
+		//tmpimg = baseStationimg->Rotate(angle, center);
 	}
 	else if (carID < 0) {
 		//tmpimg = alphaImg->Copy();

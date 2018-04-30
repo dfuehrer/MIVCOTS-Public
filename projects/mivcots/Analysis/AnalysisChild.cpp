@@ -175,9 +175,10 @@ int AnalysisChild::loop()
 			if (accelZ != 0) {
 				accelZ_conv = double(accelZ) / ((double)(1 << 16)) * accelRange * 2;
 				//wxLogMessage("Z accel: %f", accelZ_conv);
+				tempCarDataPtr->set(ACC_Z_D, accelZ_conv);
 			}
 			
-			tempCarDataPtr->set(ACC_Z_D, accelZ_conv);
+			
 
 			// push to update Queue
 			updateQueue->push(tempCarDataPtr);
