@@ -27,12 +27,16 @@ bool Map::initMap(MIVCOTS* aMIVCOTS, std::vector<long>* activeCars, double* base
 	if (const char* env_p = std::getenv("MivcotsResources")) {
 		wxLogMessage("Resources found at");
 		wxLogMessage(_(env_p));
-		std::string carPath = std::string(env_p) + std::string("maps\\favicon.png");
-		carimg = new wxImage(carPath, wxBITMAP_TYPE_ANY);
+		std::string carPath = std::string(env_p) + std::string("maps\\car1.png");
+		carimg1 = new wxImage(carPath, wxBITMAP_TYPE_ANY);
+		carPath = std::string(env_p) + std::string("maps\\car2.png");
+		carimg2 = new wxImage(carPath, wxBITMAP_TYPE_ANY);
 		std::string filePath = std::string(env_p) + std::string("maps\\base.png");
 		baseStationimg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
-		filePath = std::string(env_p) + std::string("maps\\alphaicon.png");
-		alphaImg = new wxImage(filePath, wxBITMAP_TYPE_ANY);
+		filePath = std::string(env_p) + std::string("maps\\alphacar2.png");
+		alphaImg1 = new wxImage(filePath, wxBITMAP_TYPE_ANY);
+		filePath = std::string(env_p) + std::string("maps\\alphacar2.png");
+		alphaImg2 = new wxImage(filePath, wxBITMAP_TYPE_ANY);
 
 		std::string mapPath = std::string(env_p) + std::string("maps/") + mapName + std::string(".png");
 		//probably change to tmp
@@ -96,20 +100,31 @@ bool Map::drawCar(double lat, double lon, double angle, int carID)
 	if (carID == 0) {
 		//tmpimg = baseStationimg->Copy();
 		wxPoint center = wxPoint(baseStationimg->GetWidth() / 2, baseStationimg->GetHeight() / 2);
-		tmpimg = baseStationimg->Rotate(angle, center);
+		//tmpimg = baseStationimg->Rotate(angle, center);
 	}
-	else if (carID < 0) {
+	else if (carID == -1) {
 		//tmpimg = alphaImg->Copy();
-		wxPoint center = wxPoint(alphaImg->GetWidth() / 2, alphaImg->GetHeight() / 2);
-		tmpimg = alphaImg->Rotate(angle, center);
+		wxPoint center = wxPoint(alphaImg1->GetWidth() / 2, alphaImg1->GetHeight() / 2);
+		tmpimg = alphaImg1->Rotate(angle, center);
+	}
+	else if (carID == -2) {
+		//tmpimg = alphaImg->Copy();
+		wxPoint center = wxPoint(alphaImg2->GetWidth() / 2, alphaImg2->GetHeight() / 2);
+		tmpimg = alphaImg2->Rotate(angle, center);
+	}
+	else if (carID == 1) {
+		//tmpimg = carimg->Copy();
+		wxPoint center = wxPoint(carimg1->GetWidth() / 2, carimg1->GetHeight() / 2);
+		tmpimg = carimg1->Rotate(angle, center);
+	}
+	else if (carID == 2) {
+		//tmpimg = carimg->Copy();
+		wxPoint center = wxPoint(carimg2->GetWidth() / 2, carimg2->GetHeight() / 2);
+		tmpimg = carimg2->Rotate(angle, center);
 	}
 	else {
-		//tmpimg = carimg->Copy();
-		wxPoint center = wxPoint(carimg->GetWidth() / 2, carimg->GetHeight() / 2);
-		tmpimg = carimg->Rotate(angle, center);
-
+		return false;
 	}
-	
 	//tmpimg = tmpimg.Rotate(angle, center);
 
 	double x = (lon - lonOffset)*lonFactor;
