@@ -54,9 +54,11 @@ private:
 	wxMemoryDC* dc;
 	MIVCOTS* aMIVCOTS;
 	//wxImage* carImg;
-	const wxImage *carimg;
+	const wxImage *carimg1;
+	const wxImage *carimg2;
 	const wxImage *baseStationimg;
-	const wxImage *alphaImg;
+	const wxImage *alphaImg1;
+	const wxImage *alphaImg2;
 
 	double latFactor;
 	double lonFactor;
