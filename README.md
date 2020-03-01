@@ -3,7 +3,7 @@ This is the software portion of the MIVCOTS project.
 The dev team has not yet selected an specific license for the project, but if you would like to use or contribute to the project, feel free to contact us.
 
 ## Cloning
-Use the command "git clone --recurse-submodules -j8 https://github.com/pdxfrog/MIVCOTS_SOFTWARE.git" to also clone the submodules.
+Use the command "git clone --recurse-submodules -j8 https://https://github.com/UABaja/MIVCOTS-Public.git" to also clone the submodules.
 
 ## To pull submodules into an already cloned repository, run:
 #git submodule init
