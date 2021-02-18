@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CACHE_BANK_H
+#define CACHE_BANK_H
 
 #include <map>
 #include <mutex>
@@ -67,3 +68,4 @@ private:
 	bool isNewCarNum(long carNum, CMMiter* loc);
 	int addCarNum(long carNum, CMMiter* loc);
 };
+#endif //CACHE_BANK_H

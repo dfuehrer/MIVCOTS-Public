@@ -1,4 +1,5 @@
-#pragma once
+#ifndef STATUS_WIDGET_H
+#define STATUS_WIDGET_H
 #include <wx/wx.h>
 #include "MIVCOTS.h"
 #include <math.h>
@@ -28,3 +29,4 @@ private:
 };
 
 
+#endif //STATUS_WIDGET_H

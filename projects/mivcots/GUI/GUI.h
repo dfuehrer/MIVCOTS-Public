@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GUI_H
+#define GUI_H
 //TODO: Make the log happen before the program closes
 
 #include <wx/wx.h>
@@ -192,3 +193,4 @@ wxEND_EVENT_TABLE()
 
 
 
+#endif //GUI_H

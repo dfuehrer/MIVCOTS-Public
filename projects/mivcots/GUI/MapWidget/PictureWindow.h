@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PICTURE_WINDOW_H
+#define PICTURE_WINDOW_H
 #include <wx\wx.h>
 #include <wx/dcbuffer.h>
 
@@ -18,3 +19,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif //PICTURE_WINDOW_H

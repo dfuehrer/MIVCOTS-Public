@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANALYSIS_CHILD_H
+#define ANALYSIS_CHILD_H
 #include "CarData\CarData.h"
 #include "CarPool\CarPool.h"
 #include "InterThreadComm\sharedCache.h"
@@ -50,3 +51,4 @@ protected:
 	virtual int loop();
 
 };
+#endif //ANALYSIS_CHILD_H

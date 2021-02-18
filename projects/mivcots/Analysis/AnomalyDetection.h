@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANOMALY_DETECTION_H
+#define ANOMALY_DETECTION_H
 #include "AnalysisChild.h"
 class AnomalyDetection :
 	public AnalysisChild
@@ -20,3 +21,4 @@ private:
 	
 };
 
+#endif //ANOMALY_DETECTION_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DATABASE_CONNECTOR_H
+#define DATABASE_CONNECTOR_H
 #include <mysql.h>
 #include <wx/wx.h>
 #include <atomic>
@@ -86,3 +87,4 @@ private:
 	std::vector<std::thread> playbackThreads;
 	int getDataTimestamp(std::atomic<bool>* status, long carnum, long minDateValue, long maxDateValue, long minTimeValue, long maxTimeValue, double timeFactor);
 };
+#endif //DATABASE_CONNECTOR_H

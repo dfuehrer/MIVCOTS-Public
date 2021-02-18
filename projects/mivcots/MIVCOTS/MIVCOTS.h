@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MIVCOTS_H
+#define MIVCOTS_H
 
 #include "Analysis.h"
 #include "CacheBank.h"
@@ -55,3 +56,4 @@ private:
 	InterThreadComm<CarData*, CarData*> analysis_dataStorage;
 };
 
+#endif //MIVCOTS_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DATA_INTERFACE_H
+#define DATA_INTERFACE_H
 
 
 #include <atomic>
@@ -45,3 +46,4 @@ protected:
 	serial::Serial* serialPort;
 	CarPool* CarSource;
 };
+#endif //DATA_INTERFACE_H

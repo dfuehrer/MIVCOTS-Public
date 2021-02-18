@@ -1,4 +1,5 @@
-#pragma once
+#ifndef UTILITIES_H
+#define UTILITIES_H
 
 #include <string>
 #include <algorithm> 
@@ -13,3 +14,4 @@ std::string &rtrim(std::string &s);
 std::string &trim(std::string &s);
 
 long convertTimestamp(long timestamp);
+#endif //UTILITIES_H

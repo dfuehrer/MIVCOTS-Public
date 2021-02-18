@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PLOTTING_H
+#define PLOTTING_H
 #include <wx/wx.h>
 #include <math.h>
 #include <mathplot.h>
@@ -29,3 +30,4 @@ private:
 	std::vector<double> n = { };
 
 };
+#endif //PLOTTING_H

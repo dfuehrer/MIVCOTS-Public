@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANALYSIS_H
+#define ANALYSIS_H
 
 
 #include <vector>
@@ -85,3 +86,4 @@ private:
 
 
 };
+#endif //ANALYSIS_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef KEY_DEFINES_H
+#define KEY_DEFINES_H
 #include<map>
 #include<string>
 #define numKeys 63
@@ -129,3 +130,4 @@ static std::map<std::string, std::string> keyMap {
 {NUMBER_KEYS_U, "NUMBER_KEYS_U"},
 {NUMBER_KEYS_D, "NUMBER_KEYS_D"},
 {NUMBER_KEYS_S, "NUMBER_KEYS_S"}};
+#endif //KEY_DEFINES_H

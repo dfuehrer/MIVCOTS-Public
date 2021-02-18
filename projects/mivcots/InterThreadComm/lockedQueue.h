@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOCKED_QUEUE_H
+#define LOCKED_QUEUE_H
 
 #include <mutex>
 #include <queue>
@@ -64,3 +65,4 @@ protected:
 	std::queue<T> Q;
 	std::mutex Qmutex;
 };
+#endif //LOCKED_QUEUE_H

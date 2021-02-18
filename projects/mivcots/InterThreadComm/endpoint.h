@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENDPOINT_H
+#define ENDPOINT_H
 
 #include "lockedQueue.h"
 
@@ -24,3 +25,4 @@ protected:
 	lockedQueue<T1>* forwardQ;
 	lockedQueue<T2>* backwardQ;
 };
+#endif //ENDPOINT_H

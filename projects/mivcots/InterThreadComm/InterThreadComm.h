@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTER_THREAD_COMM_H
+#define INTER_THREAD_COMM_H
 
 #include "endpoint.h"
 
@@ -50,3 +51,4 @@ private:
 	lockedQueue<T1>* forwardQ = nullptr;
 	lockedQueue<T2>* backwardQ = nullptr;
 };
+#endif //INTER_THREAD_COMM_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHARED_CACHE_H
+#define SHARED_CACHE_H
 
 #include <atomic>
 #include <shared_mutex>
@@ -65,3 +66,4 @@ private:
 	int trackUpdates(T update);
 	std::vector<T> latestUpdated;
 };
+#endif //SHARED_CACHE_H

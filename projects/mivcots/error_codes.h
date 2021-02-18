@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ERROR_CODES_H
+#define ERROR_CODES_H
 
 #define SUCCESS 0
 
@@ -37,3 +38,4 @@
 #define ERR_INVALIDMSGFORMAT	0x00000001
 #define ERR_VALUEERR			0x00000002
 #define ERR_TIME				0x00000003
+#endif //ERROR_CODES_H

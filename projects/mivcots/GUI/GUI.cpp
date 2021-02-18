@@ -1,5 +1,5 @@
 #include "GUI.h"
-#include "MIVCOTS\MIVCOTS.h"
+#include "MIVCOTS/MIVCOTS.h"
 #include <iostream>
 
 DECLARE_APP(GUI);

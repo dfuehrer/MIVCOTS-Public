@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAR_POOL_H
+#define CAR_POOL_H
 
 #include "CarData.h"
 #include "error_codes.h"
@@ -14,3 +15,4 @@ public:
 private:
 
 };
+#endif //CAR_POOL_H

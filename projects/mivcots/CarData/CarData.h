@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAR_DATA_H
+#define CAR_DATA_H
 
 #include <map>
 #include <string>
@@ -104,3 +105,4 @@ protected:
 	inline int find_key(char* key, dataMap_t::iterator* iter);
 };
 */
+#endif //CAR_DATA_H
