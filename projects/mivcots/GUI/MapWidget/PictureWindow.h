@@ -1,6 +1,6 @@
 #ifndef PICTURE_WINDOW_H
 #define PICTURE_WINDOW_H
-#include <wx\wx.h>
+#include <wx/wx.h>
 #include <wx/dcbuffer.h>
 
 class PictureWindow : public wxWindow

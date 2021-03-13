@@ -1,5 +1,14 @@
 #include "DataInterface.h"
+#include "../DataArrays/DataArrays.h"
 
+#include <cstring>
+#include <vector>
+#include <string>
+
+#define HEADER_DELIM ','
+#define HEADER_END ':'
+
+// TODO i have to make json files to describe my data structs and they contain the info on what the number was scaled by (theoretically) in the arduino so those jsons should be read here to know how to rescale the numbers into doubles
 DataInterface::DataInterface()
 {
 	serialPort = nullptr;
@@ -100,6 +109,13 @@ void DataInterface::runSerialThread()
 	while (isRunning) {
 		rc = SUCCESS;
 
+        // TODO change this to something that actually works
+        // new idea:
+        //  check that theres enough bytes to see the length of the buffer
+        //  peek at the length to know how much we need to go
+        //  check if theres enough in the buffer to grab based on the length
+        //  if there is then read that length of buffer
+        //  if not just continue till there is
 		readStr = serialPort->readline();
 		if (readStr.empty()) {
 			continue; // Read timed out - probably no data
@@ -273,3 +289,150 @@ int DataInterface::parseLoop(std::string & toParse, size_t & left, size_t & righ
 
 	//wxLogDebug("Reading Key: %s", tmpKey);
 }
+
+
+
+
+
+
+
+
+
+int DataInterface::parseData(std::string &toParse, size_t & left, CarData ** parsed){
+    uint8_t * datas = (uint8_t *)(toParse.c_str() + left);
+    uint8_t * d = datas;
+    // this line really lets you know how this function will be written
+    // i could write it to be readable and maintainable and debuggable but instead we have *d++ in an if statement condition
+    if(*d++ != '{'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    char key[5] = "";
+    std::memcpy(key, (char *)datas, 4);
+    std::string ID(key);
+    key[4] = '\0';
+    d += 4;
+    if(*d++ != HEADER_DELIM){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint16_t size = *(uint16_t *)d;
+    d += 2;
+    if(*d++ != HEADER_END){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    if(d[size] != ';'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    if(d[size + 10] != '}'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    // get the right array to know how to unload the data
+    // we get the right array by the first 3 characters in the id (the key)
+    const std::vector<std::pair<std::string, int>> dataArray = dataArrayMap.at(key);
+    for(const auto & varEl = dataArray.cbegin(); varEl != dataArray.cend(); varEl++){
+        std::string varName = varEl->first;
+        int length = varEl->second;
+        (*parsed)->addKey(varName + ID + "S");
+        uint32_t value = -1;
+        switch(length){
+            case 4:
+                value = *(uint32_t *)d; break;
+            case 2:
+                value = *(uint16_t *)d; break;
+            case 1:
+                value = *(uint8_t  *)d; break;
+            default:
+                return ERR_INVALIDMSGFORMAT;
+        }
+        d += length;
+        (*parsed)->set(varName + ID + "S", value);
+    }
+    d++;
+    uint32_t millisPassed = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != '.'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint32_t sum = 0;
+    const uint32_t * tmpval;
+    for(tmpval = (uint32_t *)(datas + 1); (uint8_t *)(tmpval + 1) < d; tmpval++){
+        sum += *tmpval;
+    }
+    if((d - datas - 1) % 4){
+        for(uint8_t * tmp8 = (uint8_t *)tmpval, shiftBy = 24; *tmp8 != '}'; tmp8++, shiftBy -= 8){
+            sum += (uint32_t)*tmp8 << (shiftBy);
+            if(*tmp8 == '.'){
+                break;
+            }
+        }
+    }
+    uint32_t checksum = *(uint32_t *)d;
+    if(checksum != sum){
+        return ERR_VALUEERR;
+    }
+    d += 4;
+
+    left += (++d - datas);
+    return SUCCESS;
+}
+
+
+int DataInterface::parseHeader(std::string &toParse, CarData ** parsed){
+    uint8_t * datas = (uint8_t *)(toParse.c_str());
+    uint8_t * d = datas + 1;
+    // TODO acutall do stuff with these 32bit ints im making
+    uint32_t messageNumber = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != HEADER_DELIM){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint32_t GPSDate = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != '-'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint32_t GPSTime = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != HEADER_DELIM){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint32_t totalsize = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != HEADER_END){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    // TODO add putting the data into the parsed CarData object with the set and stuff
+	//(*parsed)->addKey(tmpKey + "S");
+    return SUCCESS;
+}
+
+int DataInterface::parseFooter(std::string &toParse, size_t & left, CarData ** parsed){
+    uint8_t * d = (uint8_t *)(toParse.c_str() + left);
+    if(*d++ != '|'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    uint32_t checksum = *(uint32_t *)d;
+    d += 4;
+    if(*d++ != ENDOFMSG){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    // TODO figure out doing the checksum checking
+}
+
+
+int DataInterface::parseString(std::string toParse, CarData** parsed){
+    uint8_t * d = (uint8_t *)(toParse.c_str());
+    if(*d++ != '$'){
+        return ERR_INVALIDMSGFORMAT;
+    }
+    parseHeader(toParse, parsed);
+    size_t left = 16;
+    d += left;
+    for(; *d == '{'; d += left){
+        parseData(toParse, left, parsed);
+    }
+    parseFooter(toParse, left, parsed);
+}
+
+
+
+

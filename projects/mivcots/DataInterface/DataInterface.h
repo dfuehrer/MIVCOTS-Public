@@ -14,7 +14,8 @@
 #include "Utilities.h"
 
 #define DELIMITER ","
-#define ENDOFMSG "!"
+//#define ENDOFMSG "!"
+#define ENDOFMSG '!'
 
 class DataInterface
 {
@@ -42,6 +43,9 @@ protected:
 	int convertLong(std::string &toConvert, long &output);
 	int parseLoop(std::string &toParse, size_t &left, size_t &right,
 		std::string &tmpKey, std::string &tmpValue, long &tmpLong, CarData** parsed);
+    int parseHeader(std::string &toParse, CarData ** parsed);
+    int parseFooter(std::string &toParse, size_t & left, CarData ** parsed);
+    int parseData(std::string &toParse, size_t & left, CarData ** parsed);
 
 	serial::Serial* serialPort;
 	CarPool* CarSource;

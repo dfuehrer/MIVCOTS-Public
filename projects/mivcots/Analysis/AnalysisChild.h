@@ -1,9 +1,9 @@
 #ifndef ANALYSIS_CHILD_H
 #define ANALYSIS_CHILD_H
-#include "CarData\CarData.h"
-#include "CarPool\CarPool.h"
-#include "InterThreadComm\sharedCache.h"
-#include "InterThreadComm\endpoint.h"
+#include "CarData/CarData.h"
+#include "CarPool/CarPool.h"
+#include "InterThreadComm/sharedCache.h"
+#include "InterThreadComm/endpoint.h"
 #include <thread>
 #include <atomic>
 #include <mutex>
