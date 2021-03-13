@@ -6,8 +6,10 @@ The dev team has not yet selected an specific license for the project, but if yo
 Use the command "git clone --recurse-submodules -j8 https://github.com/UABaja/MIVCOTS-Public.git" to also clone the submodules.
 
 ## To pull submodules into an already cloned repository, run:
-- git submodule init
-- git submodule update
+```shell
+git submodule init
+git submodule update
+```
 
 ## Installing wxWidgets:
 1. Download and run the Windows installer for 3.0.5 (latest stable release)
@@ -24,7 +26,7 @@ Use the command "git clone --recurse-submodules -j8 https://github.com/UABaja/MI
    Make sure to include a backslash on the end: "C:\wxWidgets-3.0.5\\"
 
 ## Other Requirements
-1. Add another environemnt variable "C:\Users\Sean\Documents\MIVCOTS-Public\projects\mivcots\Resources\\" with the variable name "MivcotsResources" (make sure it ends with a backslash as well: ...\Resources\\
+1. Add another environemnt variable "C:\Users\Sean\Documents\MIVCOTS-Public\projects\mivcots\Resources\\" with the variable name "MivcotsResources" (make sure it ends with a backslash as well: ...\Resources\\)
 ## Testing with com0com
 
 Install com0com https://sourceforge.net/projects/com0com/
