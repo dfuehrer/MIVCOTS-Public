@@ -49,7 +49,7 @@ protected:
 
 // This feels wrong, but apparently it works...
 struct carTimeStampCompareLess {
-	bool operator()(CarData * lhs, CarData * rhs) {
+	bool operator()(CarData * lhs, CarData * rhs) const {
 		long lhsTimeStamp, rhsTimeStamp;
 		lhs->get(TIME_S, &lhsTimeStamp);
 		rhs->get(TIME_S, &rhsTimeStamp);
