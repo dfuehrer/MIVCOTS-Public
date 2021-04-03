@@ -5,6 +5,9 @@
 //#include <array>
 #include <vector>
 
+// this is just an array that has values of the variable names and the length in bytes of that variable
+// so i know how to unpack it in the parsing
+
 //const std::array<std::pair<std::string, int>, 14> GPSSensor = { {
 const std::vector<std::pair<std::string, int>> GPSSensor = { {
     {"ID", 4},
