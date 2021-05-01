@@ -71,12 +71,13 @@ void loop() {
     if (GPS.fix) {
       Serial.print("#,"); Serial.print(msgCounter); Serial.print(",");
       Serial.print("AA,"); Serial.print('0'); Serial.print(",");
-      Serial.print("AB,"); Serial.print("20"); Serial.print(GPS.year); printDateTime(GPS.month); printDateTime(GPS.day); Serial.print(",");
-      Serial.print("AC,"); printDateTime(GPS.hour); printDateTime(GPS.minute); printDateTime(GPS.seconds); print_ms(GPS.milliseconds); Serial.print(",");
-      Serial.print("AD,"); printLatLon(GPS.longitudeDegrees, GPS.lon); Serial.print(",");
-      Serial.print("AE,"); printLatLon(GPS.latitudeDegrees, GPS.lat); Serial.print(",");
-      Serial.print("AF,"); Serial.print((long)(GPS.altitude * 100)); Serial.print(","); //TODO: is this the right scale factor?
-      Serial.print("AG,"); Serial.print((long)(GPS.angle * 100)); Serial.print(",");
+      Serial.print("HB,"); Serial.print('9'); Serial.print(",");
+      Serial.print("AD,"); Serial.print("20"); Serial.print(GPS.year); printDateTime(GPS.month); printDateTime(GPS.day); Serial.print(",");
+      Serial.print("AE,"); printDateTime(GPS.hour); printDateTime(GPS.minute); printDateTime(GPS.seconds); print_ms(GPS.milliseconds); Serial.print(",");
+      Serial.print("AF,"); printLatLon(GPS.longitudeDegrees, GPS.lon); Serial.print(",");
+      Serial.print("AG,"); printLatLon(GPS.latitudeDegrees, GPS.lat); Serial.print(",");
+      Serial.print("AJ,"); Serial.print((long)(GPS.altitude * 100)); Serial.print(","); //TODO: is this the right scale factor?
+      Serial.print("AH,"); Serial.print((long)(GPS.angle * 100)); Serial.print(",");
       //TODO: satellites, temp?
       Serial.print("!\n"); 
       ++msgCounter;
